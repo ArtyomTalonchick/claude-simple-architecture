@@ -1,0 +1,12 @@
+{
+  "name": "simple-architecture",
+  "description": "The simple-architecture plugin: architecture rules for Claude Code.",
+  "owner": { "name": "Artyom Talonchick" },
+  "plugins": [
+    {
+      "name": "simple-architecture",
+      "source": ".",
+      "description": "Architecture rules: technology-free core plus per-stack rules"
+    }
+  ]
+}
