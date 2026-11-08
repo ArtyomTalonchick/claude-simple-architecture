@@ -12,3 +12,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - The `simple-architecture` skill with its layout: core rules and stack files for React, Zustand and Chakra UI,
   all stubs with no rules yet.
 - The stack line a project puts in its `CLAUDE.md`: `Simple Architecture stack: react, zustand, chakra`.
+- A SessionStart hook that tells the agent whether the project follows Simple Architecture, which stack it
+  declares, and to read the skill before writing code; projects without a stack line are told how to declare one.

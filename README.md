@@ -75,6 +75,10 @@ Simple Architecture stack: react, zustand, chakra
 - An empty list (`Simple Architecture stack:`) means core rules only. Without the line, the project does not
   follow Simple Architecture.
 
+At the start of every session a hook reads this line and tells the agent the declared stack, any unknown names,
+and that the skill is read before writing code. Without the line, the agent is told only how to add one. The hook
+needs Node.js on the PATH.
+
 Every rule follows one template, and a rule goes from lecture notes to a release in a fixed way — see
 [docs/rule-format.md](docs/rule-format.md). Questions found while writing rules are logged in
 [docs/questions.md](docs/questions.md).
