@@ -16,3 +16,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   stack rules and reports each finding with the rule it breaks.
 - A SessionStart hook that tells the agent whether the project follows Simple Architecture, which stack it
   declares, and to read the skill before writing code; projects without a stack line are told how to declare one.
+- CI that runs `claude plugin validate . --strict` on every push to `main` and every pull request.
