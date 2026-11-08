@@ -83,6 +83,16 @@ Every rule follows one template, and a rule goes from lecture notes to a release
 [docs/rule-format.md](docs/rule-format.md). Questions found while writing rules are logged in
 [docs/questions.md](docs/questions.md).
 
+## Review a change
+
+The plugin ships the `architecture-reviewer` agent. It is read-only: it reads the rules, your stack line and the
+diff, and reports each finding as `file:line`, the rule it breaks and why — or says there are no findings.
+
+Ask for it before you commit, for example: "Run the architecture-reviewer agent on my changes." By default it
+reviews staged and unstaged changes against `HEAD`; you can pass a commit range or a list of files instead.
+
+While the plugin has no rules, the agent says there are no rules to check against.
+
 ## License
 
 [MIT](LICENSE)
