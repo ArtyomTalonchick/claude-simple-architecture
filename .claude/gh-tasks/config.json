@@ -1,0 +1,13 @@
+{
+  "language": "en",
+  "milestones": true,
+  "version": { "scheme": "minor" },
+  "checks": [],
+  "commit": {
+    "format": "type(scope): subject",
+    "example": "feat(rules): add the core rule on layer boundaries",
+    "types": ["feat", "fix", "refactor", "docs", "test", "build", "chore"],
+    "trailers": false
+  },
+  "release": { "tag": "v{version}", "githubRelease": true, "publishedBy": "skill", "push": true }
+}
