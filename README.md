@@ -45,6 +45,10 @@ claude plugin validate .
 
 Examples in the rules are generic: they name no real project.
 
+Every rule follows one template, and a rule goes from lecture notes to a release in a fixed way — see
+[docs/rule-format.md](docs/rule-format.md). Questions found while writing rules are logged in
+[docs/questions.md](docs/questions.md).
+
 ## License
 
 [MIT](LICENSE)
