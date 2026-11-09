@@ -19,7 +19,8 @@ of the screen.
   formatting of raw data (filtering, sorting, comparing, rounding, joining text); a handler that does more than
   call one Presenter handler.
 - A violation: a Presenter file with no logic in it (an empty or pass-through Presenter).
-- The props type lives in the Presenter; a View without a Presenter declares its own props type.
+- The props type lives in the Presenter, and the View passes it on to its users, so they import it from the
+  View; a View without a Presenter declares its own props type.
 
 **Good.**
 

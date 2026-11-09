@@ -1,8 +1,8 @@
 ## View and Presenter in React
 
 **Rule.** A component is a View: `MyComponent/MyComponent.tsx`, named as its folder. Its Presenter is the hook
-`usePresenter.ts` next to it, which also exports the props type. The only hook a View calls is its own
-`usePresenter`.
+`usePresenter.ts` next to it, which declares the props type; the View re-exports that type for its users. The
+only hook a View calls is its own `usePresenter`.
 
 **Why.** One file name per role makes the pair easy to find, and a single hook call is easy to check: any other
 hook in a component means logic has leaked into the View.
@@ -18,8 +18,9 @@ hook in a component means logic has leaked into the View.
   `toLocaleString` or a template string built from data; a comparison on raw data (`a > b`, `status === 'paid'`);
   an arrow with more than one call or with a condition.
 - `usePresenter.ts` with no hook call and no computation — it only returns its props — is a violation.
-- The props type is exported from `usePresenter.ts`; a component without a Presenter declares its props type in
-  its own file.
+- The props type is declared in `usePresenter.ts` and re-exported from the component file
+  (`export type { OrderListProps } from './usePresenter'`), so users import it from the View; a component without
+  a Presenter declares its props type in its own file.
 
 **Good.**
 
@@ -39,6 +40,10 @@ export const usePresenter = ({ status }: OrderListProps) => {
 };
 
 // OrderList/OrderList.tsx
+import { usePresenter, type OrderListProps } from './usePresenter';
+
+export type { OrderListProps } from './usePresenter';
+
 export const OrderList = (props: OrderListProps) => {
   const { rows, isLoading, open } = usePresenter(props);
   if (isLoading) return <Spinner />;

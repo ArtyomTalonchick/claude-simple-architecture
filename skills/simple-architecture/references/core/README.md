@@ -15,3 +15,5 @@ plugin's repository.
   imports nothing from the app.
 - [One thing per file](one-thing-per-file.md) — one View, Presenter, stateful logic or helper per file; a long
   file gets a warning.
+- [Imports](imports.md) — import along the structure only; between kinds of code, View → Presenter → stateful
+  logic → helpers.

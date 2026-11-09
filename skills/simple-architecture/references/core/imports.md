@@ -1,0 +1,61 @@
+## Imports
+
+**Rule.** Import only along the structure: from your own children through their entry, from the shared folders
+of your own level and of any level above, and from the pure zone. Never reach into a child, into another
+branch or into a parent. Between kinds of code, imports go one way: View → Presenter → stateful logic →
+helpers.
+
+**Why.** When imports follow the folders, the folders tell the truth: a unit can be changed inside without
+breaking anyone, moved or deleted with its folder, and every dependency is visible from where a file lies. A
+single import into another branch or a parent ties two places that look apart, and the next change to one
+breaks the other. The one-way order between kinds of code keeps logic out of Views and keeps helpers free to run
+anywhere.
+
+**How to check.** For each import in the diff, find where its target lies and what kind of code both sides are.
+
+- Allowed targets:
+  - an own child unit, through its entry — the child's View, which also passes on its props type
+    ([View and Presenter](view-presenter.md));
+  - the shared folders, the types file and the constants file of the own level and of any level above it;
+  - the pure zone, from anywhere;
+  - packages from outside the project.
+- A violation:
+  - an import from inside a child unit — its Presenter, its stateful logic, its own children or shared folders;
+  - an import from another branch — a sibling's child, a unit of a cousin level. The code belongs in a shared
+    folder of the lowest common level ([Levels and placement](levels.md));
+  - an import of a parent's or an ancestor's View or Presenter. Data comes down through props;
+  - a pure zone file importing from the app ([Pure zone](pure-zone.md)).
+- By kind, a violation is any import outside this list:
+  - View → its own Presenter, child units, components from shared folders and the pure zone, types;
+  - Presenter → stateful logic, helpers, types, constants — never a View or a component;
+  - stateful logic → stateful logic, helpers, types, constants;
+  - helper → helpers, types, constants.
+- When two units need the same logic, it goes to a stateful logic folder above them. When they need the same
+  data, it goes to a store: shared stateful logic gives each user its own copy of the state, not one state.
+
+**Good.**
+
+```
+OrdersPage/
+  OrdersPage            imports OrderTable (its child's View)
+  presenter             imports hooks/orderFilters, helpers/formatPrice
+  hooks/
+    orderFilters        imports lib/helpers/debounce
+  OrderTable/
+    OrderTable          imports its presenter, OrdersPage/components/StatusBadge
+    presenter           imports OrdersPage/hooks/orderFilters
+```
+
+**Bad.**
+
+```
+OrdersPage/
+  OrdersPage            imports OrderTable/presenter — inside a child
+  OrderTable/
+    presenter           imports OrdersPage/presenter — a parent's Presenter
+                        imports OrderFilters/helpers/statusLabel — another branch
+                        imports components/StatusBadge — a Presenter importing a component
+  OrderFilters/
+```
+
+**Stack notes.** None.

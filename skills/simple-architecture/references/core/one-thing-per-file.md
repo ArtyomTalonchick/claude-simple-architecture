@@ -14,7 +14,8 @@ plain View can be fine — so it is a signal to look, not a rule to break.
 - A file that defines two or more things — two Views, a View and stateful logic, two helpers — is a violation,
   whether the second one is exported or not: the second thing gets its own file, placed by
   [Levels and placement](levels.md).
-- Not a second thing: a type or a constant used only in this file, and the props type of a View or a Presenter.
+- Not a second thing: a type or a constant used only in this file, the props type of a View or a Presenter, and
+  a View passing on its Presenter's props type.
 - A file over `maxFileLines` lines is a **warning**, not a violation: name the file and its size, and say what
   could move out — stateful logic, a helper, a child unit.
 
