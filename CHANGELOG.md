@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.1.3] — 2026-11-09
+
 ### Changed
 
 - A level's own unit counts as one of its units for the shared folders, the types file and the constants file:
