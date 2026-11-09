@@ -1,6 +1,6 @@
 {
   "name": "simple-architecture",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Architecture rules for Claude Code: technology-free core rules plus per-stack rules a project opts into.",
   "author": { "name": "Artyom Talonchick" },
   "repository": "https://github.com/ArtyomTalonchick/claude-simple-architecture",
