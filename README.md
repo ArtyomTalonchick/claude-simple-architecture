@@ -51,32 +51,45 @@ The rules live in the `simple-architecture` skill:
 skills/simple-architecture/
   SKILL.md              when the rules apply and the order of reading
   references/core/      core rules, one file per rule
-  references/stack/     one file per stack: react.md, zustand.md, chakra.md
+  references/stack/     one file per stack: react.md, zustand.md
 ```
 
 Each stack file stands on its own, so a stack can later move to a plugin of its own by moving its file.
 
 There are no rules yet: the core and the stack files are stubs.
 
-## Declare your stack
+## Configure your project
 
-Add one line to the `CLAUDE.md` at your project's root:
+A project opts in with one file at its root, `.claude/simple-architecture/config.json`. Every key is optional;
+this is the full file with the defaults:
 
+```jsonc
+{
+  // Stacks by stack file name: "react", "zustand". Empty — core rules only.
+  "stack": [],
+  // The app's root level, relative to the project root.
+  "root": "src",
+  "folders": {
+    // The pure zone, relative to "root". It knows nothing of the app.
+    "lib": "lib",
+    // The ui-kit, relative to "root". Set "ui-kit" to keep it at the root level.
+    "uiKit": "lib/components",
+    // Shared folders: the same names on every level.
+    "components": "components",
+    "hooks": "hooks",
+    "helpers": "helpers"
+  },
+  // Files longer than this get a warning, not an error.
+  "maxFileLines": 150
+}
 ```
-Simple Architecture stack: react, zustand, chakra
-```
 
-- The line starts with `Simple Architecture stack:` exactly (leading spaces are allowed). The first such line
-  counts; later ones are ignored.
-- After the colon comes a comma-separated list of names. Spaces around names are ignored. Names are compared in
-  lower case.
-- Each name is a stack file without `.md`; the ones that exist now are `react`, `zustand` and `chakra`.
-- An unknown name is skipped, and you are told it has no stack file.
-- An empty list (`Simple Architecture stack:`) means core rules only. Without the line, the project does not
-  follow Simple Architecture.
+The comments are only for this example: the file itself is plain JSON, without comments. An unknown stack name
+is skipped, and you are told it has no stack file. A value of the wrong type is ignored, and you are told.
+Without the file, the project does not follow Simple Architecture.
 
-At the start of every session a hook reads this line and tells the agent the declared stack, any unknown names,
-and that the skill is read before writing code. Without the line, the agent is told only how to add one. The hook
+At the start of every session a hook reads the config and tells the agent the resolved values, any problems,
+and that the skill is read before writing code. Without the file, the agent is told only how to add one. The hook
 needs Node.js on the PATH.
 
 Every rule follows one template, and a rule goes from an idea to a release in a fixed way — see
@@ -85,7 +98,7 @@ Every rule follows one template, and a rule goes from an idea to a release in a 
 
 ## Review a change
 
-The plugin ships the `architecture-reviewer` agent. It is read-only: it reads the rules, your stack line and the
+The plugin ships the `architecture-reviewer` agent. It is read-only: it reads the rules, your config and the
 diff, and reports each finding as `file:line`, the rule it breaks and why — or says there are no findings.
 
 Ask for it before you commit, for example: "Run the architecture-reviewer agent on my changes." By default it

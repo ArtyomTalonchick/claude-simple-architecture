@@ -2,7 +2,7 @@
   "language": "en",
   "milestones": true,
   "version": { "scheme": "minor" },
-  "checks": ["claude plugin validate ."],
+  "checks": ["node --test", "claude plugin validate ."],
   "commit": {
     "format": "type(scope): subject",
     "example": "feat(rules): add the core rule on layer boundaries",

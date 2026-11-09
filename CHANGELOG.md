@@ -5,6 +5,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- The project config `.claude/simple-architecture/config.json`: the stack, the root level, folder names and the
+  file size limit, all with defaults. The SessionStart hook and the architecture-reviewer agent read it.
+- The architecture-reviewer agent reports warnings — signals to look at, such as a long file — apart from
+  findings.
+
+### Removed
+
+- The `Simple Architecture stack:` line in `CLAUDE.md`: the stack is set in the config now.
+- The empty Chakra UI stack file.
+
 ## [0.0.0] — 2026-11-08
 
 ### Added
