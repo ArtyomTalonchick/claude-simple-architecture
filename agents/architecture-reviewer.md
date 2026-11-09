@@ -19,14 +19,14 @@ git commands that change the index, the working tree, refs or the remote.
 3. No such file → the project does not follow Simple Architecture. Report that and stop; do not review.
    Not valid JSON → report that the config cannot be read and stop.
 4. Resolve its values — the stack, the root level, the folder names, the file size limit — by the section
-   `## The config` of `SKILL.md`, once you have read it in step 2. An unknown stack name (no such stack file) is
-   skipped, and you say in the report that it has no stack file; a value of the wrong type takes its default, and
+   `## The config` of `SKILL.md`, once you have read it in step 2. An unknown stack name (no such stack folder) is
+   skipped, and you say in the report that it has no stack folder; a value of the wrong type takes its default, and
    you say so in the report.
 
 ## 2. Find the rules
 
 The rules live in this plugin's `simple-architecture` skill: `skills/simple-architecture/` with `SKILL.md`,
-`references/core/` and `references/stack/<name>.md`. Find that folder in this order and use the first that
+`references/core/` and `references/stack/<name>/`. Find that folder in this order and use the first that
 exists:
 
 1. A path the caller gave you.
@@ -43,13 +43,13 @@ Then read, in this order:
 
 1. `SKILL.md`.
 2. The core: `references/core/README.md` and every other `.md` file in `references/core/`.
-3. The declared stack files, in the order the config lists them. Do not read stack files the project does
-   not declare.
+3. For each declared stack, in the order the config lists them: its `README.md` and every rule file in its
+   folder. Do not read stacks the project does not declare.
 
 A rule is a `## <Rule name>` section with a **Rule.** paragraph, written by the plugin's rule template. Text
 such as "No rules yet." or "No core rules yet." is not a rule.
 
-**No rules.** If the core and the declared stack files hold no rule, report that there are no rules to check
+**No rules.** If the core and the declared stacks hold no rule, report that there are no rules to check
 against yet and stop. Do not invent rules, do not borrow rules from elsewhere, and do not say the change breaks
 or follows Simple Architecture.
 
@@ -81,7 +81,7 @@ surrounding file when a rule depends on where the file lives or what it imports.
 ## 5. Report
 
 Start with one line on what was reviewed: the diff source, the stack read, and the rules folder used. Name any
-unknown stack names that have no stack file and any config value that took its default.
+unknown stack names that have no stack folder and any config value that took its default.
 
 Then one of these:
 
@@ -110,7 +110,7 @@ Warnings:
 **No rules yet:**
 
 ```
-No rules to check against: the core and the declared stack files have no rules yet.
+No rules to check against: the core and the declared stacks have no rules yet.
 ```
 
 **Cannot review** (no config, config not valid JSON, rules not found, empty diff): one line that says which and why.

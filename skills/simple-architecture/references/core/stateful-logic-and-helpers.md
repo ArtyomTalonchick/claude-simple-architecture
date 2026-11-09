@@ -40,4 +40,5 @@ OrdersPage/
     currentUser         reads the store — stateful logic
 ```
 
-**Stack notes.** [react.md](../stack/react.md) — stateful logic in React is a hook.
+**Stack notes.** [react/stateful-logic-and-helpers.md](../stack/react/stateful-logic-and-helpers.md) — stateful
+logic in React is a hook.

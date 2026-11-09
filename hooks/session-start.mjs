@@ -39,9 +39,9 @@ function knownStacks() {
   const pluginRoot = process.env.CLAUDE_PLUGIN_ROOT || join(dirname(fileURLToPath(import.meta.url)), '..');
   const dir = join(pluginRoot, 'skills', 'simple-architecture', 'references', 'stack');
   try {
-    return readdirSync(dir)
-      .filter((name) => name.endsWith('.md'))
-      .map((name) => name.slice(0, -3))
+    return readdirSync(dir, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => entry.name)
       .sort();
   } catch {
     return [];
@@ -128,7 +128,7 @@ function main() {
   }
 
   const { config, problems } = resolveConfig(read.raw);
-  // If the stack files cannot be listed, trust the declared names rather than call them all unknown.
+  // If the stack folders cannot be listed, trust the declared names rather than call them all unknown.
   const used = known.length ? config.stack.filter((name) => known.includes(name)) : config.stack;
   const unknown = known.length ? config.stack.filter((name) => !known.includes(name)) : [];
   const f = config.folders;
@@ -142,14 +142,14 @@ function main() {
   ];
   if (unknown.length) {
     lines.push(
-      `Unknown stack names, skipped (no stack file): ${unknown.join(', ')}. Available: ${available}. Tell the user.`
+      `Unknown stack names, skipped (no stack folder): ${unknown.join(', ')}. Available: ${available}. Tell the user.`
     );
   }
   if (problems.length) {
     lines.push(`Config problems (the value is ignored, its default is used): ${problems.join('; ')}. Tell the user.`);
   }
   lines.push(
-    'Before writing, changing, moving or reviewing code structure, read the simple-architecture skill: the core first, then only the declared stack files. Use the folder names above wherever the rules name a default.'
+    'Before writing, changing, moving or reviewing code structure, read the simple-architecture skill: the core first, then only the declared stacks. Use the folder names above wherever the rules name a default.'
   );
   console.log(lines.join('\n'));
 }

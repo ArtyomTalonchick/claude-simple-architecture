@@ -7,8 +7,9 @@ each one the same way.
 
 - Core rules: `skills/simple-architecture/references/core/<rule>.md`. They name no technology — no library,
   framework or tool.
-- Stack rules: `skills/simple-architecture/references/stack/<tech>.md`. They say how core rules are carried out
-  with one technology and never contradict the core.
+- Stack rules: `skills/simple-architecture/references/stack/<tech>/<rule>.md`, named as the core rule they carry
+  out, next to the stack's `README.md` with its list of rules. They say how a core rule is carried out with one
+  technology and never contradict the core.
 
 A rule that needs a technology's name to make sense is a stack rule, not a core rule.
 

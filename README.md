@@ -51,10 +51,11 @@ The rules live in the `simple-architecture` skill:
 skills/simple-architecture/
   SKILL.md              when the rules apply and the order of reading
   references/core/      core rules, one file per rule
-  references/stack/     one file per stack: react.md, zustand.md
+  references/stack/     one folder per stack: react/, zustand/ — one file per rule, named as the core
+                        rule it carries out
 ```
 
-Each stack file stands on its own, so a stack can later move to a plugin of its own by moving its file.
+Each stack folder stands on its own, so a stack can later move to a plugin of its own by moving its folder.
 
 The core rules are listed in
 [skills/simple-architecture/references/core/README.md](skills/simple-architecture/references/core/README.md).
@@ -66,7 +67,7 @@ this is the full file with the defaults:
 
 ```jsonc
 {
-  // Stacks by stack file name: "react", "zustand". Empty — core rules only.
+  // Stacks by stack folder name: "react", "zustand". Empty — core rules only.
   "stack": [],
   // The app's root level, relative to the project root.
   "root": "src",
@@ -86,7 +87,7 @@ this is the full file with the defaults:
 ```
 
 The comments are only for this example: the file itself is plain JSON, without comments. An unknown stack name
-is skipped, and you are told it has no stack file. A value of the wrong type is ignored, and you are told.
+is skipped, and you are told it has no stack folder. A value of the wrong type is ignored, and you are told.
 Without the file, the project does not follow Simple Architecture.
 
 At the start of every session a hook reads the config and tells the agent the resolved values, any problems,

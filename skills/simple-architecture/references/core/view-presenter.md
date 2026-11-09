@@ -44,4 +44,4 @@ OrderList/
                              OrderRow(order, total = round(order.sum * 1.2, 2))
 ```
 
-**Stack notes.** [react.md](../stack/react.md) — View and Presenter in React.
+**Stack notes.** [react/view-presenter.md](../stack/react/view-presenter.md) — View and Presenter in React.

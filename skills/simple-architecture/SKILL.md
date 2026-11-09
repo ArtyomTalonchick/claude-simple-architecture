@@ -27,11 +27,13 @@ config file `.claude/simple-architecture/config.json` (see below).
 
 ## Order of reading
 
-1. The core: [references/core/](references/core/README.md). Core rules come first and always apply.
-2. The stack files the project declares, in the order it lists them. A stack rule says how a core rule is
-   carried out with one technology; it never overrides the core.
+1. The core: [references/core/](references/core/README.md) and every rule file in it. Core rules come first and
+   always apply.
+2. The stacks the project declares, in the order it lists them: for each, `references/stack/<name>/README.md`
+   and every rule file in that folder. A stack rule file is named as the core rule it carries out; it says how
+   that rule is carried out with one technology and never overrides it.
 
-Do not read stack files the project does not declare.
+Do not read stacks the project does not declare.
 
 ## The config
 
@@ -53,9 +55,9 @@ a missing key takes its default. The full file with the defaults:
 }
 ```
 
-- **`stack`** — the stack files to read, in order. Each name is a stack file without `.md`: `react` means
-  `references/stack/react.md`. Names are compared in lower case. An unknown name is skipped, and the user is told
-  it has no stack file. An empty list means core rules only.
+- **`stack`** — the stacks to read, in order. Each name is a stack folder: `react` means
+  `references/stack/react/`. Names are compared in lower case. An unknown name is skipped, and the user is told
+  it has no stack folder. An empty list means core rules only.
 - **`root`** — the folder of the app's root level, relative to the project root.
 - **`folders.lib`** — the pure zone, relative to `root`.
 - **`folders.uiKit`** — the ui-kit, relative to `root`. Wherever it lives, it belongs to the pure zone.
@@ -76,7 +78,7 @@ in the context (a subagent, a hook that did not run), read the config by the rul
 ## Reference files
 
 - [references/core/](references/core/README.md) — core rules.
-- [references/stack/react.md](references/stack/react.md) — React.
-- [references/stack/zustand.md](references/stack/zustand.md) — Zustand.
+- [references/stack/react/](references/stack/react/README.md) — React.
+- [references/stack/zustand/](references/stack/zustand/README.md) — Zustand.
 
 Every rule follows the template in `docs/rule-format.md` of this plugin's repository.

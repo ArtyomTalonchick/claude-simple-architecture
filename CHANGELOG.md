@@ -21,6 +21,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - The architecture-reviewer agent reports warnings — signals to look at, such as a long file — apart from
   findings.
 
+### Changed
+
+- Each stack is a folder with one file per rule, named as the core rule it carries out: `stack/react/`,
+  `stack/zustand/`.
+
 ### Removed
 
 - The `Simple Architecture stack:` line in `CLAUDE.md`: the stack is set in the config now.

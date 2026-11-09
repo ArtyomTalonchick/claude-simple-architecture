@@ -58,4 +58,5 @@ OrdersPage/
   OrderFilters/
 ```
 
-**Stack notes.** [react.md](../stack/react.md) — the View and Presenter files of a level.
+**Stack notes.** [react/view-presenter.md](../stack/react/view-presenter.md) — the View and Presenter files of a
+level.

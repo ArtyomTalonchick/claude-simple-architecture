@@ -13,7 +13,7 @@ heading is skipped. Content may be in any language.
 ## Implement
 <!-- next-task, before coding: project rules, schema or migration conventions -->
 - A core rule names no technology — no library, framework or tool. A rule that needs such a name goes to a
-  stack file.
+  stack folder.
 - The plugin mentions no specific project: examples are generic.
 
 ## Verify

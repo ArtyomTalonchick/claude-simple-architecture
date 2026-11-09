@@ -69,7 +69,7 @@ test('full config: its values are used', () => {
 test('unknown stack name: skipped, and the user is told', () => {
   const out = runHook('{"stack": ["react", "vue"]}');
   assert.match(out, /Stack: react\./);
-  assert.match(out, /Unknown stack names, skipped \(no stack file\): vue\./);
+  assert.match(out, /Unknown stack names, skipped \(no stack folder\): vue\./);
 });
 
 test('invalid JSON: the config cannot be read', () => {
