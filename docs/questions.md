@@ -156,3 +156,19 @@ valid place.
 **Answer.** Yes: the own unit counts. Code used by the own unit and by one child unit goes to a shared folder, the
 types file or the constants file of the level, and the child imports it from there as code of a level above. The
 same holds for all shared files of a level, not only types. Written into "Levels and placement" with an example.
+
+## Q13. Does a derived value form a group of its own in the two-concerns test?
+
+**Question.** The test calls stateful logic two concerns when "its state and results fall into two groups". A
+filter returned options computed only from its input, the selected option and the filtered list; the options do not
+read the selection. Are they a second group?
+
+**Context.** Found in a project that follows the plugin (#18); the reviewer passed the filter as one concern but
+noted that one could argue otherwise.
+
+**Status.** answered
+
+**Answer.** No: the groups are formed by state and lifecycle, not by results. A value computed only from the input,
+memoized or not, has no state of its own and stays with the state it is returned next to. A value with state or
+lifecycle of its own, such as a request, can form a second group. Written into "Stateful logic and helpers" with an
+example.

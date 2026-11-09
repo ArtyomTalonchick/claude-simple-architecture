@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - A level's own unit counts as one of its units for the shared folders, the types file and the constants file:
   code used by the own unit and by one child unit goes to the level and the child imports it from there.
+- The two-concerns test of stateful logic groups state and lifecycle, not results: a value computed only from the
+  input, memoized or not, forms no group of its own.
 
 ## [0.1.2] — 2026-11-09
 

@@ -30,6 +30,11 @@ neither can be reused without the other.
   of a field and the request made with that value. Split it into two, pass that value as an argument, and join
   them in the Presenter or in other stateful logic. Steps of one job — waiting, cancelling and retrying one
   request — are one concern.
+- The groups of that test are formed by state and lifecycle, not by results. A value computed only from the
+  input — memoized or not — has no state of its own and forms no group: it stays with the state it is returned
+  next to. For example, a filter that returns its options computed from the list, the selected option and the
+  filtered list is one concern. A value with state or lifecycle of its own — a request, a subscription — can form a
+  second group.
 
 **Good.**
 
@@ -38,6 +43,8 @@ OrdersPage/
   hooks/
     orderFilters        keeps the filter state
     currentUser         reads the store
+    statusFilter        options computed from the orders, the selected status, the filtered orders — one
+                        concern: the options have no state of their own
   helpers/
     formatPrice         number -> text, no state
   OrderSearch/
