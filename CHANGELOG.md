@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- Rule gaps found in the first real use are closed: `usePresenter` is exempt from the `use` prefix rule; a View
+  may read styles from the design system (in React, styling hooks), and a computed constant anywhere in a View
+  file is a computation; one concern per piece of stateful logic; the design-system theme belongs to the pure
+  zone, and a dependency by key counts as an import; tests are not part of the level shape and may import the
+  code they test; a recommendation on relative paths and the path alias; an example of a View that only chooses
+  a screen. Each decision is logged in `docs/questions.md`.
+
 ## [0.1.0] — 2026-11-09
 
 ### Added

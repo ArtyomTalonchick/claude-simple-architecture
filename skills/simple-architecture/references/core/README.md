@@ -10,9 +10,9 @@ plugin's repository.
 - [Levels and placement](levels.md) — every code folder has the same shape; code lives at the lowest level that
   covers all its users.
 - [Stateful logic and helpers](stateful-logic-and-helpers.md) — stateful logic uses state, lifecycle or a
-  store; a helper is a plain function.
-- [Pure zone](pure-zone.md) — code that knows nothing of the app lives in `lib/` and the ui-kit at the root, and
-  imports nothing from the app.
+  store; a helper is a plain function; one concern per piece of stateful logic.
+- [Pure zone](pure-zone.md) — code that knows nothing of the app lives in `lib/` and the ui-kit at the root,
+  with the design-system theme, and depends on nothing from the app, by import or by key.
 - [One thing per file](one-thing-per-file.md) — one View, Presenter, stateful logic or helper per file; a long
   file gets a warning.
 - [Imports](imports.md) — import along the structure only; between kinds of code, View → Presenter → stateful

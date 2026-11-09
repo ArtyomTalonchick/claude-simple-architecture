@@ -32,7 +32,11 @@ level means one set of rules to know: a module reads the same way as the app, at
 - An empty shared folder is a violation: a shared folder exists only when it has content.
 - A child unit does not need the parent's name as a prefix.
 - The exception is the pure zone ([Pure zone](pure-zone.md)): pure code stays there whatever the number of its
-  users.
+  users, and the lib folder may hold other folders of pure code, such as the theme.
+- Tests are not part of the shape. A test lives next to the code it tests — a test file beside it, or a tests
+  folder in the folder that holds it, by the project's convention — and is not a unit, a shared folder or a level.
+  A test is not a user: it does not count when deciding where code goes, and a file used by one unit and by tests
+  still has one user.
 
 **Good.**
 
@@ -47,6 +51,7 @@ OrdersPage/
   OrderTable/           used only by OrdersPage
     OrderTable
     presenter
+    tests/              tests of OrderTable and its presenter — not a level
   OrderFilters/         used only by OrdersPage
     OrderFilters
 ```

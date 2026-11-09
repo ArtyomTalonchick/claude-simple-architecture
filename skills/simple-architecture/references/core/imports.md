@@ -37,6 +37,12 @@ belongs to the level that holds the folder.
   import the props type its child passes on. It brings in no markup and no logic.
 - When two units need the same logic, it goes to a stateful logic folder above them. When they need the same
   data, it goes to a store: shared stateful logic gives each user its own copy of the state, not one state.
+- A test ([Levels and placement](levels.md)) may import the code it tests, even when that code sits one folder
+  up from a tests folder, and anything that code itself may import. It is not an import from a parent.
+- The rule is about targets, not path syntax: a relative path and a path alias are judged the same, and the path
+  style is never a finding. Recommended:
+  import own child units and the code a test tests by a relative path, everything else through the project's
+  root alias, so a path shows at a glance whether it stays inside the unit.
 
 **Good.**
 

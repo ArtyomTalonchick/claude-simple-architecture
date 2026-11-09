@@ -3,7 +3,8 @@
 **Rule.** Stateful logic is a hook: a function whose name starts with `use` and that calls at least one React
 hook — `useState`, `useEffect`, a context, a store or a query hook, or a custom hook — or that a hook library
 creates for you (a store made by a store library). A function that is neither is a helper: its name does not
-start with `use`.
+start with `use`. The one exception is the Presenter, `usePresenter`: it is a hook by convention, whether or not
+it calls one.
 
 **Why.** React enforces its rules of hooks by the `use` prefix. A `use` name on a plain function puts those
 limits on code that does not need them, and a helper that calls a hook breaks at run time.
@@ -13,7 +14,10 @@ limits on code that does not need them, and a helper that calls a hook breaks at
 - A function named `use…` that calls no hook and is not created by a hook library is a violation: rename it and
   move it to a helpers folder.
 - A function whose name does not start with `use` and that calls a hook is a violation.
-- The Presenter, `usePresenter`, is a hook: it may call hooks and helpers.
+- The Presenter, `usePresenter`, is a hook: it may call hooks and helpers. A `usePresenter` that calls no hook
+  but computes something from its props is not a violation of this rule — the View always calls its Presenter
+  the same way, so a hook added later changes nothing for the View. A Presenter with no computation at all is
+  judged by [View and Presenter in React](view-presenter.md).
 
 **Good.**
 
