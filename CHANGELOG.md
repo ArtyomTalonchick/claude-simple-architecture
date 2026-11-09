@@ -11,6 +11,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   when two ways both work, pick the one that is easier to change later.
 - Core rule "View and Presenter": markup in the View, all logic in the Presenter; with its React side —
   `MyComponent.tsx` and the `usePresenter` hook.
+- Core rule "Levels and placement": every code folder has the same shape — its unit, children, shared folders —
+  and code lives at the lowest level that covers all its users.
 - The project config `.claude/simple-architecture/config.json`: the stack, the root level, folder names and the
   file size limit, all with defaults. The SessionStart hook and the architecture-reviewer agent read it.
 - The architecture-reviewer agent reports warnings — signals to look at, such as a long file — apart from
