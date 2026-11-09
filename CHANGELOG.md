@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- A level's own unit counts as one of its units for the shared folders, the types file and the constants file:
+  code used by the own unit and by one child unit goes to the level and the child imports it from there.
+
 ## [0.1.2] — 2026-11-09
 
 ### Changed

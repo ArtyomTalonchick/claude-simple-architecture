@@ -141,3 +141,18 @@ props.
 props type, or nothing when the child is hidden, and the View passes it on whole. A View that passes separate ready
 values is not reported: that is not a computation. Written into "View and Presenter" with a React example; the
 type-only import of the props type was already allowed by "Imports".
+
+## Q12. Does a level's own unit count as a unit for its shared files?
+
+**Question.** Shared folders, the types file and the constants file of a level are for code used by "two or more
+units of this level". Does the level's own unit count as one of them, next to a child unit?
+
+**Context.** Found in a project that follows the plugin (#17): a type used by a helper of the parent's own unit and
+by one child unit. The reviewer accepted it in the parent's types file, but the other reading left the type with no
+valid place.
+
+**Status.** answered
+
+**Answer.** Yes: the own unit counts. Code used by the own unit and by one child unit goes to a shared folder, the
+types file or the constants file of the level, and the child imports it from there as code of a level above. The
+same holds for all shared files of a level, not only types. Written into "Levels and placement" with an example.

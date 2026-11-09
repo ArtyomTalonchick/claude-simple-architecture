@@ -24,6 +24,10 @@ level means one set of rules to know: a module reads the same way as the app, at
     `components/`), the stateful logic folder (default `hooks/`), the helpers folder (default `helpers/`);
   - a types file and a constants file (default `types` and `constants`) for types and constants shared by two or
     more units of this level.
+- The level's own unit counts as one of its units, next to its child units. Code used by the own unit and by one
+  child unit has two users: it goes to a shared folder, the types file or the constants file of the level, and the
+  child imports it from there, as code of a level above. Inside the child it would be a violation: the own unit
+  would import from inside a child.
 - A file in a shared folder, a types file or a constants file of a level with only one user is a violation: it
   belongs next to that user.
 - A child unit or a file used by two or more siblings, or from outside its parent level, is a violation: it
@@ -46,6 +50,7 @@ OrdersPage/
   presenter             Presenter
   orderFilters          used only by the presenter
   constants             PAGE_SIZE — used by the presenter and by OrderTable
+  types                 StatusCount — used by orderFilters (the own unit) and by OrderFilters
   components/
     StatusBadge/        used by OrderTable and OrderFilters
   OrderTable/           used only by OrdersPage
@@ -68,6 +73,8 @@ OrdersPage/
   OrderTable/
     StatusBadge/        OrderFilters uses it too — it belongs in OrdersPage/components/
   OrderFilters/
+    types               StatusCount — orderFilters of OrdersPage uses it too, so OrdersPage would import from
+                        inside a child — it belongs in OrdersPage/types
 ```
 
 **Stack notes.** [react/view-presenter.md](../stack/react/view-presenter.md) — the View and Presenter files of a
