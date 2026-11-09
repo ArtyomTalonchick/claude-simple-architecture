@@ -112,3 +112,17 @@ question, why it was dropped.
 **Status.** answered
 
 **Answer.** An example, not a rule: the rules already allow it. Added as a second Good example to "View and Presenter".
+
+## Q10. Is choosing a value by a condition in a View a computation?
+
+**Question.** A View passed `src={image ?? undefined}`: it only turns `null` into the `undefined` a prop expects.
+The rule forbids computations in a View but did not name a fallback, a default or an optional read.
+
+**Context.** Found by the architecture-reviewer in a project that follows the plugin (#16); it called the case
+borderline, so the same line could be judged two ways.
+
+**Status.** answered
+
+**Answer.** Yes: a fallback, a default, a value picked by a condition, an optional read and turning one kind of
+"no value" into another are computations, and the Presenter returns the ready value. Choosing markup by a ready
+flag stays allowed. Written into "View and Presenter"; the React side names `??`, `||`, `?:` on values and `?.`.

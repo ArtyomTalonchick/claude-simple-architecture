@@ -23,6 +23,10 @@ are the View's concern.
 - A violation in JSX: `.filter`, `.sort`, `.reduce`, `.find` on data; formatting such as `.toFixed`,
   `toLocaleString` or a template string built from data; a comparison on raw data (`a > b`, `status === 'paid'`);
   an arrow with more than one call or with a condition.
+- A violation in JSX: a value chosen by a condition — `??`, `||` or `?:` that picks a value
+  (`src={image ?? undefined}`, `title={name || 'Untitled'}`, `label={isOpen ? 'Hide' : 'Show'}`) — and an optional
+  read `a?.b`. The Presenter returns the ready value (`imageSrc: image ?? undefined`). `&&` and `?:` stay allowed
+  when they choose markup by a ready flag, as above.
 - The same violations count anywhere in the component file, not only in JSX: a module-level constant built with
   `.map`, `.flatMap`, `.filter` or a template string is a computation in the View and goes to `usePresenter.ts`.
   A literal array or object is allowed.
@@ -60,6 +64,22 @@ export const OrderList = (props: OrderListProps) => {
 };
 ```
 
+A value the View passes to a prop is ready too, even when it only turns `null` into `undefined`:
+
+```tsx
+// UserCard/usePresenter.ts
+export const usePresenter = ({ userId }: UserCardProps) => {
+  const { user } = useUser(userId);
+  return { name: user?.name ?? 'Guest', imageSrc: user?.image ?? undefined };
+};
+
+// UserCard/UserCard.tsx
+export const UserCard = (props: UserCardProps) => {
+  const { name, imageSrc } = usePresenter(props);
+  return <Avatar name={name} src={imageSrc} />;
+};
+```
+
 **Bad.**
 
 ```tsx
@@ -70,6 +90,14 @@ export const OrderList = ({ status }: { status: OrderStatus }) => {
   return orders
     .filter((o) => o.status === status)
     .map((o) => <OrderRow key={o.id} row={{ ...o, total: o.sum.toFixed(2) }} />);
+};
+```
+
+```tsx
+// UserCard/UserCard.tsx
+export const UserCard = (props: UserCardProps) => {
+  const { user } = usePresenter(props);
+  return <Avatar name={user?.name ?? 'Guest'} src={user?.image ?? undefined} />;
 };
 ```
 

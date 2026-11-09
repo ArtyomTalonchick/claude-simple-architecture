@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - The rules version in use is named: the SessionStart hook prints the plugin version and its rules folder, and the
   architecture-reviewer agent names the version and folder it read. The reviewer stays on the session's version,
   as the skill does, and warns when a newer version is installed and the session must be restarted.
+- Choosing a value by a condition in a View — a fallback, a default, an optional read, turning `null` into
+  `undefined` — is a computation and belongs to the Presenter; choosing markup by a ready flag stays allowed.
 
 ## [0.1.1] — 2026-11-09
 

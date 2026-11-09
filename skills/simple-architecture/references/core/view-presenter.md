@@ -19,6 +19,9 @@ of the screen.
 - A violation in a View: state, effects or lifecycle code; reading data or a store directly; a computation or
   formatting of raw data (filtering, sorting, comparing, rounding, joining text); a handler that does more than
   call one Presenter handler.
+- Choosing a value by a condition is a computation too: a fallback or a default for a missing value, a value
+  picked by a condition, a read of a field that may be missing, turning one kind of "no value" into another. The
+  Presenter returns the ready value. Choosing which markup to show by a ready flag stays allowed.
 - The whole View file counts, not only its markup: a constant built by a computation outside the markup (a list
   mapped from another list, text joined from parts) is a computation in the View. It goes to the Presenter: a
   unit that needs it has logic, so it has a Presenter. Reading styles from the design system is not stateful
