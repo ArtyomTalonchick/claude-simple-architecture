@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- The rules version in use is named: the SessionStart hook prints the plugin version and its rules folder, and the
+  architecture-reviewer agent names the version and folder it read. The reviewer stays on the session's version,
+  as the skill does, and warns when a newer version is installed and the session must be restarted.
+
 ## [0.1.1] — 2026-11-09
 
 ### Changed

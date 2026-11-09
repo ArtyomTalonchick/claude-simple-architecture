@@ -26,18 +26,32 @@ The values are resolved in section 2, once `SKILL.md` is read.
 ## 2. Find the rules
 
 The rules live in this plugin's `simple-architecture` skill: `skills/simple-architecture/` with `SKILL.md`,
-`references/core/` and `references/stack/<name>/`. Find that folder in this order and use the first that
-exists:
+`references/core/` and `references/stack/<name>/`. Use the rules of the session's plugin version — the version
+the session loaded, which the skill uses too — so the skill and the review check against the same rules. Find
+that folder in this order and use the first that exists:
 
-1. A path the caller gave you.
+1. A path the caller gave you. If the caller gave only a version, the folder of that version in the plugin
+   cache: `<home>/.claude/plugins/cache/*/simple-architecture/<version>/skills/simple-architecture/`, where
+   `<home>` comes from `echo "$HOME"`. The SessionStart context names the session's version and rules folder.
 2. `${CLAUDE_PLUGIN_ROOT}/skills/simple-architecture/` — only if the text before `/skills` is a real path, not
    the literal `${CLAUDE_PLUGIN_ROOT}` (it is not expanded everywhere).
 3. The installed plugin: Glob for `**/skills/simple-architecture/SKILL.md` under
-   `<home>/.claude/plugins/cache/`, where `<home>` comes from `echo "$HOME"`. If several versions match, take the
-   highest version folder.
+   `<home>/.claude/plugins/cache/`. If several versions match, take the highest version folder, and add a
+   warning that the session's version is not known, so the rules may differ from the ones the skill uses.
 4. The project itself, when it is the plugin's own repository: `<project root>/skills/simple-architecture/`.
 
 If none exists, report that the rules could not be found and stop. Never review from memory.
+
+**The rules version.** Read `version` from `.claude-plugin/plugin.json` two levels above the rules folder (the
+plugin's root, which holds `skills/`). If the file or the field is missing, the version is unknown; say so.
+
+**A newer version installed.** When the rules folder is in the plugin cache, Glob for
+`**/skills/simple-architecture/SKILL.md` under `<home>/.claude/plugins/cache/` and compare the version folder
+names — the folder that holds `skills/` — with the version used, as semver: compare major, then minor, then
+patch as numbers; a version with a pre-release part (`1.2.0-beta`) is lower than the same version without one.
+Any higher version → add a warning: a newer version of the plugin is installed (`<newest>`), this session uses
+`<version>`, restart the session to load the new rules. Do not switch to the newer version: the skill in this
+session still uses the session's version. Skip this check when the rules folder is outside the cache.
 
 Then read, in this order:
 
@@ -82,8 +96,9 @@ surrounding file when a rule depends on where the file lives or what it imports.
 
 ## 5. Report
 
-Start with one line on what was reviewed: the diff source, the stack read, and the rules folder used. Name any
-unknown stack names that have no stack folder and any config value that took its default.
+Start with one line on what was reviewed: the rules version and the rules folder used, the diff source, and the
+stack read — for example `Rules 0.1.1 from <rules folder>; diff: git diff HEAD; stack: react.` Name any unknown
+stack names that have no stack folder and any config value that took its default.
 
 Then one of these:
 
@@ -107,7 +122,11 @@ No findings: the change follows every rule checked (<N> rules).
 ```
 Warnings:
 - src/orders/OrderForm/OrderForm.tsx — <Rule name>: <what the signal says, e.g. 212 lines, limit 150>
+- A newer version of the plugin is installed (0.2.0); this session uses 0.1.1. Restart the session to load the new rules.
 ```
+
+The warnings from section 2 — a newer version installed, the session's version not known — go here too, and are
+given even when the report is "No rules yet".
 
 **No rules yet:**
 

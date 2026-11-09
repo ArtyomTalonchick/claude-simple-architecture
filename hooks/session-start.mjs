@@ -1,5 +1,5 @@
 // SessionStart hook: tells the agent whether the project follows Simple Architecture, the resolved values of
-// its config, and that the skill is read before writing code.
+// its config, the plugin version in use, and that the skill is read before writing code.
 // Plain stdout of a SessionStart hook is added to the session as context.
 // It never fails the session: any error ends with exit code 0.
 
@@ -35,9 +35,28 @@ function projectRoot() {
   return process.cwd();
 }
 
+const pluginRoot = () => process.env.CLAUDE_PLUGIN_ROOT || join(dirname(fileURLToPath(import.meta.url)), '..');
+const rulesFolder = () => join(pluginRoot(), 'skills', 'simple-architecture');
+
+// The version this session loaded, from the plugin's own manifest; null when it cannot be read.
+function pluginVersion() {
+  try {
+    const manifest = JSON.parse(
+      readFileSync(join(pluginRoot(), '.claude-plugin', 'plugin.json'), 'utf8').replace(/^﻿/, '')
+    );
+    return isText(manifest.version) ? manifest.version.trim() : null;
+  } catch {
+    return null;
+  }
+}
+
+function versionLine() {
+  const version = pluginVersion();
+  return `Simple Architecture plugin version in this session: ${version || 'unknown'}.`;
+}
+
 function knownStacks() {
-  const pluginRoot = process.env.CLAUDE_PLUGIN_ROOT || join(dirname(fileURLToPath(import.meta.url)), '..');
-  const dir = join(pluginRoot, 'skills', 'simple-architecture', 'references', 'stack');
+  const dir = join(rulesFolder(), 'references', 'stack');
   try {
     return readdirSync(dir, { withFileTypes: true })
       .filter((entry) => entry.isDirectory())
@@ -113,7 +132,8 @@ function main() {
 
   if (read.status === 'missing') {
     console.log(
-      `Simple Architecture: this project does not follow it - it has no ${CONFIG_PATH}. ` +
+      `${versionLine()} ` +
+        `Simple Architecture: this project does not follow it - it has no ${CONFIG_PATH}. ` +
         `To opt in, create that file, for example {"stack": ["${known[0] || 'react'}"]} ` +
         `(available stacks: ${available}; every key is optional, see the simple-architecture skill).`
     );
@@ -121,7 +141,8 @@ function main() {
   }
   if (read.status === 'invalid') {
     console.log(
-      `Simple Architecture: ${CONFIG_PATH} cannot be read (${read.error}). Tell the user. ` +
+      `${versionLine()} ` +
+        `Simple Architecture: ${CONFIG_PATH} cannot be read (${read.error}). Tell the user. ` +
         'Until it is fixed, do not apply or judge code by the Simple Architecture rules.'
     );
     return;
@@ -135,6 +156,7 @@ function main() {
 
   const lines = [
     `This project follows Simple Architecture (${CONFIG_PATH}).`,
+    `${versionLine()} Its rules: ${rulesFolder()}. Pass this folder to the architecture-reviewer agent, so it checks against the same rules as the skill.`,
     `Stack: ${used.length ? used.join(', ') : 'none - core rules only'}.`,
     `Root level: ${config.root}/. Pure zone: ${config.root}/${f.lib}/. UI kit: ${config.root}/${f.uiKit}/.`,
     `Shared folders on every level: ${f.components}/, ${f.hooks}/, ${f.helpers}/.`,

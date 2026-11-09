@@ -4,16 +4,18 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const pluginRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 const hook = join(pluginRoot, 'hooks', 'session-start.mjs');
+const version = JSON.parse(readFileSync(join(pluginRoot, '.claude-plugin', 'plugin.json'), 'utf8')).version;
 
-// Runs the hook for a project with the given config text; null means no config file.
-function runHook(configText) {
+// Runs the hook for a project with the given config text; null means no config file. `root` is the plugin root
+// the hook is told it runs from.
+function runHook(configText, root = pluginRoot) {
   const project = mkdtempSync(join(tmpdir(), 'sa-hook-'));
   try {
     if (configText !== null) {
@@ -22,7 +24,7 @@ function runHook(configText) {
       writeFileSync(join(dir, 'config.json'), configText);
     }
     const result = spawnSync(process.execPath, [hook], {
-      env: { ...process.env, CLAUDE_PROJECT_DIR: project, CLAUDE_PLUGIN_ROOT: pluginRoot },
+      env: { ...process.env, CLAUDE_PROJECT_DIR: project, CLAUDE_PLUGIN_ROOT: root },
       input: '',
       encoding: 'utf8',
     });
@@ -106,4 +108,25 @@ test('wrong types and unknown keys: defaults are used and each problem is named'
 test('a byte order mark at the start of the file is ignored', () => {
   const out = runHook('﻿{"stack": ["react"]}');
   assert.match(out, /Stack: react\./);
+});
+
+test('the plugin version is named in every branch, and the rules folder when the project follows it', () => {
+  const line = `Simple Architecture plugin version in this session: ${version}.`;
+  for (const configText of [null, '{}', '{"stack": [']) {
+    assert.ok(runHook(configText).includes(line), `names the version for config ${configText}`);
+  }
+  const out = runHook('{}');
+  assert.ok(out.includes(`Its rules: ${join(pluginRoot, 'skills', 'simple-architecture')}.`), 'names the rules folder');
+  assert.match(out, /Pass this folder to the architecture-reviewer agent/);
+});
+
+test('a plugin root without a manifest: the version is unknown and the hook still prints', () => {
+  const root = mkdtempSync(join(tmpdir(), 'sa-plugin-'));
+  try {
+    const out = runHook('{}', root);
+    assert.match(out, /plugin version in this session: unknown./);
+    assert.match(out, /This project follows Simple Architecture/);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
 });

@@ -19,8 +19,9 @@ Add the marketplace and install the plugin:
 /plugin marketplace update simple-architecture
 ```
 
-Then restart Claude Code, or run `/reload-plugins`, to load the new version. Changes between versions are listed
-in [CHANGELOG.md](CHANGELOG.md).
+Then restart Claude Code, or run `/reload-plugins`, to load the new version: until then a running session keeps
+the version it loaded. The `architecture-reviewer` agent uses that same version and warns when a newer one is
+installed. Changes between versions are listed in [CHANGELOG.md](CHANGELOG.md).
 
 ## Develop locally
 
