@@ -13,6 +13,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `MyComponent.tsx` and the `usePresenter` hook.
 - Core rule "Levels and placement": every code folder has the same shape — its unit, children, shared folders —
   and code lives at the lowest level that covers all its users.
+- Core rule "Stateful logic and helpers": stateful logic uses state, lifecycle or a store, a helper is a plain
+  function; with its React side — stateful logic is a hook, and the `use` prefix goes only on functions that call
+  hooks.
 - The project config `.claude/simple-architecture/config.json`: the stack, the root level, folder names and the
   file size limit, all with defaults. The SessionStart hook and the architecture-reviewer agent read it.
 - The architecture-reviewer agent reports warnings — signals to look at, such as a long file — apart from

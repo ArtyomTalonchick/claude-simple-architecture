@@ -59,16 +59,16 @@ a missing key takes its default. The full file with the defaults:
 - **`root`** — the folder of the app's root level, relative to the project root.
 - **`folders.lib`** — the pure zone, relative to `root`.
 - **`folders.uiKit`** — the ui-kit, relative to `root`. Wherever it lives, it belongs to the pure zone.
-- **`folders.components`**, **`folders.hooks`**, **`folders.helpers`** — the names of the shared folders. The
-  same names are used on every level.
+- **`folders.components`**, **`folders.hooks`**, **`folders.helpers`** — the names of the shared folders: for
+  components, for stateful logic and for helpers. The same names are used on every level.
 - **`maxFileLines`** — a positive whole number: the size above which a file gets a warning.
 
-The rules name a folder by its role and its default, for example "the hooks folder (default `hooks/`)"; in a
-project, use the configured name.
+The rules name a folder by its role and its default, for example "the stateful logic folder (default
+`hooks/`)"; in a project, use the configured name.
 
-A value of the wrong type is ignored, its default is used, and the user is told; so is an unknown key. A file that is not valid JSON
-means the config cannot be read: tell the user, and do not apply or judge by the rules until it is fixed. No
-file means the project does not follow Simple Architecture.
+A value of the wrong type is ignored, its default is used, and the user is told; so is an unknown key. A file
+that is not valid JSON means the config cannot be read: tell the user, and do not apply or judge by the rules
+until it is fixed. No file means the project does not follow Simple Architecture.
 
 At session start a hook reads the config and passes the resolved values to the agent. When those values are not
 in the context (a subagent, a hook that did not run), read the config by the rules above.

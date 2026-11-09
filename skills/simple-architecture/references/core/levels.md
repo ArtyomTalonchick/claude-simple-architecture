@@ -12,11 +12,11 @@ level means one set of rules to know: a module reads the same way as the app, at
 **How to check.**
 
 - The shape of a level, every part optional:
-  - its own unit — the View (named as the folder), the Presenter, and files only they use, such as a hook only
-    the Presenter calls;
+  - its own unit — the View (named as the folder), the Presenter, and files only they use, such as stateful
+    logic only the Presenter calls;
   - child folders — units used only by this level, with the same shape inside;
   - shared folders, for code used by two or more units of this level: the components folder (default
-    `components/`), the hooks folder (default `hooks/`), the helpers folder (default `helpers/`);
+    `components/`), the stateful logic folder (default `hooks/`), the helpers folder (default `helpers/`);
   - a types file and a constants file (default `types` and `constants`) for types and constants shared by two or
     more units of this level.
 - A file in a shared folder, a types file or a constants file of a level with only one user is a violation: it
@@ -33,7 +33,7 @@ level means one set of rules to know: a module reads the same way as the app, at
 OrdersPage/
   OrdersPage            View
   presenter             Presenter
-  useOrderFilters       used only by the presenter
+  orderFilters          used only by the presenter
   constants             PAGE_SIZE — used by the presenter and by OrderTable
   components/
     StatusBadge/        used by OrderTable and OrderFilters
@@ -51,7 +51,7 @@ OrdersPage/
   OrdersPage
   presenter
   hooks/
-    useOrderFilters     only the presenter uses it — it belongs next to the presenter
+    orderFilters        only the presenter uses it — it belongs next to the presenter
   components/           empty
   OrderTable/
     StatusBadge/        OrderFilters uses it too — it belongs in OrdersPage/components/

@@ -9,3 +9,5 @@ plugin's repository.
 - [View and Presenter](view-presenter.md) — markup in the View, all logic in the Presenter.
 - [Levels and placement](levels.md) — every code folder has the same shape; code lives at the lowest level that
   covers all its users.
+- [Stateful logic and helpers](stateful-logic-and-helpers.md) — stateful logic uses state, lifecycle or a
+  store; a helper is a plain function.
