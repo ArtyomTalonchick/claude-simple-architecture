@@ -13,3 +13,5 @@ plugin's repository.
   store; a helper is a plain function.
 - [Pure zone](pure-zone.md) — code that knows nothing of the app lives in `lib/` and the ui-kit at the root, and
   imports nothing from the app.
+- [One thing per file](one-thing-per-file.md) — one View, Presenter, stateful logic or helper per file; a long
+  file gets a warning.

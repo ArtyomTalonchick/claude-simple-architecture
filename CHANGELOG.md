@@ -18,6 +18,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   hooks.
 - Core rule "Pure zone": code that knows nothing of the app lives in `lib/` and the ui-kit at the root level and
   imports nothing from the app.
+- Core rule "One thing per file": one View, Presenter, stateful logic or helper per file; a file longer than
+  `maxFileLines` gets a warning, not a finding.
 - The project config `.claude/simple-architecture/config.json`: the stack, the root level, folder names and the
   file size limit, all with defaults. The SessionStart hook and the architecture-reviewer agent read it.
 - The architecture-reviewer agent reports warnings — signals to look at, such as a long file — apart from
