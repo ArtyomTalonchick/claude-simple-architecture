@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   as the skill does, and warns when a newer version is installed and the session must be restarted.
 - Choosing a value by a condition in a View — a fallback, a default, an optional read, turning `null` into
   `undefined` — is a computation and belongs to the Presenter; choosing markup by a ready flag stays allowed.
+- A new pattern in "View and Presenter": a Presenter may return a child's props as one ready value, or nothing when
+  the child is hidden, and the View passes it on whole. It is a pattern, not a check.
 
 ## [0.1.1] — 2026-11-09
 

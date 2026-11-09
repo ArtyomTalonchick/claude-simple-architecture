@@ -126,3 +126,18 @@ borderline, so the same line could be judged two ways.
 **Answer.** Yes: a fallback, a default, a value picked by a condition, an optional read and turning one kind of
 "no value" into another are computations, and the Presenter returns the ready value. Choosing markup by a ready
 flag stays allowed. Written into "View and Presenter"; the React side names `??`, `||`, `?:` on values and `?.`.
+
+## Q11. Should a Presenter return a child's props as one value?
+
+**Question.** A Presenter returned separate values (`hasPagination`, `page`, `total`, `changePage`) and the View
+put them back together into a child's props. Should the Presenter return the child's props ready instead?
+
+**Context.** Found in a project that follows the plugin (#15); "View and Presenter" said nothing about a child's
+props.
+
+**Status.** answered
+
+**Answer.** A pattern, not a check: a Presenter may return a child's props as one ready value, typed by the child's
+props type, or nothing when the child is hidden, and the View passes it on whole. A View that passes separate ready
+values is not reported: that is not a computation. Written into "View and Presenter" with a React example; the
+type-only import of the props type was already allowed by "Imports".

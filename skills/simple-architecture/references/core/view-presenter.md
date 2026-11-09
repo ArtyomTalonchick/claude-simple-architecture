@@ -13,9 +13,10 @@ of the screen.
 
 - A View may: call its own Presenter once and read values from the result; hold markup and styles, including
   reading styles from the design system (a style by its name, a theme value, a value per screen size); show or
-  hide a part by a ready flag from the Presenter (an "if" or a two-way choice on that flag); repeat a part for
-  each item of a ready list; pass a ready handler; wrap a Presenter handler only to pass it an argument
-  (`select(item.id)`); keep a constant written out as a plain value (a list of labels, a size).
+  hide a part by a ready flag from the Presenter (an "if" or a two-way choice on that flag) or by a ready value
+  that is there or not; repeat a part for each item of a ready list; pass a ready handler; wrap a Presenter
+  handler only to pass it an argument (`select(item.id)`); keep a constant written out as a plain value (a list
+  of labels, a size).
 - A violation in a View: state, effects or lifecycle code; reading data or a store directly; a computation or
   formatting of raw data (filtering, sorting, comparing, rounding, joining text); a handler that does more than
   call one Presenter handler.
@@ -64,6 +65,20 @@ OrderPage/
     ResultsError/
     ResultsEmpty/
     ResultsList/
+```
+
+A pattern, not a check: a Presenter may return a child's props as one ready value, typed by the props type the
+child passes on ([Imports](imports.md) allows that type-only import), or nothing when the child is hidden. The View
+shows the child when the value is there and passes it on whole. The View then does not list the child's props, and
+a new prop of the child touches only the Presenter. A View that passes separate ready values instead is not a
+violation: passing a ready value is not a computation.
+
+```
+OrderList/
+  OrderList   (View)       p = presenter(props)
+                           if p.pagination: Pagination(p.pagination as its props)
+  presenter   (Presenter)  pagination = page count > 1 ? { page, total, onPageChange = go to page } : nothing
+  Pagination/
 ```
 
 **Bad.**

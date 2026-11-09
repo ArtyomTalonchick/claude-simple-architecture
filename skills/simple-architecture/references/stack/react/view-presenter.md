@@ -18,6 +18,7 @@ are the View's concern.
   so it is not stateful logic. A hook whose result the View uses for anything but a style prop — in a condition,
   as text, passed to a handler — is not a styling hook.
 - Allowed in JSX: `{flag && <A />}` and `{flag ? <A /> : <B />}` on a value from the Presenter;
+  `{pagination && <Pagination {...pagination} />}` on a child's ready props or `null`;
   `{items.map((item) => <Row key={item.id} … />)}` on a ready array; `onClick={onSave}`;
   `onClick={() => onSelect(item.id)}`; style props, `className`, `style`.
 - A violation in JSX: `.filter`, `.sort`, `.reduce`, `.find` on data; formatting such as `.toFixed`,
@@ -78,6 +79,42 @@ export const UserCard = (props: UserCardProps) => {
   const { name, imageSrc } = usePresenter(props);
   return <Avatar name={name} src={imageSrc} />;
 };
+```
+
+A pattern, not a check: the Presenter returns a child's props as one value, typed by the child's props type, or
+`null` when the child is hidden; the View spreads it. The condition stays in the Presenter, and
+`{pagination && …}` only chooses markup by a ready value:
+
+```tsx
+// OrderList/usePresenter.ts
+import type { PaginationProps } from './Pagination/Pagination';
+
+export const usePresenter = ({ status }: OrderListProps) => {
+  const { rows, page, total, pageCount, setPage } = useOrderPage(status);
+  const pagination: PaginationProps | null = pageCount > 1 ? { page, total, onPageChange: setPage } : null;
+  return { rows, pagination };
+};
+
+// OrderList/OrderList.tsx
+export const OrderList = (props: OrderListProps) => {
+  const { rows, pagination } = usePresenter(props);
+  return (
+    <>
+      <OrderTable rows={rows} />
+      {pagination && <Pagination {...pagination} />}
+    </>
+  );
+};
+```
+
+Less preferred, but not a violation, so not reported: the View rebuilds the child's props from separate ready
+values.
+
+```tsx
+// OrderList/OrderList.tsx
+const { rows, hasPagination, page, total, changePage } = usePresenter(props);
+// …
+{hasPagination && <Pagination page={page} total={total} onPageChange={changePage} />}
 ```
 
 **Bad.**
