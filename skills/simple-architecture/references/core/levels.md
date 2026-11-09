@@ -1,9 +1,8 @@
 ## Levels and placement
 
-**Rule.** Every folder with code is a level — the app root, a module, a child of a module — and every level has
-the same shape. Put code at the lowest level that covers all its users: next to its one user, or in a shared
-folder of the level that holds all its users. When a user appears outside that level, move the code up to the
-level that covers them all.
+**Rule.** The app root and every unit folder are levels, and every level has the same shape. Put code at the
+lowest level that covers all its users: next to its one user, or in a shared folder of the level that holds all
+its users. When a user appears outside that level, move the code up to the level that covers them all.
 
 **Why.** Code that sits next to its only user can be changed without checking anyone else; code that sits higher
 than needed looks shared, so every change to it needs a search for users that do not exist. One shape on every
@@ -11,21 +10,29 @@ level means one set of rules to know: a module reads the same way as the app, at
 
 **How to check.**
 
+- What a level is:
+  - the app root (`root` in the config), and every unit folder — a folder named as the View it holds;
+  - a shared folder and the files in it belong to the level that holds the folder; a unit folder inside a shared
+    folder (`components/StatusBadge/`) is a level of its own;
+  - the parent of a level is the nearest level above it; levels with the same parent are siblings; one level's
+    subtree is a branch.
 - The shape of a level, every part optional:
   - its own unit — the View (named as the folder), the Presenter, and files only they use, such as stateful
     logic only the Presenter calls;
-  - child folders — units used only by this level, with the same shape inside;
+  - child units — unit folders used only by this level, with the same shape inside;
   - shared folders, for code used by two or more units of this level: the components folder (default
     `components/`), the stateful logic folder (default `hooks/`), the helpers folder (default `helpers/`);
   - a types file and a constants file (default `types` and `constants`) for types and constants shared by two or
     more units of this level.
 - A file in a shared folder, a types file or a constants file of a level with only one user is a violation: it
   belongs next to that user.
-- A child folder or a file used by two or more siblings, or from outside its parent level, is a violation: it
+- A child unit or a file used by two or more siblings, or from outside its parent level, is a violation: it
   belongs in a shared folder of the lowest level that covers all its users.
 - A type or a constant used by one file lives in that file.
 - An empty shared folder is a violation: a shared folder exists only when it has content.
-- A child folder is named so its name is clear on its own; it does not need the parent's name as a prefix.
+- A child unit does not need the parent's name as a prefix.
+- The exception is the pure zone ([Pure zone](pure-zone.md)): pure code stays there whatever the number of its
+  users.
 
 **Good.**
 

@@ -11,6 +11,9 @@ hidden dependency on that life cycle, and a reader cannot tell from where a func
 
 **How to check.**
 
+- A store is data that lives outside any one UI unit and is shared by the units that read it. A store and the
+  code that reads or changes it are stateful logic, placed by [Levels and placement](levels.md): next to its one
+  user, or in the stateful logic folder of the lowest level that covers all its users.
 - A file in a helpers folder that uses state, lifecycle or a store, or calls stateful logic, is a violation: it
   is stateful logic.
 - A file in a stateful logic folder that uses none of these and calls no stateful logic is a violation: it is a
@@ -25,7 +28,8 @@ hidden dependency on that life cycle, and a reader cannot tell from where a func
 ```
 OrdersPage/
   hooks/
-    orderFilters        keeps the filter state, reads the current user from the store
+    orderFilters        keeps the filter state
+    currentUser         reads the store
   helpers/
     formatPrice         number -> text, no state
 ```
@@ -35,7 +39,8 @@ OrdersPage/
 ```
 OrdersPage/
   hooks/
-    priceFormat         number -> text, no state — a helper
+    orderFilters        keeps the filter state
+    formatPrice         number -> text, no state — a helper
   helpers/
     currentUser         reads the store — stateful logic
 ```

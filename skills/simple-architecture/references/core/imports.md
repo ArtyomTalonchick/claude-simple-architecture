@@ -12,24 +12,29 @@ breaks the other. The one-way order between kinds of code keeps logic out of Vie
 anywhere.
 
 **How to check.** For each import in the diff, find where its target lies and what kind of code both sides are.
+Level, parent, sibling and branch are as defined in [Levels and placement](levels.md); a file in a shared folder
+belongs to the level that holds the folder.
 
 - Allowed targets:
   - an own child unit, through its entry — the child's View, which also passes on its props type
     ([View and Presenter](view-presenter.md));
-  - the shared folders, the types file and the constants file of the own level and of any level above it;
+  - the shared folders, the types file and the constants file of the own level and of any level above it — so a
+    file in one shared folder may import from another shared folder of the same level;
   - the pure zone, from anywhere;
-  - packages from outside the project.
+  - packages from outside the project, from any kind of code.
 - A violation:
   - an import from inside a child unit — its Presenter, its stateful logic, its own children or shared folders;
-  - an import from another branch — a sibling's child, a unit of a cousin level. The code belongs in a shared
-    folder of the lowest common level ([Levels and placement](levels.md));
+  - an import from another branch — a unit inside a sibling, or anything under a level that is not the own level
+    or one above it. The code belongs in a shared folder of the lowest common level;
   - an import of a parent's or an ancestor's View or Presenter. Data comes down through props;
   - a pure zone file importing from the app ([Pure zone](pure-zone.md)).
-- By kind, a violation is any import outside this list:
-  - View → its own Presenter, child units, components from shared folders and the pure zone, types;
+- By kind, among the allowed targets, a violation is any import outside this list:
+  - View → its own Presenter, child units, components from shared folders and the pure zone, types, constants;
   - Presenter → stateful logic, helpers, types, constants — never a View or a component;
   - stateful logic → stateful logic, helpers, types, constants;
   - helper → helpers, types, constants.
+- A type-only import is allowed for every kind from any allowed target, including a child's View: a Presenter may
+  import the props type its child passes on. It brings in no markup and no logic.
 - When two units need the same logic, it goes to a stateful logic folder above them. When they need the same
   data, it goes to a store: shared stateful logic gives each user its own copy of the state, not one state.
 
@@ -38,12 +43,15 @@ anywhere.
 ```
 OrdersPage/
   OrdersPage            imports OrderTable (its child's View)
-  presenter             imports hooks/orderFilters, helpers/formatPrice
+  presenter             imports hooks/orderFilters, helpers/formatPrice, the row type from OrderTable
   hooks/
-    orderFilters        imports lib/helpers/debounce
+    orderFilters        imports helpers/formatPrice, lib/helpers/debounce
+  helpers/
+    formatPrice
   OrderTable/
     OrderTable          imports its presenter, OrdersPage/components/StatusBadge
     presenter           imports OrdersPage/hooks/orderFilters
+  OrderFilters/
 ```
 
 **Bad.**
@@ -54,7 +62,7 @@ OrdersPage/
   OrderTable/
     presenter           imports OrdersPage/presenter — a parent's Presenter
                         imports OrderFilters/helpers/statusLabel — another branch
-                        imports components/StatusBadge — a Presenter importing a component
+                        imports OrdersPage/components/StatusBadge — a Presenter importing a component
   OrderFilters/
 ```
 

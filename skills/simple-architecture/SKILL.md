@@ -69,8 +69,8 @@ The rules name a folder by its role and its default, for example "the stateful l
 `hooks/`)"; in a project, use the configured name.
 
 A value of the wrong type is ignored, its default is used, and the user is told; so is an unknown key. A file
-that is not valid JSON means the config cannot be read: tell the user, and do not apply or judge by the rules
-until it is fixed. No file means the project does not follow Simple Architecture.
+that is not valid JSON, or whose top level is not an object, means the config cannot be read: tell the user, and
+do not apply or judge by the rules until it is fixed. No file means the project does not follow Simple Architecture.
 
 At session start a hook reads the config and passes the resolved values to the agent. When those values are not
 in the context (a subagent, a hook that did not run), read the config by the rules above.

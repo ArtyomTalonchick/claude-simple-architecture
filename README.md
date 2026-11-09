@@ -87,7 +87,8 @@ this is the full file with the defaults:
 ```
 
 The comments are only for this example: the file itself is plain JSON, without comments. An unknown stack name
-is skipped, and you are told it has no stack folder. A value of the wrong type is ignored, and you are told.
+is skipped, and you are told it has no stack folder. A value of the wrong type and an unknown key are ignored, and
+you are told. A file that is not a JSON object cannot be read: the agent tells you and does not apply the rules.
 Without the file, the project does not follow Simple Architecture.
 
 At the start of every session a hook reads the config and tells the agent the resolved values, any problems,
