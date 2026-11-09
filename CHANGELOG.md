@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- The principle behind every rule, in the skill: changing code that exists matters more than adding new code;
+  when two ways both work, pick the one that is easier to change later.
 - The project config `.claude/simple-architecture/config.json`: the stack, the root level, folder names and the
   file size limit, all with defaults. The SessionStart hook and the architecture-reviewer agent read it.
 - The architecture-reviewer agent reports warnings — signals to look at, such as a long file — apart from

@@ -10,6 +10,15 @@ Rules for how code is split into layers and modules. They come in two parts:
 - **Core** — applies to every project. Names no technology.
 - **Stack** — one file per technology. A project loads only the files for the stack it declares.
 
+## The principle
+
+Architecture exists to cut the human effort of building and keeping a system. Of that effort, changing code that
+exists matters more than adding new code: a feature is added once and changed many times.
+
+So when two ways to write something both work, pick the one that is easier to change later, even if it takes
+longer to write now. Every rule below serves this. When a case is not covered by a rule, decide it by this
+principle.
+
 ## When it applies
 
 Use these rules when you write, change, move or review code structure — new files and modules, imports, where a
