@@ -79,7 +79,7 @@ At the start of every session a hook reads this line and tells the agent the dec
 and that the skill is read before writing code. Without the line, the agent is told only how to add one. The hook
 needs Node.js on the PATH.
 
-Every rule follows one template, and a rule goes from lecture notes to a release in a fixed way — see
+Every rule follows one template, and a rule goes from an idea to a release in a fixed way — see
 [docs/rule-format.md](docs/rule-format.md). Questions found while writing rules are logged in
 [docs/questions.md](docs/questions.md).
 

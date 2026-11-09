@@ -53,11 +53,11 @@ rule it carries out.
 
 ## How a rule is added
 
-1. **Notes.** After a lecture, the ideas are written down as rough notes, in any language.
-2. **Issue.** Each idea that should become a rule gets a GitHub issue. The issue says what the rule is about and
-   whether it is core or stack.
-3. **Rule.** The rule is written by the template above, in the right file. Questions that come up while writing
-   it go to [questions.md](questions.md). The change gets a line under `## [Unreleased]` in
+1. **Ideas.** The ideas are discussed until each one is either a rule (core or stack), a principle, or dropped.
+2. **Issue.** The agreed ideas go into a GitHub issue: what each rule is about and whether it is core or stack.
+   One issue may cover a set of related rules; the details are settled while the rules are written.
+3. **Rule.** Each rule is written by the template above, in the right file, one commit per rule. Questions that
+   come up while writing it go to [questions.md](questions.md). The change gets a line under `## [Unreleased]` in
    [CHANGELOG.md](../CHANGELOG.md).
 4. **Release.** The rule ships with the next version: the changelog entries move under the new version and the
    plugin version is bumped.

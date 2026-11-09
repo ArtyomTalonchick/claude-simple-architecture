@@ -13,7 +13,7 @@ Add new questions at the end. Number them in order; a number is never reused.
 
 **Question.** The question in one or two sentences.
 
-**Context.** Where it came up: the rule, the issue (#N) or the lecture, and why it matters.
+**Context.** Where it came up: the rule or the issue (#N), and why it matters.
 
 **Status.** open | answered | dropped
 
