@@ -11,3 +11,5 @@ plugin's repository.
   covers all its users.
 - [Stateful logic and helpers](stateful-logic-and-helpers.md) — stateful logic uses state, lifecycle or a
   store; a helper is a plain function.
+- [Pure zone](pure-zone.md) — code that knows nothing of the app lives in `lib/` and the ui-kit at the root, and
+  imports nothing from the app.

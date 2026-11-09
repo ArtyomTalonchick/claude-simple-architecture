@@ -16,6 +16,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Core rule "Stateful logic and helpers": stateful logic uses state, lifecycle or a store, a helper is a plain
   function; with its React side — stateful logic is a hook, and the `use` prefix goes only on functions that call
   hooks.
+- Core rule "Pure zone": code that knows nothing of the app lives in `lib/` and the ui-kit at the root level and
+  imports nothing from the app.
 - The project config `.claude/simple-architecture/config.json`: the stack, the root level, folder names and the
   file size limit, all with defaults. The SessionStart hook and the architecture-reviewer agent read it.
 - The architecture-reviewer agent reports warnings — signals to look at, such as a long file — apart from
