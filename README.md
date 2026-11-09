@@ -56,7 +56,8 @@ skills/simple-architecture/
 
 Each stack file stands on its own, so a stack can later move to a plugin of its own by moving its file.
 
-There are no rules yet: the core and the stack files are stubs.
+The core rules are listed in
+[skills/simple-architecture/references/core/README.md](skills/simple-architecture/references/core/README.md).
 
 ## Configure your project
 
@@ -103,8 +104,6 @@ diff, and reports each finding as `file:line`, the rule it breaks and why — or
 
 Ask for it before you commit, for example: "Run the architecture-reviewer agent on my changes." By default it
 reviews staged and unstaged changes against `HEAD`; you can pass a commit range or a list of files instead.
-
-While the plugin has no rules, the agent says there are no rules to check against.
 
 ## License
 

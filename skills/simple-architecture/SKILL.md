@@ -25,12 +25,6 @@ Use these rules when you write, change, move or review code structure — new fi
 piece of code belongs — in a project that follows Simple Architecture. A project follows it when it has the
 config file `.claude/simple-architecture/config.json` (see below).
 
-## No rules yet
-
-This version has no rules: the core and every stack file are empty stubs. Do not invent rules in their name.
-Until rules appear, follow the project's own conventions, and do not say a change breaks or follows Simple
-Architecture.
-
 ## Order of reading
 
 1. The core: [references/core/](references/core/README.md). Core rules come first and always apply.

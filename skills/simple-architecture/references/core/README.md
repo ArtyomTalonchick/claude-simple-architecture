@@ -6,4 +6,4 @@ or tool; a rule that needs such a name goes to a stack file in [../stack/](../st
 Each core rule gets its own file here, `<rule>.md`, written by the template in `docs/rule-format.md` of this
 plugin's repository.
 
-No core rules yet.
+- [View and Presenter](view-presenter.md) — markup in the View, all logic in the Presenter.
