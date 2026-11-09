@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.1.1] — 2026-11-09
+
 ### Changed
 
 - Rule gaps found in the first real use are closed: `usePresenter` is exempt from the `use` prefix rule; a View
