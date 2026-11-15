@@ -172,3 +172,37 @@ noted that one could argue otherwise.
 memoized or not, has no state of its own and stays with the state it is returned next to. A value with state or
 lifecycle of its own, such as a request, can form a second group. Written into "Stateful logic and helpers" with an
 example.
+
+## Q14. How can a level's folder show what is the own unit's, what is shared and what is a child?
+
+**Question.** A level's folder mixes three kinds of entries: the own unit (View, Presenter, its stateful logic and
+helpers), the level's shared code (shared folders, types and constants files) and the child units. They look the
+same, so a large level is hard to read, and a child importing `../types` looks like a child importing from its
+parent, though the rules allow it. Should the shape of a level make the three kinds visible?
+
+**Context.** Found in a project that follows the plugin: one level held 9 own-unit files, another 6 files next to 7
+child unit folders. The idea comes from Next.js App Router: a `(group)/` folder organises files and adds no route
+segment. Options discussed, none agreed:
+
+- `(children)/` — a fixed group that holds every child unit of the level, whenever there is one. Not a level of its
+  own. Child units are not grouped by meaning: a free split would differ from one author to the next.
+- Groups for stateful logic, by a fixed test: stateful logic with helpers that only it uses goes, with them and their
+  tests, into a group named after it without `use` (`useOrderFilters` → `(orderFilters)/`). No private helpers — no
+  group. The Presenter is not grouped: its own helpers stay loose. Rejected: one fixed `(logic)/` group (it only moves
+  the crowd) and free groups by meaning (not checkable).
+- `(children)/index.ts` — re-exports only the children's entries (the View and its props type), so a View imports
+  all its children from `./(children)`. Rejected: an `index` file in every unit (more files, not fewer) and in logic
+  groups (saves one word). Path aliases do not help: they are fixed prefixes and cannot drop a `(children)` segment.
+- `(shared)/` — a fixed group for the level's shared code: shared folders, types and constants files. Then a
+  descendant may import from an ancestor only what lies in its `(shared)/`; anything loose at an ancestor is that
+  ancestor's own unit. The import check becomes a check of the path.
+- A sub-option: inside `(shared)/` drop the folders by kind (`components/`, `hooks/`, `helpers/`) and tell the kind
+  by name. It removes config keys and raises the question of `lib/`; to be settled separately.
+
+The cost of the groups: one more folder segment per level, longer import paths, and `(children)/` holding a single
+child. The leaning was `(shared)/` + `(children)/` + `(children)/index.ts` + logic groups by the fixed test, as one
+rule for the shape of a level, changing "Levels and placement" and "Imports".
+
+**Status.** open
+
+**Answer.**
