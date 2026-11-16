@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - "Tasks" no longer says that stateful logic may navigate after a task: the Presenter navigates, as the rest of the
   rules say.
+- In React, a `use…` function that calls no hook moves to where its kind belongs: a task if it reaches a store or
+  the server, a helper otherwise — not always to helpers.
 
 ## [0.2.0] — 2026-11-16
 

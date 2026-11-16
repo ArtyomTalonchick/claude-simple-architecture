@@ -12,7 +12,8 @@ limits on code that does not need them, and a helper that calls a hook breaks at
 **How to check.**
 
 - A function named `use…` that calls no hook and is not created by a hook library is a violation: rename it and
-  move it to a helpers folder.
+  move it where its kind belongs — to a tasks folder if it reaches a store or the server
+  ([Tasks in React](tasks.md)), to a helpers folder otherwise.
 - A function whose name does not start with `use` and that calls a hook is a violation.
 - A function that uses the DOM outside React — `document.activeElement`, `focus()`, `setSelectionRange`,
   `document.startViewTransition` — and calls no hook is a helper, not `use…`. One that keeps a ref, a listener or
@@ -56,8 +57,13 @@ export const useOrderFilters = () => {
 // helpers/getCurrentUser.ts — calls a hook
 export const getCurrentUser = () => useUserStore((s) => s.user);
 
-// hooks/useFormatPrice.ts — calls no hook
+// hooks/useFormatPrice.ts — calls no hook: a helper, formatPrice
 export const useFormatPrice = (sum: number) => sum.toFixed(2);
+
+// hooks/useCancelOrder.ts — calls no hook and reaches the server: a task, cancelOrder
+export const useCancelOrder = async (id: string) => {
+  await api.cancelOrder(id);
+};
 ```
 
 **Stack notes.** Carries out the core rule [Stateful logic and helpers](../../core/stateful-logic-and-helpers.md).
