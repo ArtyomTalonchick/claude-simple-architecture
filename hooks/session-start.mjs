@@ -16,7 +16,7 @@ const DEFAULT_FOLDERS = {
   hooks: 'hooks',
   helpers: 'helpers',
 };
-const DEFAULTS = { stack: [], root: 'src', folders: DEFAULT_FOLDERS, maxFileLines: 150 };
+const DEFAULTS = { stack: [], root: 'src', folders: DEFAULT_FOLDERS, maxFileLines: 120 };
 
 function readStdinJson() {
   try {
@@ -160,7 +160,7 @@ function main() {
     `Stack: ${used.length ? used.join(', ') : 'none - core rules only'}.`,
     `Root level: ${config.root}/. Pure zone: ${config.root}/${f.lib}/. UI kit: ${config.root}/${f.uiKit}/.`,
     `Shared folders on every level: ${f.components}/, ${f.hooks}/, ${f.helpers}/.`,
-    `File size warning above ${config.maxFileLines} lines.`,
+    `File size limit: ${config.maxFileLines} lines; a longer file is a violation.`,
   ];
   if (unknown.length) {
     lines.push(

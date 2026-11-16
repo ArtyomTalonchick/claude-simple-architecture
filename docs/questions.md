@@ -206,3 +206,17 @@ rule for the shape of a level, changing "Levels and placement" and "Imports".
 **Status.** open
 
 **Answer.**
+
+## Q15. Is a file over the line limit a violation, and which files does the limit cover?
+
+**Question.** A file longer than `maxFileLines` only got a warning, which is easy to wave away, so files kept
+growing past it. Should it be a violation, and does the limit cover files nobody writes by hand?
+
+**Context.** #26: the default of 150 lines is more than fits on a screen with room to read it, and a warning did not
+stop the growth.
+
+**Status.** answered
+
+**Answer.** Yes: the default is 120 lines and a longer file is a violation; the value stays configurable. A file
+written by a tool is not checked, since nobody edits it by hand; a type declaration file written by hand is. Written
+into "One thing per file". Test files are settled separately (#20).

@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- The file limit `maxFileLines` defaults to 120 lines, and a longer file is a violation, not a warning. A file
+  written by a tool is not checked against it; a type declaration file written by hand is.
+
 ## [0.1.3] — 2026-11-09
 
 ### Changed

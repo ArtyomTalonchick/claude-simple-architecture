@@ -82,8 +82,8 @@ this is the full file with the defaults:
     "hooks": "hooks",
     "helpers": "helpers"
   },
-  // Files longer than this get a warning, not an error.
-  "maxFileLines": 150
+  // Files longer than this are a violation.
+  "maxFileLines": 120
 }
 ```
 

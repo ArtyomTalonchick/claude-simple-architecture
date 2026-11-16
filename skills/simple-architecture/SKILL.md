@@ -51,7 +51,7 @@ a missing key takes its default. The full file with the defaults:
     "hooks": "hooks",
     "helpers": "helpers"
   },
-  "maxFileLines": 150
+  "maxFileLines": 120
 }
 ```
 
@@ -63,7 +63,7 @@ a missing key takes its default. The full file with the defaults:
 - **`folders.uiKit`** — the ui-kit, relative to `root`. Wherever it lives, it belongs to the pure zone.
 - **`folders.components`**, **`folders.hooks`**, **`folders.helpers`** — the names of the shared folders: for
   components, for stateful logic and for helpers. The same names are used on every level.
-- **`maxFileLines`** — a positive whole number: the size above which a file gets a warning.
+- **`maxFileLines`** — a positive whole number: the size above which a file is a violation.
 
 The rules name a folder by its role and its default, for example "the stateful logic folder (default
 `hooks/`)"; in a project, use the configured name.

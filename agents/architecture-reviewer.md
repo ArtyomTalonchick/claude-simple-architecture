@@ -90,8 +90,8 @@ surrounding file when a rule depends on where the file lives or what it imports.
 - One finding per place and rule. If one place breaks two rules, give two findings.
 - When you are not sure a line breaks a rule, say so in the finding rather than leaving it out or overstating
   it.
-- A rule may name a check as a **warning** — a signal to look at, not a violation (for example, a file longer
-  than the configured limit). Report it under Warnings, never as a finding.
+- A rule may name a check as a **warning** — a signal to look at, not a violation. Report it under Warnings,
+  never as a finding.
 - Where a rule names a folder by its default, use the name from the project's config.
 
 ## 5. Report
@@ -121,7 +121,7 @@ No findings: the change follows every rule checked (<N> rules).
 
 ```
 Warnings:
-- src/orders/OrderForm/OrderForm.tsx — <Rule name>: <what the signal says, e.g. 212 lines, limit 150>
+- src/orders/OrderForm/OrderForm.tsx — <Rule name>: <what the signal says>
 - A newer version of the plugin is installed (0.2.0); this session uses 0.1.1. Restart the session to load the new rules.
 ```
 
