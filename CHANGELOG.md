@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.2.1] — 2026-11-16
+
 ### Fixed
 
 - "Tasks" no longer says that stateful logic may navigate after a task: the Presenter navigates, as the rest of the
