@@ -1,8 +1,8 @@
 ## One thing per file
 
 **Rule.** A file holds one thing: one View, one Presenter, one piece of stateful logic or one helper. Types and
-constants that only this thing uses belong to it and stay in its file. A file is no longer than the configured
-limit (`maxFileLines`, default 120).
+constants that only this thing uses belong to it and stay in its file. A file other than a test is no longer than
+the configured limit (`maxFileLines`, default 120).
 
 **Why.** A file that holds one thing is found by its name, read in one go and changed without touching anything
 else. Once a second thing moves in, the file grows by habit: the next piece of logic lands there because it is
@@ -19,8 +19,12 @@ is only a signal gets waved away, so it is a rule.
   a View passing on its Presenter's props type.
 - A file over `maxFileLines` lines is a violation: name the file, its size and the limit, and say what could move
   out — stateful logic, a helper, a child unit. A long View is split into child units.
-- A file written by a tool — marked as generated, or in a folder a tool writes — is not checked against the limit:
-  nobody edits it by hand. A type declaration file written by hand is checked like any other file.
+- Not checked against the limit:
+  - a test file: it grows by one case per behavior, and the cases are read one at a time; splitting it by case
+    would spread the tests of one thing over several files. Tests are not part of the shape ([Levels and
+    placement](levels.md));
+  - a file written by a tool — marked as generated, or in a folder a tool writes: nobody edits it by hand. A type
+    declaration file written by hand is checked like any other file.
 
 **Good.**
 

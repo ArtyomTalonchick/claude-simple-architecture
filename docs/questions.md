@@ -219,4 +219,19 @@ stop the growth.
 
 **Answer.** Yes: the default is 120 lines and a longer file is a violation; the value stays configurable. A file
 written by a tool is not checked, since nobody edits it by hand; a type declaration file written by hand is. Written
-into "One thing per file". Test files are settled separately (#20).
+into "One thing per file". Test files are settled separately (Q16).
+
+## Q16. Does the file limit apply to test files?
+
+**Question.** A test file of one hook grows by one scenario per bug fix and passes the limit, though splitting it by
+scenario would spread the tests of one hook over several files. Is a test file checked against `maxFileLines`?
+
+**Context.** #20, found by the architecture-reviewer in a project that follows the plugin. "Levels and placement"
+already says tests are not part of the shape, while "One thing per file" named no exception.
+
+**Status.** answered
+
+**Answer.** No: a test file is not checked against the limit. Its cases are independent and read one at a time, and
+a split by case makes the tests of one thing harder to find. A separate limit for tests was rejected as one more
+number with no ground, and a rule for how to split a test file as a constraint nobody asked for. Written into "One
+thing per file".
