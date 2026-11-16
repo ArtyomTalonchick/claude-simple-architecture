@@ -4,7 +4,8 @@
 stores folder and the components folder of your own level and of any level above — except that level's Presenter —
 from the pure zone, and from the shared types package. Never reach into a child, into another branch, into a
 parent's entry or Presenter, or into another app. Between kinds of code, imports go one way: View → Presenter →
-stateful logic → tasks → helpers; a Presenter, stateful logic and a task may also import a store.
+stateful logic → tasks → helpers; a Presenter, stateful logic and a task may also import a store, and only a task
+(and generic I/O itself) imports the generic I/O of the pure zone.
 
 **Why.** When imports follow the folders, the folders tell the truth: a unit can be changed inside without
 breaking anyone, moved or deleted with its folder, and every dependency is visible from where a file lies. A
@@ -24,7 +25,7 @@ stores folder or a components folder belongs to the level that holds the folder.
   - the stores in the stores folder of the own level and of any level above it, from a Presenter, stateful logic or
     a task;
   - the units in the components folder of the own level and of any level above it, through their entry;
-  - the pure zone of the own app, from anywhere in it;
+  - the pure zone of the own app, from anywhere in it, by the kinds below;
   - the shared types package (`shared` in the config), from any app and any kind of code;
   - packages from outside the project, from any kind of code.
 - A violation:
@@ -45,11 +46,13 @@ stores folder or a components folder belongs to the level that holds the folder.
   - the entry of a unit with no UI → child units, stateful logic, tasks, helpers, types, constants;
   - Presenter → stateful logic, tasks, stores, helpers, types, constants — never a View or a component;
   - stateful logic → stateful logic, tasks, stores, helpers, types, constants;
-  - task → tasks, stores, helpers, types, constants — never a View, a Presenter, stateful logic or a helper that
-    acts on the screen ([Tasks](tasks.md));
+  - task → tasks, stores, helpers, generic I/O, types, constants — never a View, a Presenter, stateful logic or
+    a helper that acts on the screen ([Tasks](tasks.md));
   - store → helpers, types, constants — never another store, a task or stateful logic
     ([Stateful logic and helpers](stateful-logic-and-helpers.md));
-  - helper → helpers, types, constants.
+  - helper → helpers, types, constants;
+  - generic I/O ([Pure zone](pure-zone.md)) → generic I/O, helpers, types, constants of the pure zone. No kind but
+    a task and generic I/O imports it.
 - A type-only import is allowed for every kind from any allowed target, including a child's View: a Presenter may
   import the props type its child passes on. It brings in no markup and no logic.
 - When two units need the same logic, it goes to the logic folder of the lowest level above them. When they need
@@ -73,8 +76,8 @@ OrdersPage/
     orderFilters        imports stores/ordersStore, logic/formatPrice, lib/helpers/debounce
     formatPrice
     tasks/
-      cancelOrder       imports stores/ordersStore, logic/tasks/notifyUser — called by the presenter and by
-                        OrderTable/logic/presenter
+      cancelOrder       imports stores/ordersStore, logic/tasks/notifyUser, lib/http/fetchJson — called by the
+                        presenter and by OrderTable/logic/presenter
       notifyUser        called by cancelOrder and by OrderFilters/logic/presenter
   stores/
     ordersStore         a store, used by orderFilters and cancelOrder
@@ -121,6 +124,7 @@ OrdersPage/
       presenter         imports OrdersPage/logic/presenter — a parent's Presenter
                         imports OrderFilters/logic/statusLabel — another branch
                         imports OrdersPage/components/StatusBadge — a Presenter importing a component
+                        imports lib/http/fetchJson — generic I/O outside a task
   OrderFilters/
     stores/
       filterStore       imported by OrdersPage/logic/orderFilters — inside a child

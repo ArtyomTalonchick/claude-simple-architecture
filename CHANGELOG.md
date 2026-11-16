@@ -27,6 +27,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   level that covers all its users, never in `logic/`: move a store kept in `logic/` there. Only a task, through the
   store's API, and on a client a Presenter or stateful logic reach a store. In Zustand, a store made by `create`
   lives in `stores/` and holds its state and actions only.
+- **Breaking:** generic I/O — code that does I/O, such as a request or a storage access, and knows nothing of the
+  app — is a kind of its own that lives only in the pure zone: neither a task nor a helper. Only a task, and other
+  generic I/O, calls or imports it; a Presenter, stateful logic, a helper, a View, a store or the entry of a unit
+  with no UI that calls it is a violation. A task that calls it is still the step that reaches the server, and code
+  in the app that does I/O is still a task. Folders inside `lib/` are named by what they hold (`lib/http/`,
+  `lib/errors/`, `lib/theme/`), and a tasks folder in `lib/` is now a violation, since the pure zone has no
+  business logic: move generic I/O from `lib/tasks/` to a folder named by its content, and app tasks to the app.
 
 ### Added
 

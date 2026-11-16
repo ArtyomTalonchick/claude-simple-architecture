@@ -24,6 +24,10 @@ the UI's part: showing the call and going somewhere after it.
   ([Stateful logic and helpers](stateful-logic-and-helpers.md)).
 - A task returns its result and fails by throwing. Catching an error only to return it as a value is a violation;
   catching an error the action itself handles (a failed step it may skip) is not.
+- Generic I/O of the pure zone ([Pure zone](pure-zone.md)) — a request or a storage access that knows nothing of
+  the app — is not a task, and only a task or other generic I/O calls it. A task that calls it is still the step
+  that reaches the server. A Presenter or stateful logic that calls it is a violation, as one that reaches the
+  server directly is.
 - A large step that several actions need — unsubscribing from push notifications before logging out — is a task of
   its own, and the actions call it.
 - Steps of one user action — a server call, store changes, other actions — written in a Presenter or in stateful
@@ -33,8 +37,8 @@ the UI's part: showing the call and going somewhere after it.
   or a folder named as the task when it needs several files to stay within the file limit: the file of the same
   name is its entry, and the rest are parts only it uses — a smaller task or a helper only it calls. Others import
   only the entry.
-- Recommended, not checked: a task talks to the server through a small project module (`api.logout()`), not
-  through the transport directly.
+- Recommended, not checked: a task talks to the server through a small project module of tasks, one per
+  request (`api.logout()`), which call the pure zone's generic I/O — not through generic I/O directly.
 
 **Good.**
 
@@ -61,6 +65,9 @@ LogoutButton/
   logic/
     presenter         onClick: await api.unsubscribe(...); await api.logout(); session store: clear;
                       go to the start page — the action lives in the Presenter
+UserMenu/
+  logic/
+    presenter         onOpen: user = await fetchJson('/user') from lib/http/ — generic I/O outside a task
 logic/
   tasks/
     logout            ...; navigate to the start page — navigation in a task

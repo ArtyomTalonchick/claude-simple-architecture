@@ -1,7 +1,7 @@
 ## One thing per file
 
-**Rule.** A file holds one thing: one View, one Presenter, one piece of stateful logic, one task, one helper or one
-store.
+**Rule.** A file holds one thing: one View, one Presenter, one piece of stateful logic, one task, one helper, one
+piece of generic I/O or one store.
 Types and constants that only this thing uses belong to it and stay in its file. A file other than a test or a
 file written by a tool is no longer than the configured limit (`maxFileLines`, default 120).
 

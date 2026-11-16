@@ -17,8 +17,11 @@ plugin's repository.
 - [Tasks](tasks.md) — a user action is a plain function that reaches stores directly; the Presenter or stateful
   logic awaits it and keeps loading and error; the Presenter navigates.
 - [Pure zone](pure-zone.md) — code that knows nothing of the app lives in `lib/` and the ui-kit at the root,
-  with the design-system theme, and depends on nothing from the app, by import or by key.
+  with the design-system theme, in folders named by what they hold, and depends on nothing from the app, by import
+  or by key. Generic I/O — I/O that knows nothing of the app — is its own kind there, called only by tasks; `lib/`
+  holds no tasks.
 - [One thing per file](one-thing-per-file.md) — one View, Presenter, stateful logic, task or helper per file; a file
   over the line limit is a violation.
 - [Imports](imports.md) — import along the structure only, never into another app; between kinds of code, View →
-  Presenter → stateful logic → tasks → helpers, and a Presenter, stateful logic or a task may import a store.
+  Presenter → stateful logic → tasks → helpers, a Presenter, stateful logic or a task may import a store, and
+  only a task imports generic I/O.

@@ -9,7 +9,8 @@ tasks to the tasks folder inside it (default `logic/tasks/`), stores to the stor
 the level set by [Levels and placement](levels.md). A helper may be called from a Presenter, stateful logic, a task
 or another helper, except that a task never calls one that acts on the screen; a task from a Presenter, stateful
 logic or another task; stateful logic only from a Presenter or other stateful logic; a store is reached only by a
-task, through its own API, and on a client by a Presenter or stateful logic. One piece of stateful logic has one
+task, through its own API, and on a client by a Presenter or stateful logic; generic I/O of the pure zone — I/O
+that knows nothing of the app ([Pure zone](pure-zone.md)) — only by a task. One piece of stateful logic has one
 concern; the code that uses them joins them.
 
 **Why.** A helper keeps nothing between calls and needs nothing set up around it, so it can be moved, reused and
@@ -41,11 +42,17 @@ logic around it, and the few kinds of code that reach it show who depends on it.
   store's changes is stateful logic.
 - Stateful logic and helpers share the logic folder, so what a function does decides its kind, not where it lies.
   A function used as a helper — called from a task or another helper — that uses state, lifecycle or a store,
-  calls the server, or calls stateful logic or a task, is a violation: it is stateful logic or a task.
+  calls the server or generic I/O, or calls stateful logic or a task, is a violation: it is stateful logic or a
+  task.
+- Generic I/O ([Pure zone](pure-zone.md)) is neither a task nor a helper: it does I/O and knows nothing of the app,
+  and it lives only in the pure zone. Only a task, and other generic I/O, calls it. A Presenter, stateful logic, a
+  helper, a View, a store or the entry of a unit with no UI that calls it is a violation, as reaching the server
+  outside a task is. In the app, a function that does I/O is a task, whatever it calls to do it.
 - A function marked as stateful logic by the stack's convention that uses no state, lifecycle or subscription and
   calls no stateful logic is a violation: it is a task or a helper.
 - A function in the logic folder, outside its tasks folder, that uses no state, lifecycle or subscription but
-  reaches the server or reads or changes a store once is a violation: it is a task and goes to the tasks folder.
+  reaches the server, calls generic I/O, or reads or changes a store once is a violation: it is a task and goes to
+  the tasks folder.
   A file in the tasks folder that uses state, lifecycle or a subscription, or calls stateful logic, is a
   violation: it is stateful logic and goes to the logic folder.
 - Stateful logic called from a helper or a task is a violation; a store is not stateful logic, so a task that
@@ -109,6 +116,7 @@ OrdersPage/
     orderFilters        keeps the filter state
     formatPrice         called by a task as a helper, but follows the currency in the store — stateful logic
     cancelOrder         server call, then a store change — a task outside tasks/
+    toOrderLines        a helper that loads the products with lib/http/fetchJson — I/O in the app is a task
     ordersStore         a store in logic/ — it belongs in stores/
     tasks/
       currentUser       subscribes to the store — stateful logic, not a task
