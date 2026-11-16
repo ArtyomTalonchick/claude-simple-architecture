@@ -11,6 +11,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   rules say.
 - In React, a `use…` function that calls no hook moves to where its kind belongs: a task if it reaches a store or
   the server, a helper otherwise — not always to helpers.
+- The Good example in "Imports" no longer has a View call a task: every caller of a task is a Presenter that
+  imports it.
 
 ## [0.2.0] — 2026-11-16
 

@@ -65,15 +65,18 @@ OrdersPage/
     ordersStore         a store, used by orderFilters and cancelOrder
   tasks/
     cancelOrder         imports hooks/ordersStore (a store), tasks/notifyUser — called by the presenter and
-                        by OrderTable
-    notifyUser          called by cancelOrder and by OrderFilters
+                        by OrderTable/logic/presenter
+    notifyUser          called by cancelOrder and by OrderFilters/logic/presenter
   helpers/
     formatPrice
   OrderTable/
     OrderTable          imports logic/presenter, OrdersPage/components/StatusBadge
     logic/
-      presenter         imports OrdersPage/hooks/orderFilters
+      presenter         imports OrdersPage/hooks/orderFilters, OrdersPage/tasks/cancelOrder
   OrderFilters/
+    OrderFilters        imports logic/presenter
+    logic/
+      presenter         imports OrdersPage/hooks/orderFilters, OrdersPage/tasks/notifyUser
 ```
 
 ```
