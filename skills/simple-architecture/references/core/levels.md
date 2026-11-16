@@ -14,7 +14,9 @@ logic in one folder, the View — the file people look for — is not lost among
 **How to check.**
 
 - What a level is:
-  - the app root (`root` in the config), and every unit folder — a folder named as the View it holds;
+  - the app root (`root` in the config), and every unit folder — a folder named as the View it holds. In a
+    project with several apps, the root of each app (`apps` in the config) is a root level of its own; no level
+    spans two apps, and the shared types package is not a level;
   - a shared folder and the files in it belong to the level that holds the folder; a unit folder inside a shared
     folder (`components/StatusBadge/`) is a level of its own;
   - the parent of a level is the nearest level above it; levels with the same parent are siblings; one level's

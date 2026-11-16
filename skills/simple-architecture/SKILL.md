@@ -33,7 +33,9 @@ config file `.claude/simple-architecture/config.json` (see below).
    and every rule file in that folder. A stack rule file is named as the core rule it carries out; it says how
    that rule is carried out with one technology and never overrides it.
 
-Do not read stacks the project does not declare.
+Do not read stacks the project does not declare. In a project with several apps (`apps` in the config), read the
+core and then only the stacks of the app whose root holds the code; code in the shared types package gets the core
+only.
 
 ## The config
 
@@ -70,6 +72,27 @@ a missing key takes its default. The full file with the defaults:
   name is used in every unit.
 - **`maxFileLines`** — a positive whole number: the size above which a file is a violation. Test files and files
   written by a tool are not checked.
+
+A repository with several apps — a client, a server and a package of types they share — declares them instead of
+`root` and `stack`:
+
+```json
+{
+  "apps": {
+    "client": { "root": "client/src", "stack": ["react", "zustand"] },
+    "server": { "root": "server/src", "stack": [] }
+  },
+  "shared": "shared/src"
+}
+```
+
+- **`apps`** — the apps, by name. Each has a **`root`** (required), relative to the project root, and a **`stack`**
+  (default `[]`), read as the top-level `stack` is. Each app is checked on its own: its levels start at its root,
+  its pure zone and ui-kit are relative to its root, and only its own stacks apply. An app without `root` is
+  skipped. With `apps` set, the top-level `root` and `stack` are ignored; `folders` and `maxFileLines` apply to
+  every app.
+- **`shared`** — the shared types package, relative to the project root: types only, imported by every app,
+  importing no app ([Imports](references/core/imports.md)). Optional, with or without `apps`.
 
 The rules name a folder by its role and its default, for example "the stateful logic folder (default
 `hooks/`)"; in a project, use the configured name.

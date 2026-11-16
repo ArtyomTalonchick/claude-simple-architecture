@@ -90,6 +90,21 @@ this is the full file with the defaults:
 }
 ```
 
+A repository with several apps declares them instead of `root` and `stack`; each app is checked on its own, by
+the core and its own stacks, and an app never imports from another app:
+
+```jsonc
+{
+  "apps": {
+    "client": { "root": "client/src", "stack": ["react", "zustand"] },
+    // No stack yet — core rules only.
+    "server": { "root": "server/src", "stack": [] }
+  },
+  // A package of types both apps import. Types only; it imports no app.
+  "shared": "shared/src"
+}
+```
+
 The comments are only for this example: the file itself is plain JSON, without comments. An unknown stack name
 is skipped, and you are told it has no stack folder. A value of the wrong type and an unknown key are ignored, and
 you are told. A file that is not a JSON object cannot be read: the agent tells you and does not apply the rules.

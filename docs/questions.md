@@ -330,3 +330,22 @@ constants used by two or more files of the level, of one unit or of several. A t
 tried first and dropped: the logic folder holds only the unit's own code, and what is reused stays where it was.
 The file of the main user was rejected because "main" cannot be checked and the export makes one user look like the
 owner. Written into "Levels and placement".
+
+## Q22. How does the config describe a repository with several apps and a shared types package?
+
+**Question.** The config described one app: one `root` and one `stack`. A repository with a client, a server and a
+package of types they share could not be described, so the rules either missed two of the three parts or judged
+the server by the client's stack. What shape does the config take, do the folder names stay global, and may the
+shared package hold more than types?
+
+**Context.** #27.
+
+**Status.** answered
+
+**Answer.** An `apps` map — each app by name, with its own `root` and `stack` — next to a top-level `shared` folder.
+A map gives every app a name for messages and reports; without `apps` the config works as before. `folders` and
+`maxFileLines` stay global: one naming for the whole repository, with `lib` and `uiKit` relative to each app's
+root. Each app is checked on its own: its levels start at its root and only its stacks apply. An app never imports
+from another app; every app may import the shared package; the package imports no app and holds types only —
+runtime code there, constants included, would tie the apps' builds and runtimes together. Written into "Imports",
+"Levels and placement", `SKILL.md`, the session-start hook and the architecture-reviewer agent.

@@ -1,9 +1,9 @@
 ## Imports
 
-**Rule.** Import only along the structure: from your own children through their entry, from the shared folders
-of your own level and of any level above, and from the pure zone. Never reach into a child, into another
-branch or into a parent. Between kinds of code, imports go one way: View → Presenter → stateful logic → tasks →
-helpers; a task may also import a store.
+**Rule.** Import only along the structure: from your own children through their entry, from the shared folders of
+your own level and of any level above, from the pure zone, and from the shared types package. Never reach into a
+child, into another branch, into a parent or into another app. Between kinds of code, imports go one way: View →
+Presenter → stateful logic → tasks → helpers; a task may also import a store.
 
 **Why.** When imports follow the folders, the folders tell the truth: a unit can be changed inside without
 breaking anyone, moved or deleted with its folder, and every dependency is visible from where a file lies. A
@@ -20,7 +20,8 @@ belongs to the level that holds the folder.
     ([View and Presenter](view-presenter.md));
   - the shared folders, the types file and the constants file of the own level and of any level above it — so a
     file in one shared folder may import from another shared folder of the same level;
-  - the pure zone, from anywhere;
+  - the pure zone of the own app, from anywhere in it;
+  - the shared types package (`shared` in the config), from any app and any kind of code;
   - packages from outside the project, from any kind of code.
 - A violation:
   - an import from inside a child unit — anything in its logic folder, its own children or shared folders. A
@@ -28,6 +29,10 @@ belongs to the level that holds the folder.
   - an import from another branch — a unit inside a sibling, or anything under a level that is not the own level
     or one above it. The code belongs in a shared folder of the lowest common level;
   - an import of a parent's or an ancestor's View or Presenter. Data comes down through props;
+  - in a project with several apps (`apps` in the config), an import from another app — its code, its pure zone,
+    anything under its root. What two apps share goes to the shared types package, if it is a type;
+  - in the shared types package, an import from any app, and any runtime code — a function, a constant, a value. It
+    holds types only, so every app can use it and none depends on another through it;
   - a pure zone file importing from the app ([Pure zone](pure-zone.md)).
 - By kind, among the allowed targets, a violation is any import outside this list:
   - View → its own Presenter, child units, components from shared folders and from the ui-kit, types, constants;
@@ -71,6 +76,18 @@ OrdersPage/
   OrderFilters/
 ```
 
+```
+client/src/             app "client"
+  OrderList/
+    logic/
+      presenter         imports shared/src/order (the Order type)
+server/src/             app "server"
+  orders/
+    createOrder         imports shared/src/order
+shared/src/             the shared types package
+  order                 type Order — types only
+```
+
 **Bad.**
 
 ```
@@ -84,6 +101,16 @@ OrdersPage/
                         imports OrderFilters/logic/statusLabel — another branch
                         imports OrdersPage/components/StatusBadge — a Presenter importing a component
   OrderFilters/
+```
+
+```
+client/src/
+  OrderList/
+    logic/
+      presenter         imports server/src/orders/createOrder — another app
+shared/src/
+  order                 imports client/src/OrderList — the shared package importing an app
+  orderStatuses         ORDER_STATUSES = ['new', 'paid'] — runtime code in the shared package
 ```
 
 **Stack notes.** None.

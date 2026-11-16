@@ -112,6 +112,52 @@ test('a byte order mark at the start of the file is ignored', () => {
   assert.match(out, /Stack: react\./);
 });
 
+test('several apps and a shared types package: each app with its own root and stack', () => {
+  const out = runHook(
+    JSON.stringify({
+      apps: { client: { root: 'client/src', stack: ['React'] }, server: { root: 'server/src' } },
+      shared: 'shared/src',
+    })
+  );
+  assert.match(out, /an app never imports from another app/);
+  assert.match(out, /- client: root level client\/src\/; stack react; pure zone client\/src\/lib\//);
+  assert.match(out, /- server: root level server\/src\/; stack none - core rules only;/);
+  assert.match(out, /Shared types package: shared\/src\/ - types only; every app may import it, and it imports no app\./);
+  assert.match(out, /only the declared stacks of the app whose root holds the code\./);
+  assert.doesNotMatch(out, /Root level: src|problems|Unknown/);
+});
+
+test('apps with mistakes: bad entries are skipped and named, top-level root and stack are ignored', () => {
+  const out = runHook(
+    JSON.stringify({
+      root: 'src',
+      stack: ['react'],
+      apps: { web: { root: 'web', stack: ['vue'], extra: 1 }, broken: { stack: [] }, bad: { root: 'x', stack: 'react' } },
+      shared: 5,
+    })
+  );
+  assert.match(out, /- web: root level web\/; stack none - core rules only;/);
+  assert.match(out, /- bad: root level x\/;/);
+  assert.match(out, /Unknown stack names, skipped \(no stack folder\): vue\./);
+  for (const problem of [
+    '"apps.broken" has no "root" folder name, so it is skipped',
+    '"apps.bad.stack" is not a list of names',
+    '"apps.web.extra" is not a known key',
+    '"root" is ignored because "apps" is set',
+    '"stack" is ignored because "apps" is set',
+    '"shared" is not a folder name',
+  ]) {
+    assert.ok(out.includes(problem), `names the problem: ${problem}`);
+  }
+});
+
+test('apps with no usable app: one app as before', () => {
+  const out = runHook(JSON.stringify({ stack: ['react'], apps: { broken: {} } }));
+  assert.match(out, /Stack: react\./);
+  assert.match(out, /Root level: src\//);
+  assert.ok(out.includes('"apps" has no usable app'));
+});
+
 test('the plugin version is named in every branch, and the rules folder when the project follows it', () => {
   const line = `Simple Architecture plugin version in this session: ${version}.`;
   for (const configText of [null, '{}', '{"stack": [']) {

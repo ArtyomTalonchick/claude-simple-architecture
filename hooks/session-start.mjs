@@ -18,7 +18,7 @@ const DEFAULT_FOLDERS = {
   tasks: 'tasks',
   logic: 'logic',
 };
-const DEFAULTS = { stack: [], root: 'src', folders: DEFAULT_FOLDERS, maxFileLines: 120 };
+const DEFAULTS = { stack: [], root: 'src', folders: DEFAULT_FOLDERS, maxFileLines: 120, apps: null, shared: null };
 
 function readStdinJson() {
   try {
@@ -90,6 +90,41 @@ function readConfig(root) {
   }
 }
 
+const stackList = (value) => [...new Set(value.map((name) => name.trim().toLowerCase()))];
+
+// Several apps of one repository: { name: { root, stack } }. Returns a list of { name, root, stack }, or null when
+// there is no usable app, so the config falls back to one app.
+function resolveApps(raw, problems) {
+  if (!raw.apps || typeof raw.apps !== 'object' || Array.isArray(raw.apps)) {
+    problems.push('"apps" is not an object');
+    return null;
+  }
+  const apps = [];
+  for (const [name, app] of Object.entries(raw.apps)) {
+    if (!app || typeof app !== 'object' || Array.isArray(app) || !isText(app.root)) {
+      problems.push(`"apps.${name}" has no "root" folder name, so it is skipped`);
+      continue;
+    }
+    let stack = [];
+    if ('stack' in app) {
+      if (Array.isArray(app.stack) && app.stack.every(isText)) stack = stackList(app.stack);
+      else problems.push(`"apps.${name}.stack" is not a list of names`);
+    }
+    for (const key of Object.keys(app)) {
+      if (key !== 'root' && key !== 'stack') problems.push(`"apps.${name}.${key}" is not a known key`);
+    }
+    apps.push({ name, root: app.root.trim(), stack });
+  }
+  if (!apps.length) {
+    problems.push('"apps" has no usable app');
+    return null;
+  }
+  for (const key of ['root', 'stack']) {
+    if (key in raw) problems.push(`"${key}" is ignored because "apps" is set`);
+  }
+  return apps;
+}
+
 // Applies the defaults; every value of the wrong type is replaced by its default and noted in `problems`.
 function resolveConfig(raw) {
   const problems = [];
@@ -97,7 +132,7 @@ function resolveConfig(raw) {
 
   if ('stack' in raw) {
     if (Array.isArray(raw.stack) && raw.stack.every(isText)) {
-      config.stack = [...new Set(raw.stack.map((name) => name.trim().toLowerCase()))];
+      config.stack = stackList(raw.stack);
     } else {
       problems.push('"stack" is not a list of names');
     }
@@ -120,6 +155,11 @@ function resolveConfig(raw) {
   if ('maxFileLines' in raw) {
     if (Number.isInteger(raw.maxFileLines) && raw.maxFileLines > 0) config.maxFileLines = raw.maxFileLines;
     else problems.push('"maxFileLines" is not a positive whole number');
+  }
+  if ('apps' in raw) config.apps = resolveApps(raw, problems);
+  if ('shared' in raw) {
+    if (isText(raw.shared)) config.shared = raw.shared.trim();
+    else problems.push('"shared" is not a folder name');
   }
   for (const key of Object.keys(raw)) {
     if (!(key in DEFAULTS)) problems.push(`"${key}" is not a known key`);
@@ -152,18 +192,36 @@ function main() {
 
   const { config, problems } = resolveConfig(read.raw);
   // If the stack folders cannot be listed, trust the declared names rather than call them all unknown.
-  const used = known.length ? config.stack.filter((name) => known.includes(name)) : config.stack;
-  const unknown = known.length ? config.stack.filter((name) => !known.includes(name)) : [];
+  const usedOf = (stack) => (known.length ? stack.filter((name) => known.includes(name)) : stack);
+  const stackText = (stack) => (usedOf(stack).length ? usedOf(stack).join(', ') : 'none - core rules only');
+  const declared = config.apps ? config.apps.flatMap((app) => app.stack) : config.stack;
+  const unknown = known.length ? [...new Set(declared.filter((name) => !known.includes(name)))] : [];
   const f = config.folders;
 
   const lines = [
     `This project follows Simple Architecture (${CONFIG_PATH}).`,
     `${versionLine()} Its rules: ${rulesFolder()}. Pass this folder to the architecture-reviewer agent, so it checks against the same rules as the skill.`,
-    `Stack: ${used.length ? used.join(', ') : 'none - core rules only'}.`,
-    `Root level: ${config.root}/. Pure zone: ${config.root}/${f.lib}/. UI kit: ${config.root}/${f.uiKit}/.`,
-    `Shared folders on every level: ${f.components}/, ${f.hooks}/, ${f.helpers}/, ${f.tasks}/. A unit's own logic: ${f.logic}/ next to its View.`,
-    `File size limit: ${config.maxFileLines} lines; a longer file is a violation (test files and generated files are not checked).`,
   ];
+  if (config.apps) {
+    lines.push('Apps - each is checked on its own, by the core and its own stacks; an app never imports from another app:');
+    for (const app of config.apps) {
+      lines.push(
+        `- ${app.name}: root level ${app.root}/; stack ${stackText(app.stack)}; pure zone ${app.root}/${f.lib}/; UI kit ${app.root}/${f.uiKit}/.`
+      );
+    }
+  } else {
+    lines.push(
+      `Stack: ${stackText(config.stack)}.`,
+      `Root level: ${config.root}/. Pure zone: ${config.root}/${f.lib}/. UI kit: ${config.root}/${f.uiKit}/.`
+    );
+  }
+  if (config.shared) {
+    lines.push(`Shared types package: ${config.shared}/ - types only; every app may import it, and it imports no app.`);
+  }
+  lines.push(
+    `Shared folders on every level: ${f.components}/, ${f.hooks}/, ${f.helpers}/, ${f.tasks}/. A unit's own logic: ${f.logic}/ next to its View.`,
+    `File size limit: ${config.maxFileLines} lines; a longer file is a violation (test files and generated files are not checked).`
+  );
   if (unknown.length) {
     lines.push(
       `Unknown stack names, skipped (no stack folder): ${unknown.join(', ')}. Available: ${available}. Tell the user.`
@@ -173,7 +231,9 @@ function main() {
     lines.push(`Config problems (the value is ignored, its default is used): ${problems.join('; ')}. Tell the user.`);
   }
   lines.push(
-    'Before writing, changing, moving or reviewing code structure, read the simple-architecture skill: the core first, then only the declared stacks. Use the folder names above wherever the rules name a default.'
+    'Before writing, changing, moving or reviewing code structure, read the simple-architecture skill: the core first, then only the declared stacks' +
+      (config.apps ? ' of the app whose root holds the code.' : '.') +
+      ' Use the folder names above wherever the rules name a default.'
   );
   console.log(lines.join('\n'));
 }

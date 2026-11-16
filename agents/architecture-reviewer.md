@@ -56,11 +56,13 @@ session still uses the session's version. Skip this check when the rules folder 
 Then read, in this order:
 
 1. `SKILL.md`. Then resolve the config values — the stack, the root level, the folder names, the file size
-   limit — by its section `## The config`. An unknown stack name (no such stack folder) is skipped; a value of
+   limit, and with `apps` each app's root and stack, and the shared types package — by its section
+   `## The config`. An unknown stack name (no such stack folder) is skipped; a value of
    the wrong type and an unknown key are ignored, and the default is used. Say each of these in the report.
 2. The core: `references/core/README.md` and every other `.md` file in `references/core/`.
 3. For each declared stack, in the order the config lists them: its `README.md` and every rule file in its
-   folder. Do not read stacks the project does not declare.
+   folder. Do not read stacks the project does not declare. With `apps`, read the stacks of every app that holds
+   a changed file.
 
 A rule is a `## <Rule name>` section with a **Rule.** paragraph, written by the plugin's rule template. Text
 such as "No rules yet." or "No core rules yet." is not a rule.
@@ -93,11 +95,15 @@ surrounding file when a rule depends on where the file lives or what it imports.
 - A rule may name a check as a **warning** — a signal to look at, not a violation. Report it under Warnings,
   never as a finding.
 - Where a rule names a folder by its default, use the name from the project's config.
+- With `apps` in the config, check each changed file by the rules of its app — the app whose root holds it: the
+  core and that app's stacks only, with levels starting at that root. A file in the shared types package gets the
+  core rules only. A file outside every app's root and the shared package is not checked; name it in the report.
 
 ## 5. Report
 
 Start with one line on what was reviewed: the rules version and the rules folder used, the diff source, and the
-stack read — for example `Rules 0.1.1 from <rules folder>; diff: git diff HEAD; stack: react.` Name any unknown
+stack read — for example `Rules 0.1.1 from <rules folder>; diff: git diff HEAD; stack: react.`, or with apps
+`…; apps: client (react, zustand), server (core only).` Name any unknown
 stack names that have no stack folder and any config value that took its default.
 
 Then one of these:
