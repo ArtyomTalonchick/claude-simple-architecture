@@ -82,7 +82,7 @@ this is the full file with the defaults:
     "hooks": "hooks",
     "helpers": "helpers",
     "tasks": "tasks",
-    // A unit's own logic, next to its View.
+    // A unit's own logic, next to its entry.
     "logic": "logic"
   },
   // Files longer than this are a violation; tests and generated files are not checked.

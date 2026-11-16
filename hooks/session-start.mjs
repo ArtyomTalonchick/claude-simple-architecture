@@ -219,7 +219,7 @@ function main() {
     lines.push(`Shared types package: ${config.shared}/ - types only; every app may import it, and it imports no app.`);
   }
   lines.push(
-    `Shared folders on every level: ${f.components}/, ${f.hooks}/, ${f.helpers}/, ${f.tasks}/. A unit's own logic: ${f.logic}/ next to its View.`,
+    `Shared folders on every level: ${f.components}/, ${f.hooks}/, ${f.helpers}/, ${f.tasks}/. A unit's own logic: ${f.logic}/ next to its entry.`,
     `File size limit: ${config.maxFileLines} lines; a longer file is a violation (test files and generated files are not checked).`
   );
   if (unknown.length) {

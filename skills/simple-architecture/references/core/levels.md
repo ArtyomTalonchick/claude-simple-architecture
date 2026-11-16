@@ -1,7 +1,7 @@
 ## Levels and placement
 
-**Rule.** The app root and every unit folder are levels, and every level has the same shape: the View at its root,
-the unit's own logic in its logic folder (default `logic/`), the shared folders and the child units next to them.
+**Rule.** The app root and every unit folder are levels, and every level has the same shape: the unit's entry at its
+root, the unit's own logic in its logic folder (default `logic/`), the shared folders and the child units next to them.
 Put code at the lowest level that covers all its users: in the logic folder of its one unit, or in a shared folder
 of the level that holds all its users. When a user appears outside that level, move the code up to the level that
 covers them all.
@@ -14,15 +14,17 @@ logic in one folder, the View — the file people look for — is not lost among
 **How to check.**
 
 - What a level is:
-  - the app root (`root` in the config), and every unit folder — a folder named as the View it holds. In a
-    project with several apps, the root of each app (`apps` in the config) is a root level of its own; no level
-    spans two apps, and the shared types package is not a level;
+  - the app root (`root` in the config), and every unit folder — a folder that holds a file named as the folder:
+    the unit's entry. In an app with a UI the entry is the unit's View; in an app with no UI it is the file that
+    gives the unit to its users — for a server's route module, the file that builds its routes. In a project with
+    several apps, the root of each app (`apps` in the config) is a root level of its own; no level spans two apps,
+    and the shared types package is not a level;
   - a shared folder and the files in it belong to the level that holds the folder; a unit folder inside a shared
     folder (`components/StatusBadge/`) is a level of its own;
   - the parent of a level is the nearest level above it; levels with the same parent are siblings; one level's
     subtree is a branch.
 - The shape of a level, every part optional:
-  - its own unit — the View (named as the folder) at the level root, and the logic folder (default `logic/`) with
+  - its own unit — the entry (named as the folder) at the level root, and the logic folder (default `logic/`) with
     everything else of the unit's own: the Presenter, stateful logic and helpers only the unit uses, and a tasks
     folder (the same name as the shared one, default `tasks/`) with its own tasks. The logic folder is flat apart
     from `tasks/`. A unit without logic has no logic folder;
@@ -35,6 +37,9 @@ logic in one folder, the View — the file people look for — is not lost among
 - The shared folders, the types file and the constants file stay at the level root, next to the child units, never
   in the logic folder: the logic folder holds only the unit's own code. Any other file only the own unit uses, at
   the level root, is a violation: it belongs in the logic folder.
+- The root level is not named after its entry. Its root holds two files of its own unit: the entry — the file that
+  builds the app (e.g. `App`, `createApp`) — and the file the app starts from (e.g. `main`, `index`), which only
+  runs the entry. Neither is a violation; the rest of the root unit's own code goes to its logic folder.
 - The level's own unit counts as one of its units, next to its child units. Code used by the own unit and by one
   child unit has two users: it goes to a shared folder, the types file or the constants file of the level, and the
   child imports it from there, as code of a level above. Inside the child it would be a violation: the own unit
@@ -81,6 +86,22 @@ OrdersPage/
     tests/              tests of OrderTable and its presenter — not a level
   OrderFilters/         used only by OrdersPage
     OrderFilters        no logic, so no logic/
+```
+
+An app with no UI has the same levels, with an entry in place of a View:
+
+```
+src/
+  index                 starts the app: runs createApp
+  createApp             the root unit's entry: builds the app with its route modules
+  orders/
+    orders              the entry: builds the routes of /orders
+    logic/
+      parseOrderId      used only by orders
+    tasks/
+      loadOrder         used by orders and by items
+    items/              the routes of /orders/:id/items — a child unit
+      items             the entry
 ```
 
 **Bad.**

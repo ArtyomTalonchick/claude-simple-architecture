@@ -16,8 +16,8 @@ Level, parent, sibling and branch are as defined in [Levels and placement](level
 belongs to the level that holds the folder.
 
 - Allowed targets:
-  - an own child unit, through its entry — the child's View, which also passes on its props type
-    ([View and Presenter](view-presenter.md));
+  - an own child unit, through its entry ([Levels and placement](levels.md)) — in an app with a UI the child's
+    View, which also passes on its props type ([View and Presenter](view-presenter.md));
   - the shared folders, the types file and the constants file of the own level and of any level above it — so a
     file in one shared folder may import from another shared folder of the same level;
   - the pure zone of the own app, from anywhere in it;
@@ -25,10 +25,10 @@ belongs to the level that holds the folder.
   - packages from outside the project, from any kind of code.
 - A violation:
   - an import from inside a child unit — anything in its logic folder, its own children or shared folders. A
-    unit's logic folder is inside the unit: only the unit's own View and the files in that folder import from it;
+    unit's logic folder is inside the unit: only the unit's own entry and the files in that folder import from it;
   - an import from another branch — a unit inside a sibling, or anything under a level that is not the own level
     or one above it. The code belongs in a shared folder of the lowest common level;
-  - an import of a parent's or an ancestor's View or Presenter. Data comes down through props;
+  - an import of a parent's or an ancestor's entry or Presenter. Data comes down through props;
   - in a project with several apps (`apps` in the config), an import from another app — its code, its pure zone,
     anything under its root. What two apps share goes to the shared types package, if it is a type;
   - in the shared types package, an import from any app, and any runtime code — a function, a constant, a value. It
@@ -36,6 +36,7 @@ belongs to the level that holds the folder.
   - a pure zone file importing from the app ([Pure zone](pure-zone.md)).
 - By kind, among the allowed targets, a violation is any import outside this list:
   - View → its own Presenter, child units, components from shared folders and from the ui-kit, types, constants;
+  - the entry of a unit with no UI → child units, stateful logic, tasks, helpers, types, constants;
   - Presenter → stateful logic, tasks, helpers, types, constants — never a View or a component;
   - stateful logic → stateful logic, tasks, helpers, types, constants;
   - task → tasks, stores, helpers, types, constants — never a View, a Presenter, other stateful logic or a helper
@@ -88,7 +89,10 @@ client/src/             app "client"
       presenter         imports shared/src/order (the Order type)
 server/src/             app "server"
   orders/
-    createOrder         imports shared/src/order
+    orders              the entry: imports logic/tasks/createOrder
+    logic/
+      tasks/
+        createOrder     imports shared/src/order
 shared/src/             the shared types package
   order                 type Order — types only
 ```
@@ -112,7 +116,7 @@ OrdersPage/
 client/src/
   OrderList/
     logic/
-      presenter         imports server/src/orders/createOrder — another app
+      presenter         imports server/src/orders/logic/tasks/createOrder — another app
 shared/src/
   order                 imports client/src/OrderList — the shared package importing an app
   orderStatuses         ORDER_STATUSES = ['new', 'paid'] — runtime code in the shared package

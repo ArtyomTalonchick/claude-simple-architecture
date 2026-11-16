@@ -11,6 +11,8 @@ of the screen.
 
 **How to check.**
 
+- The rule covers UI units. A unit of an app with no UI has an entry in place of a View
+  ([Levels and placement](levels.md)); the entry is not a View, and this rule does not check it.
 - A View may: call its own Presenter once and read values from the result; hold markup and styles, including
   reading styles from the design system (a style by its name, a theme value, a value per screen size); show or
   hide a part by a ready flag from the Presenter (an "if" or a two-way choice on that flag) or by a ready value

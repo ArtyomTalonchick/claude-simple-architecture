@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- A unit is a folder with an entry file named as the folder: the View in an app with a UI, and in an app with no
+  UI the file that gives the unit to its users, such as the file that builds a server's routes. An app with no UI
+  now has levels, checked by the same rules; the View and Presenter rule covers UI units only, and Imports lists
+  what such an entry may import.
+- The root level holds the file that builds the app and the file the app starts from at its root; neither is a
+  violation.
+
 ## [0.2.1] — 2026-11-16
 
 ### Fixed
