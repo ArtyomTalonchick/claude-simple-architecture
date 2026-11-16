@@ -3,8 +3,8 @@
 **Rule.** Write each user action — log in, log out, place an order, publish a post — and each step of one that
 reaches a store or the server as a task: a plain function named with a verb, with nothing from the UI framework. A
 task reaches stores through their own API, may call other tasks, returns its result and fails by throwing. A
-Presenter or stateful logic calls it, awaits it, keeps the state of the call (loading, error) and decides what
-follows, navigation included.
+Presenter or stateful logic calls it, awaits it and keeps the state of the call (loading, error); the Presenter
+decides what follows, navigation included.
 
 **Why.** What a user action means does not depend on the UI: logging out is the same in a web app and in a mobile
 app, in any UI framework. Written inside stateful logic, it is tied to the life of a component and can run only
