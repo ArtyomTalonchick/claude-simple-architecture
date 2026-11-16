@@ -151,11 +151,20 @@ test('apps with mistakes: bad entries are skipped and named, top-level root and 
   }
 });
 
-test('apps with no usable app: one app as before', () => {
-  const out = runHook(JSON.stringify({ stack: ['react'], apps: { broken: {} } }));
-  assert.match(out, /Stack: react\./);
-  assert.match(out, /Root level: src\//);
-  assert.ok(out.includes('"apps" has no usable app'));
+test('apps with no usable app: one app as before, with the top-level root and stack', () => {
+  for (const apps of [{ broken: {} }, {}]) {
+    const out = runHook(JSON.stringify({ stack: ['react'], root: 'app', apps }));
+    assert.match(out, /Stack: react\./);
+    assert.match(out, /Root level: app\//);
+    assert.ok(out.includes('"apps" has no usable app, so it is ignored and the project is one app'));
+    assert.ok(!out.includes('is ignored because "apps" is set'), 'the top-level root and stack are used');
+  }
+});
+
+test('the config problems heading covers a skipped app as well as an ignored key', () => {
+  const out = runHook(JSON.stringify({ apps: { web: { root: 'web' }, broken: {} }, maxFileLines: 'x' }));
+  assert.ok(out.includes('Config problems (each value named here is not used: a key falls back to its default, an app is skipped)'));
+  assert.ok(out.includes('"apps.broken" has no "root" folder name, so it is skipped'));
 });
 
 test('the plugin version is named in every branch, and the rules folder when the project follows it', () => {

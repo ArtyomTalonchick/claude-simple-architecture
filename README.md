@@ -107,7 +107,8 @@ the core and its own stacks, and an app never imports from another app:
 
 The comments are only for this example: the file itself is plain JSON, without comments. An unknown stack name
 is skipped, and you are told it has no stack folder. A value of the wrong type and an unknown key are ignored, and
-you are told. A file that is not a JSON object cannot be read: the agent tells you and does not apply the rules.
+you are told; so is an app without `root`, and `apps` with no usable app leaves the project one app, as without
+`apps`. A file that is not a JSON object cannot be read: the agent tells you and does not apply the rules.
 Without the file, the project does not follow Simple Architecture.
 
 At the start of every session a hook reads the config and tells the agent the resolved values, any problems,

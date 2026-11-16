@@ -89,8 +89,9 @@ A repository with several apps — a client, a server and a package of types the
 - **`apps`** — the apps, by name. Each has a **`root`** (required), relative to the project root, and a **`stack`**
   (default `[]`), read as the top-level `stack` is. Each app is checked on its own: its levels start at its root,
   its pure zone and ui-kit are relative to its root, and only its own stacks apply. An app without `root` is
-  skipped. With `apps` set, the top-level `root` and `stack` are ignored; `folders` and `maxFileLines` apply to
-  every app.
+  skipped, and the user is told. With at least one usable app, the top-level `root` and `stack` are ignored;
+  `folders` and `maxFileLines` apply to every app. With none — `apps` is empty, is not an object, or every app in
+  it is skipped — `apps` is ignored, the user is told, and the project is one app, as without `apps`.
 - **`shared`** — the shared types package, relative to the project root: types only, imported by every app,
   importing no app ([Imports](references/core/imports.md)). Optional, with or without `apps`.
 

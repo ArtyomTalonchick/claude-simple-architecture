@@ -116,7 +116,7 @@ function resolveApps(raw, problems) {
     apps.push({ name, root: app.root.trim(), stack });
   }
   if (!apps.length) {
-    problems.push('"apps" has no usable app');
+    problems.push('"apps" has no usable app, so it is ignored and the project is one app');
     return null;
   }
   for (const key of ['root', 'stack']) {
@@ -228,7 +228,7 @@ function main() {
     );
   }
   if (problems.length) {
-    lines.push(`Config problems (the value is ignored, its default is used): ${problems.join('; ')}. Tell the user.`);
+    lines.push(`Config problems (each value named here is not used: a key falls back to its default, an app is skipped): ${problems.join('; ')}. Tell the user.`);
   }
   lines.push(
     'Before writing, changing, moving or reviewing code structure, read the simple-architecture skill: the core first, then only the declared stacks' +

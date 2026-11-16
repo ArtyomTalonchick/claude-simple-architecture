@@ -11,6 +11,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   rules say.
 - In React, a `use…` function that calls no hook moves to where its kind belongs: a task if it reaches a store or
   the server, a helper otherwise — not always to helpers.
+- A config whose `apps` has no usable app — empty, not an object, or every app without `root` — is one app with
+  the top-level `root` and `stack`: the skill and the reviewer now say so, as the session-start hook already did.
+  The hook's config problems line now also fits a skipped app.
 - The Good example in "Imports" no longer has a View call a task: every caller of a task is a Presenter that
   imports it.
 
