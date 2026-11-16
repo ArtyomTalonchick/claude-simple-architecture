@@ -49,7 +49,7 @@ test('empty config: every default', () => {
   assert.match(out, /Root level: src\/\. Pure zone: src\/lib\/\. UI kit: src\/lib\/components\/\./);
   assert.match(out, /Shared folders on every level: components\/, hooks\/, helpers\/, tasks\/\./);
   assert.match(out, /A unit's own logic: logic\/ next to its View\./);
-  assert.match(out, /File size limit: 120 lines; a longer file is a violation\./);
+  assert.match(out, /File size limit: 120 lines; a longer file is a violation \(test files and generated files are not checked\)\./);
   assert.doesNotMatch(out, /problems|Unknown/);
 });
 
@@ -66,7 +66,7 @@ test('full config: its values are used', () => {
   assert.match(out, /Root level: app\/\. Pure zone: app\/shared\/\. UI kit: app\/ui-kit\/\./);
   assert.match(out, /Shared folders on every level: parts\/, use\/, utils\/, actions\/\./);
   assert.match(out, /A unit's own logic: own\/ next to its View\./);
-  assert.match(out, /File size limit: 200 lines; a longer file is a violation\./);
+  assert.match(out, /File size limit: 200 lines; a longer file is a violation \(/);
   assert.doesNotMatch(out, /problems|Unknown/);
 });
 
@@ -94,7 +94,7 @@ test('wrong types and unknown keys: defaults are used and each problem is named'
   assert.match(out, /Stack: none - core rules only\./);
   assert.match(out, /Root level: src\//);
   assert.match(out, /hooks\/, helpers\//);
-  assert.match(out, /File size limit: 120 lines; a longer file is a violation\./);
+  assert.match(out, /File size limit: 120 lines; a longer file is a violation \(/);
   for (const problem of [
     '"stack" is not a list of names',
     '"root" is not a folder name',

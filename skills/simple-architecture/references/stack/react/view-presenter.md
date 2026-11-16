@@ -1,8 +1,8 @@
 ## View and Presenter in React
 
 **Rule.** A component is a View: `MyComponent/MyComponent.tsx`, named as its folder. Its Presenter is the hook
-`usePresenter.ts` in the unit's `logic/` folder, which declares the props type; the View re-exports that type for its users. The
-only hooks a View calls are its own `usePresenter` and styling hooks.
+`usePresenter.ts` in the unit's `logic/` folder, which declares the props type; the View re-exports that type
+for its users. The only hooks a View calls are its own `usePresenter` and styling hooks.
 
 **Why.** One file name per role makes the pair easy to find, and a short list of allowed hooks is easy to check:
 any other hook in a component means logic has leaked into the View. Styling hooks only return styles, and styles
@@ -32,9 +32,9 @@ are the View's concern.
   `.map`, `.flatMap`, `.filter` or a template string is a computation in the View and goes to `usePresenter.ts`.
   A literal array or object is allowed.
 - `usePresenter.ts` with no hook call and no computation — it only returns its props — is a violation.
-- The props type is declared in `usePresenter.ts` and re-exported from the component file
-  (`export type { OrderListProps } from './logic/usePresenter'`), so users import it from the View; a component without
-  a Presenter declares its props type in its own file.
+- The props type is declared in `usePresenter.ts` and re-exported from the component file (`export type {
+  OrderListProps } from './logic/usePresenter'`), so users import it from the View; a component without a Presenter
+  declares its props type in its own file.
 
 **Good.**
 

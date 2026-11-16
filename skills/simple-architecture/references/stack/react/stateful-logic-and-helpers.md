@@ -2,9 +2,9 @@
 
 **Rule.** Stateful logic is a hook: a function whose name starts with `use` and that calls at least one React
 hook — `useState`, `useEffect`, a context, a store or a query hook, or a custom hook — or that a hook library
-creates for you (a store made by a store library). A function that is neither is a task ([Tasks in React](tasks.md)) or a
-helper: its name does not start with `use`. The one exception is the Presenter, `usePresenter`: it is a hook by convention, whether or not
-it calls one.
+creates for you (a store made by a store library). A function that is neither is a task ([Tasks in React](tasks.md))
+or a helper: its name does not start with `use`. The one exception is the Presenter, `usePresenter`: it is a hook
+by convention, whether or not it calls one.
 
 **Why.** React enforces its rules of hooks by the `use` prefix. A `use` name on a plain function puts those
 limits on code that does not need them, and a helper that calls a hook breaks at run time.

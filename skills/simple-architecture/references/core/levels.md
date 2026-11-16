@@ -21,14 +21,14 @@ logic in one folder, the View — the file people look for — is not lost among
     subtree is a branch.
 - The shape of a level, every part optional:
   - its own unit — the View (named as the folder) at the level root, and the logic folder (default `logic/`) with
-    everything else of the unit's own: the Presenter, stateful logic and helpers only the unit uses, and a
-    `tasks/` folder with its own tasks. The logic folder is flat apart from `tasks/`. A unit without logic has no
-    logic folder;
+    everything else of the unit's own: the Presenter, stateful logic and helpers only the unit uses, and a tasks
+    folder (the same name as the shared one, default `tasks/`) with its own tasks. The logic folder is flat apart
+    from `tasks/`. A unit without logic has no logic folder;
   - child units — unit folders used only by this level, with the same shape inside;
   - shared folders, for code used by two or more units of this level: the components folder (default
     `components/`), the stateful logic folder (default `hooks/`), the helpers folder (default `helpers/`), the
     tasks folder (default `tasks/`);
-  - a types file and a constants file (default `types` and `constants`) for types and constants shared by two or
+  - a types file and a constants file (`types` and `constants`) for types and constants shared by two or
     more units of this level.
 - The shared folders, the types file and the constants file stay at the level root, next to the child units, never
   in the logic folder: they belong to the level, not to its own unit. A file only the own unit uses, at the level
@@ -38,7 +38,9 @@ logic in one folder, the View — the file people look for — is not lost among
   child imports it from there, as code of a level above. Inside the child it would be a violation: the own unit
   would import from inside a child.
 - A file in a shared folder, a types file or a constants file of a level with only one user is a violation: it
-  belongs in that user's logic folder.
+  belongs in that user's logic folder. When that one user is itself a file in a shared folder, the file is a part
+  of it: a task becomes a folder with its parts ([Tasks](tasks.md)); stateful logic or a helper sits next to its
+  user in the same shared folder.
 - A child unit or a file used by two or more siblings, or from outside its parent level, is a violation: it
   belongs in a shared folder of the lowest level that covers all its users.
 - A type or a constant used by one file lives in that file. One used by two or more files of one unit, and by no

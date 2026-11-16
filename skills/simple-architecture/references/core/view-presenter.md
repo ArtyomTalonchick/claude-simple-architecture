@@ -97,8 +97,8 @@ OrderList/
 ```
 
 A large Presenter only joins: each group of its own state moves out as stateful logic, and the Presenter calls it,
-joins the results and hands out props. Before, the presenter of SearchPage kept the screen state itself next to two
-hooks — a warning:
+joins the results and hands out props. A presenter of SearchPage that kept the screen state itself next to the
+field and the request would get a warning; with the screen state moved out it only joins:
 
 ```
 SearchPage/

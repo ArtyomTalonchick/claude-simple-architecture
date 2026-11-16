@@ -18,7 +18,7 @@ is only a signal gets waved away, so it is a rule.
 - Not a second thing: a type or a constant used only in this file, the props type of a View or a Presenter, and
   a View passing on its Presenter's props type.
 - A file over `maxFileLines` lines is a violation: name the file, its size and the limit, and say what could move
-  out — stateful logic, a helper, a child unit. A long View is split into child units.
+  out — stateful logic, a task, a helper, a child unit. A long View is split into child units.
 - Not checked against the limit:
   - a test file: it grows by one case per behavior, and the cases are read one at a time; splitting it by case
     would spread the tests of one thing over several files. Tests are not part of the shape ([Levels and

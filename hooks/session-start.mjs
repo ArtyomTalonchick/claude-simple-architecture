@@ -162,7 +162,7 @@ function main() {
     `Stack: ${used.length ? used.join(', ') : 'none - core rules only'}.`,
     `Root level: ${config.root}/. Pure zone: ${config.root}/${f.lib}/. UI kit: ${config.root}/${f.uiKit}/.`,
     `Shared folders on every level: ${f.components}/, ${f.hooks}/, ${f.helpers}/, ${f.tasks}/. A unit's own logic: ${f.logic}/ next to its View.`,
-    `File size limit: ${config.maxFileLines} lines; a longer file is a violation.`,
+    `File size limit: ${config.maxFileLines} lines; a longer file is a violation (test files and generated files are not checked).`,
   ];
   if (unknown.length) {
     lines.push(

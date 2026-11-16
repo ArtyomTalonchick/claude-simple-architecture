@@ -85,7 +85,7 @@ this is the full file with the defaults:
     // A unit's own logic, next to its View.
     "logic": "logic"
   },
-  // Files longer than this are a violation.
+  // Files longer than this are a violation; tests and generated files are not checked.
   "maxFileLines": 120
 }
 ```

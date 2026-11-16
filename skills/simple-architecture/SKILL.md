@@ -65,10 +65,11 @@ a missing key takes its default. The full file with the defaults:
 - **`folders.uiKit`** — the ui-kit, relative to `root`. Wherever it lives, it belongs to the pure zone.
 - **`folders.components`**, **`folders.hooks`**, **`folders.helpers`**, **`folders.tasks`** — the names of the
   shared folders: for components, for stateful logic, for helpers and for tasks. The same names are used on every
-  level.
+  level; the tasks name is also used for a unit's own tasks inside its logic folder.
 - **`folders.logic`** — the name of the folder next to a unit's View that holds the unit's own logic. The same
   name is used in every unit.
-- **`maxFileLines`** — a positive whole number: the size above which a file is a violation.
+- **`maxFileLines`** — a positive whole number: the size above which a file is a violation. Test files and files
+  written by a tool are not checked.
 
 The rules name a folder by its role and its default, for example "the stateful logic folder (default
 `hooks/`)"; in a project, use the configured name.

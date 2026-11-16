@@ -30,11 +30,11 @@ belongs to the level that holds the folder.
   - an import of a parent's or an ancestor's View or Presenter. Data comes down through props;
   - a pure zone file importing from the app ([Pure zone](pure-zone.md)).
 - By kind, among the allowed targets, a violation is any import outside this list:
-  - View → its own Presenter, child units, components from shared folders and the pure zone, types, constants;
+  - View → its own Presenter, child units, components from shared folders and from the ui-kit, types, constants;
   - Presenter → stateful logic, tasks, helpers, types, constants — never a View or a component;
   - stateful logic → stateful logic, tasks, helpers, types, constants;
-  - task → tasks, stores, helpers, types, constants — never a View, a Presenter or other stateful logic
-    ([Tasks](tasks.md));
+  - task → tasks, stores, helpers, types, constants — never a View, a Presenter, other stateful logic or a helper
+    that acts on the screen ([Tasks](tasks.md));
   - helper → helpers, types, constants.
 - A type-only import is allowed for every kind from any allowed target, including a child's View: a Presenter may
   import the props type its child passes on. It brings in no markup and no logic.
@@ -57,10 +57,11 @@ OrdersPage/
                         OrderTable
   hooks/
     orderFilters        imports helpers/formatPrice, lib/helpers/debounce
-    ordersStore         a store
+    ordersStore         a store, used by orderFilters and cancelOrder
   tasks/
-    cancelOrder         imports hooks/ordersStore (a store), tasks/notifyUser
-    notifyUser
+    cancelOrder         imports hooks/ordersStore (a store), tasks/notifyUser — called by the presenter and
+                        by OrderTable
+    notifyUser          called by cancelOrder and by OrderFilters
   helpers/
     formatPrice
   OrderTable/

@@ -1,9 +1,10 @@
 ## Tasks
 
-**Rule.** Write each user action — log in, log out, place an order, publish a post — as a task: a plain function
-named with a verb, with nothing from the UI framework. A task reaches stores through their own API, may call other
-tasks, returns its result and fails by throwing. A Presenter or stateful logic calls it, awaits it, keeps the state
-of the call (loading, error) and decides what follows, navigation included.
+**Rule.** Write each user action — log in, log out, place an order, publish a post — and each step of one that
+reaches a store or the server as a task: a plain function named with a verb, with nothing from the UI framework. A
+task reaches stores through their own API, may call other tasks, returns its result and fails by throwing. A
+Presenter or stateful logic calls it, awaits it, keeps the state of the call (loading, error) and decides what
+follows, navigation included.
 
 **Why.** What a user action means does not depend on the UI: logging out is the same in a web app and in a mobile
 app, in any UI framework. Written inside stateful logic, it is tied to the life of a component and can run only
@@ -16,8 +17,8 @@ the UI's part: showing the call and going somewhere after it.
 - A task is one action and one function from the outside; inside it may be split into smaller functions. Its name
   is a verb (`logout`, `addUser`, `publishPost`).
 - A task uses nothing from the UI framework: no import from it, no call of stateful logic (a store is reached
-  through its own API, below), no helper that acts on the screen, no navigation. Navigation depends on where the app runs, so it stays in the
-  Presenter. Any of these in a task is a violation.
+  through its own API, below), no helper that acts on the screen, no navigation. Navigation depends on where the
+  app runs, so it stays in the Presenter. Any of these in a task is a violation.
 - A task reads and changes a store once, through the store's own API, at the time it is called; it does not
   subscribe. Code that follows a store's changes to show them is stateful logic
   ([Stateful logic and helpers](stateful-logic-and-helpers.md)).
@@ -27,10 +28,11 @@ the UI's part: showing the call and going somewhere after it.
   its own, and the actions call it.
 - Steps of one user action — a server call, store changes, other actions — written in a Presenter or in stateful
   logic are a violation: they are a task. One call of a store's action is not.
-- Placement follows [Levels and placement](levels.md): in `logic/tasks/` of its one unit, or in the tasks folder
-  (default `tasks/`) of the lowest level that covers all its users. A task is one file, or a folder named as the task when
-  it needs several files to stay within the file limit: the file of the same name is its entry, and the rest are
-  parts only it uses. Others import only the entry.
+- Placement follows [Levels and placement](levels.md): in the tasks folder (default `tasks/`) inside the logic
+  folder of its one unit, or in the tasks folder of the lowest level that covers all its users. A task is one file,
+  or a folder named as the task when it needs several files to stay within the file limit: the file of the same
+  name is its entry, and the rest are parts only it uses — a smaller task or a helper only it calls. Others import
+  only the entry.
 - Recommended, not checked: a task talks to the server through a small project module (`api.logout()`), not
   through the transport directly.
 
@@ -39,7 +41,11 @@ the UI's part: showing the call and going somewhere after it.
 ```
 tasks/
   logout              await unsubscribePush(); await api.logout(); session store: clear
-  unsubscribePush     await api.unsubscribe(push token from the settings store)
+                      — called by LogoutButton and SessionExpired
+  unsubscribePush     await api.unsubscribe(push token from the settings store) — called by logout and
+                      deleteAccount
+  deleteAccount
+SessionExpired/
 LogoutButton/
   LogoutButton        View
   logic/
