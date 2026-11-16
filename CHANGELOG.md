@@ -15,6 +15,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - A unit's own logic — the Presenter, its stateful logic, helpers and `tasks/` — lives in a `logic/` folder next to
   its View, flat apart from `tasks/`; the level's shared folders stay at the level root. The folder name is set by
   the new key `folders.logic` (default `logic`). In React, `usePresenter.ts` moves to `logic/`.
+- A warning in "View and Presenter": a Presenter whose own state and lifecycle form two or more groups by the
+  two-concerns test should move them out as stateful logic and only join it; a Presenter with one group stays
+  whole.
 
 ### Changed
 

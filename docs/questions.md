@@ -295,3 +295,21 @@ to the child units. The logic folder is inside the unit: only its View and its o
 is configurable like the other folders (`folders.logic`, default `logic`). Written into "Levels and placement",
 "Imports", "View and Presenter", the examples of the other core rules, and the React rule "View and Presenter in
 React".
+
+## Q20. When is a Presenter split into stateful logic it joins?
+
+**Question.** One concern per piece of stateful logic is checked on hooks, but a Presenter may keep any amount of
+state, effects and handlers of its own, so it can grow into the place where everything happens. When is it split,
+how is "large" told from "a few simple jobs", and is that a violation?
+
+**Context.** #22: a page Presenter joined two hooks and kept the screen state itself; the reviewer passed it, and
+moving the screen state out was the preferred shape.
+
+**Status.** answered
+
+**Answer.** By the two-concerns test, not by size: a Presenter whose own state and lifecycle fall into two or more
+groups should move them out as stateful logic and only join it. The stateful logic it calls, values computed from
+props or from that logic, and the loading and error of a task kept by the handler that calls it do not count. One
+group of its own stays. It is a warning, not a violation: which jobs are simple enough to stay is a judgement, and
+a violation would make the reviewer's verdict depend on the run. The moved-out logic goes to the unit's logic
+folder while the Presenter is its only user. Written into "View and Presenter".

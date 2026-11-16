@@ -31,6 +31,14 @@ of the screen.
   the call — loading, error — and decides what follows, navigation included. The steps of the action itself do
   not belong in the Presenter.
 - A violation: a Presenter file with no logic in it (an empty or pass-through Presenter).
+- A **warning**, not a violation: a Presenter whose own state and lifecycle fall into two or more groups by the
+  two-concerns test of [Stateful logic and helpers](stateful-logic-and-helpers.md). Name the groups and say which
+  could move out as stateful logic, so the Presenter only joins it. Not counted: the stateful logic it calls, the
+  values it computes from props or from that logic, and the loading and error of a task kept by the handler that
+  calls it. A Presenter with one group of its own stays whole: splitting it would add a file for nothing. The
+  moved-out logic goes to the unit's logic folder while the Presenter is its only user
+  ([Levels and placement](levels.md)). Which jobs are simple enough to stay is a judgement, so it is not a
+  violation.
 - The props type lives in the Presenter, and the View passes it on to its users, so they import it from the
   View; a View without a Presenter declares its own props type.
 
@@ -86,6 +94,20 @@ OrderList/
   logic/
     presenter (Presenter)  pagination = page count > 1 ? { page, total, onPageChange = go to page } : nothing
   Pagination/
+```
+
+A large Presenter only joins: each group of its own state moves out as stateful logic, and the Presenter calls it,
+joins the results and hands out props. Before, the presenter of SearchPage kept the screen state itself next to two
+hooks — a warning:
+
+```
+SearchPage/
+  SearchPage   (View)      p = presenter(props)
+  logic/
+    presenter  (Presenter) field = searchField(); results = searchRequest(field.value); screen = searchScreen()
+    searchField            the field: value, change, clear
+    searchRequest          the request for a value
+    searchScreen           which screen is shown, and the switch between them with a transition
 ```
 
 **Bad.**
