@@ -14,6 +14,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - A config whose `apps` has no usable app — empty, not an object, or every app without `root` — is one app with
   the top-level `root` and `stack`: the skill and the reviewer now say so, as the session-start hook already did.
   The hook's config problems line now also fits a skipped app.
+- The architecture-reviewer counts the lines of every added or changed file as a whole against `maxFileLines`,
+  so a small edit to a file already over the limit is no longer missed.
 - The Good example in "Imports" no longer has a View call a task: every caller of a task is a Presenter that
   imports it.
 

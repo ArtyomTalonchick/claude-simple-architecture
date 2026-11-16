@@ -86,6 +86,10 @@ For each rule, follow its **How to check** steps on the diff. Look mainly at add
 surrounding file when a rule depends on where the file lives or what it imports. Report only what a rule's
 **How to check** actually covers — not taste, not general code quality, not rules of your own.
 
+- The file limit is checked on the whole file, not on the diff: for every added or changed file, count the lines
+  of its whole new version and compare them with `maxFileLines`. Skip the files the rule exempts — a test file and
+  a file written by a tool (`references/core/one-thing-per-file.md`). A file over the limit is
+  a violation even when the diff touches only a few of its lines.
 - Core rules always apply. A stack rule carries out a core rule with one technology and never overrides it.
 - Line numbers are in the new version of the file (the `+` side of the diff). For a deleted file or a moved
   file, name the path and say so.
