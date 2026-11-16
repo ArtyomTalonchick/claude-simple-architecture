@@ -15,6 +15,7 @@ const DEFAULT_FOLDERS = {
   components: 'components',
   tasks: 'tasks',
   logic: 'logic',
+  stores: 'stores',
 };
 const DEFAULTS = { stack: [], root: 'src', folders: DEFAULT_FOLDERS, maxFileLines: 120, apps: null, shared: null };
 
@@ -217,7 +218,7 @@ function main() {
     lines.push(`Shared types package: ${config.shared}/ - types only; every app may import it, and it imports no app.`);
   }
   lines.push(
-    `On every level: all its non-UI code in ${f.logic}/ next to its entry, tasks in ${f.logic}/${f.tasks}/; shared child units in ${f.components}/.`,
+    `On every level: its non-UI code in ${f.logic}/ next to its entry, tasks in ${f.logic}/${f.tasks}/; its stores in ${f.stores}/, never in ${f.logic}/; shared child units in ${f.components}/.`,
     `File size limit: ${config.maxFileLines} lines; a longer file is a violation (test files and generated files are not checked).`
   );
   if (unknown.length) {

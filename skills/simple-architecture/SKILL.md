@@ -51,7 +51,8 @@ a missing key takes its default. The full file with the defaults:
     "uiKit": "lib/components",
     "components": "components",
     "tasks": "tasks",
-    "logic": "logic"
+    "logic": "logic",
+    "stores": "stores"
   },
   "maxFileLines": 120
 }
@@ -63,9 +64,11 @@ a missing key takes its default. The full file with the defaults:
 - **`root`** — the folder of the app's root level, relative to the project root.
 - **`folders.lib`** — the pure zone, relative to `root`.
 - **`folders.uiKit`** — the ui-kit, relative to `root`. Wherever it lives, it belongs to the pure zone.
-- **`folders.logic`** — the name of the folder next to a level's entry that holds all the level's non-UI code: its
-  own unit's and what its units share — stateful logic, helpers, tasks, types and constants.
+- **`folders.logic`** — the name of the folder next to a level's entry that holds the level's non-UI code but its
+  stores: its own unit's and what its units share — stateful logic, helpers, tasks, types and constants.
 - **`folders.tasks`** — the name of the tasks folder inside the logic folder.
+- **`folders.stores`** — the name of the folder next to a level's entry that holds the level's stores: data that
+  lives longer than one call and is shared by the code that reads it.
 - **`folders.components`** — the name of the folder for the child units that two or more units of a level share.
 - The same names are used on every level.
 - **`maxFileLines`** — a positive whole number: the size above which a file is a violation. Test files and files

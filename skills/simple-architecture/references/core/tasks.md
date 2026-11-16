@@ -71,4 +71,4 @@ logic/
 
 - [react/tasks.md](../stack/react/tasks.md) — a task in React and the Presenter that calls it.
 - [zustand/stateful-logic-and-helpers.md](../stack/zustand/stateful-logic-and-helpers.md) — `getState()` and
-  `setState()` in a task.
+  `setState()` of a store in a task.

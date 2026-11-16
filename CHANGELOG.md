@@ -21,6 +21,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   import from the `logic/` of its own level and of any level above, except that level's Presenter. The config keys
   `folders.hooks` and `folders.helpers` are removed: drop them from your config, or the session-start hook names
   them as unknown keys. `folders.tasks` now names the tasks folder inside `logic/`.
+- **Breaking:** a store is a kind of its own, no longer stateful logic: data that lives longer than one call and is
+  shared by the code that reads it, on a client or a server — a cache or an in-memory table on a server is a store.
+  A store file holds the data and its own API, nothing else. It lives in the level's `stores/` folder, at the lowest
+  level that covers all its users, never in `logic/`: move a store kept in `logic/` there. Only a task, through the
+  store's API, and on a client a Presenter or stateful logic reach a store. In Zustand, a store made by `create`
+  lives in `stores/` and holds its state and actions only.
+
+### Added
+
+- The config key `folders.stores` (default `stores`): the name of a level's stores folder.
 
 ## [0.2.1] — 2026-11-16
 

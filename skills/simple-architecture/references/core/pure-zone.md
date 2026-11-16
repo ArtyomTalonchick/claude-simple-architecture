@@ -5,8 +5,8 @@
 (default `lib/components/`) as its components folder. The design-system theme — tokens and the styles of ui-kit
 components — is pure too and lives in the lib folder. Pure code depends on nothing from the app — no domain types,
 store, data access, app components or app styles, by import or by key. Code that knows the app goes to the logic
-folder or the components folder of the root level. Pure code stays in the pure zone whatever the number of its
-users.
+folder, the stores folder or the components folder of the root level. Pure code stays in the pure zone whatever the
+number of its users.
 
 **Why.** Pure code is the base the rest of the app stands on. As long as it knows nothing of the app, it changes
 only for its own reasons, can be reused anywhere in the app, and can move to another project as it is. Once it
@@ -51,7 +51,9 @@ src/
       searchField         the style of SearchField
   App                     mounts the theme from lib/theme/
   logic/
-    currentUser           reads the store — app code, so outside lib/
+    currentUser           subscribes to stores/userStore — app code, so outside lib/
+  stores/
+    userStore             the current user — app data, so outside lib/
   components/
     UserAvatar/           its presenter reads the current user from the store — app code, so outside lib/
 ```

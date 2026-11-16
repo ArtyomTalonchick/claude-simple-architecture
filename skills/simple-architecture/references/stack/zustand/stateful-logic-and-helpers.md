@@ -1,6 +1,7 @@
-## A store is stateful logic
+## A Zustand store
 
-**Rule.** A Zustand store hook (`useOrdersStore`, made by `create`) is stateful logic: call it only from a
+**Rule.** A Zustand store (`useOrdersStore`, made by `create`) is a store: its file lives in the stores folder
+(`stores/`) and holds `create(...)` with the state and its actions, nothing else. Call its hook only from a
 Presenter or other stateful logic — never from a View, a task or a helper. A task reaches the store outside hooks
 through `getState()` and `setState()`; a View and a helper never do.
 
@@ -11,6 +12,11 @@ change it, not a subscription, and `getState()` / `setState()` give exactly that
 
 **How to check.**
 
+- A store file — `create(...)` and its actions — goes to the `stores/` folder of the lowest level that covers all
+  its users ([Levels and placement](../../core/levels.md)). A store file in `logic/` or `logic/tasks/` is a
+  violation, even with one user. Its `use…` name is right even though its own code calls no hook.
+- An action of the store that calls the server, calls a task, or does more than read and change the store's state is
+  a violation: that part is a task ([Tasks](../../core/tasks.md)), and the action only sets the result.
 - A store hook called in a component file (a View) is a violation — also of
   [View and Presenter](../../core/view-presenter.md).
 - A store hook, `getState()` or `setState()` used in a helper is a violation: a function that reads or changes the
@@ -18,18 +24,17 @@ change it, not a subscription, and `getState()` / `setState()` give exactly that
 - `getState()` or `setState()` in a View is a violation; a store hook called as a hook in a task is a violation.
 - In a task, `useOrdersStore.getState()` and `useOrdersStore.setState()`, or an action read through `getState()`,
   are allowed. No middleware such as thunks is needed for that.
-- A store file — `create(...)` and its actions — is stateful logic and is placed by
-  [Levels and placement](../../core/levels.md): in the `logic/` folder of the lowest level that covers all its
-  users. Its `use…` name is right even though its own code calls no hook.
+- In a Presenter or other stateful logic, a store hook with a selector, and an action taken from it and called
+  once in a handler, are allowed.
 
 **Good.**
 
 ```ts
-// OrderList/OrderList.tsx — the View takes data from its Presenter
-export const OrderList = (props: OrderListProps) => {
-  const { orders } = usePresenter(props);
-  return orders.map((o) => <OrderRow key={o.id} row={o} />);
-};
+// stores/useOrdersStore.ts — the store: its state and actions only
+export const useOrdersStore = create<OrdersState>()((set) => ({
+  orders: [],
+  setOrders: (orders) => set({ orders }),
+}));
 
 // logic/useOrderCount.ts — stateful logic subscribes to the store
 export const useOrderCount = () => useOrdersStore((s) => s.orders.length);
@@ -44,6 +49,12 @@ export const cancelOrder = async (id: string) => {
 **Bad.**
 
 ```tsx
+// logic/useOrdersStore.ts — a store in logic/, and an action that calls the server
+export const useOrdersStore = create<OrdersState>()((set) => ({
+  orders: [],
+  load: async () => set({ orders: await api.getOrders() }),
+}));
+
 // OrderList/OrderList.tsx — a View reads the store
 export const OrderList = () => {
   const orders = useOrdersStore((s) => s.orders);

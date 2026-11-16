@@ -49,7 +49,7 @@ test('empty config: every default', () => {
   assert.match(out, /Root level: src\/\. Pure zone: src\/lib\/\. UI kit: src\/lib\/components\/\./);
   assert.match(
     out,
-    /On every level: all its non-UI code in logic\/ next to its entry, tasks in logic\/tasks\/; shared child units in components\/\./
+    /On every level: its non-UI code in logic\/ next to its entry, tasks in logic\/tasks\/; its stores in stores\/, never in logic\/; shared child units in components\/\./
   );
   assert.match(out, /File size limit: 120 lines; a longer file is a violation \(test files and generated files are not checked\)\./);
   assert.doesNotMatch(out, /problems|Unknown/);
@@ -60,7 +60,7 @@ test('full config: its values are used', () => {
     JSON.stringify({
       stack: ['React', 'zustand', 'react'],
       root: 'app',
-      folders: { lib: 'shared', uiKit: 'ui-kit', components: 'parts', tasks: 'actions', logic: 'own' },
+      folders: { lib: 'shared', uiKit: 'ui-kit', components: 'parts', tasks: 'actions', logic: 'own', stores: 'state' },
       maxFileLines: 200,
     })
   );
@@ -68,7 +68,7 @@ test('full config: its values are used', () => {
   assert.match(out, /Root level: app\/\. Pure zone: app\/shared\/\. UI kit: app\/ui-kit\/\./);
   assert.match(
     out,
-    /On every level: all its non-UI code in own\/ next to its entry, tasks in own\/actions\/; shared child units in parts\/\./
+    /On every level: its non-UI code in own\/ next to its entry, tasks in own\/actions\/; its stores in state\/, never in own\/; shared child units in parts\/\./
   );
   assert.match(out, /File size limit: 200 lines; a longer file is a violation \(/);
   assert.doesNotMatch(out, /problems|Unknown/);
@@ -116,8 +116,18 @@ test('the removed keys folders.hooks and folders.helpers get the unknown-key not
   const out = runHook(JSON.stringify({ folders: { hooks: 'use', helpers: 'utils', logic: 'own' } }));
   assert.ok(out.includes('"folders.hooks" is not a known key'), 'names folders.hooks');
   assert.ok(out.includes('"folders.helpers" is not a known key'), 'names folders.helpers');
-  assert.match(out, /all its non-UI code in own\/ next to its entry/);
+  assert.match(out, /its non-UI code in own\/ next to its entry/);
   assert.doesNotMatch(out, /use\/|utils\//);
+});
+
+test('folders.stores: a custom name is used, and a value of the wrong type falls back to stores', () => {
+  const custom = runHook(JSON.stringify({ folders: { stores: 'data' } }));
+  assert.match(custom, /its stores in data\/, never in logic\//);
+  assert.doesNotMatch(custom, /problems|stores\//);
+
+  const wrong = runHook(JSON.stringify({ folders: { stores: 3 } }));
+  assert.match(wrong, /its stores in stores\/, never in logic\//);
+  assert.ok(wrong.includes('"folders.stores" is not a folder name'), 'names folders.stores');
 });
 
 test('a byte order mark at the start of the file is ignored', () => {

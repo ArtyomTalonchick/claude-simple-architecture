@@ -1,17 +1,18 @@
 ## Levels and placement
 
 **Rule.** The app root and every unit folder are levels, and every level has the same shape: the unit's entry at its
-root, the level's non-UI code in its logic folder (default `logic/`), the shared components folder (default
-`components/`) and the child units next to them. Put code at the lowest level that covers all its users: in the
-logic folder of the one unit that uses it, or of the level that holds all its users. When a user appears outside
-that level, move the code up to the level that covers them all.
+root, the level's non-UI code in its logic folder (default `logic/`) — apart from its stores, which go to its stores
+folder (default `stores/`) — the shared components folder (default `components/`) and the child units next to them.
+Put code at the lowest level that covers all its users: in the logic folder or the stores folder of the one unit
+that uses it, or of the level that holds all its users. When a user appears outside that level, move the code up to
+the level that covers them all.
 
 **Why.** Code that sits next to its only user can be changed without checking anyone else; code that sits higher
 than needed looks shared, so every change to it needs a search for users that do not exist. One shape on every
-level means one set of rules to know: a module reads the same way as the app, at any depth. With all of a level's
-non-UI code in one folder, the View — the file people look for — is not lost among a dozen files of other kinds,
-and code does not move between folders of one level when its users change: only the level it sits on says who may
-use it.
+level means one set of rules to know: a module reads the same way as the app, at any depth. With a level's non-UI
+code in one folder and its stores in another, the View — the file people look for — is not lost among a dozen files
+of other kinds, the data is seen apart from the logic around it, and code does not move between folders of one
+level when its users change: only the level it sits on says who may use it.
 
 **How to check.**
 
@@ -21,41 +22,48 @@ use it.
     gives the unit to its users — for a server's route module, the file that builds its routes. In a project with
     several apps, the root of each app (`apps` in the config) is a root level of its own; no level spans two apps,
     and the shared types package is not a level;
-  - the logic folder and the components folder, and the files in them, belong to the level that holds them; a
-    unit folder inside the components folder (`components/StatusBadge/`) is a level of its own;
+  - the logic folder, the stores folder and the components folder, and the files in them, belong to the level that
+    holds them; a unit folder inside the components folder (`components/StatusBadge/`) is a level of its own;
   - the parent of a level is the nearest level above it; levels with the same parent are siblings; one level's
     subtree is a branch.
 - The shape of a level, every part optional:
   - the entry, named as the folder, at the level root;
-  - the logic folder (default `logic/`) with all the non-UI code of the level: the Presenter, stateful logic,
-    helpers, a types file and a constants file (`types` and `constants`), and a tasks folder (default `tasks/`)
-    with the tasks. It holds both the own unit's code and the code the level's units share. The logic folder is
-    flat apart from the tasks folder. A level with no non-UI code has no logic folder;
+  - the logic folder (default `logic/`) with all the non-UI code of the level but its stores: the Presenter,
+    stateful logic, helpers, a types file and a constants file (`types` and `constants`), and a tasks folder
+    (default `tasks/`) with the tasks. It holds both the own unit's code and the code the level's units share. The
+    logic folder is flat apart from the tasks folder. A level with no such code has no logic folder;
+  - the stores folder (default `stores/`) with the stores of the level
+    ([Stateful logic and helpers](stateful-logic-and-helpers.md)), flat: both the own unit's stores and the ones
+    the level's units share. A level with no store has no stores folder;
   - the components folder (default `components/`) with the child units used by two or more units of this level;
   - child units — unit folders used only by this level, with the same shape inside.
 - Any other file or folder at a level root is a violation: a stateful logic, helpers or tasks folder, a types or
-  constants file, or a file of non-UI code goes to the logic folder; a unit goes next to the entry or to the
-  components folder. Tests and the pure zone are not part of the shape (below).
+  constants file, or a file of non-UI code goes to the logic folder; a store goes to the stores folder; a unit goes
+  next to the entry or to the components folder. Tests and the pure zone are not part of the shape (below).
+- A store in the logic folder or in its tasks folder is a violation, even when one unit uses it: it goes to the
+  stores folder of the same level.
 - The root level is not named after its entry. Its root holds two files of its own unit: the entry — the file that
   builds the app (e.g. `App`, `createApp`) — and the file the app starts from (e.g. `main`, `index`), which only
-  runs the entry. Neither is a violation; the rest of the root level's non-UI code goes to its logic folder.
-- The users of a file in a level's logic folder are counted by where they sit. The level's own unit — its entry
-  and the other files of its logic folder — counts as one user; each child unit, with everything inside it,
-  counts as one more. Code used by the own unit and by one child unit has two users: it stays in the level's logic
-  folder, and the child imports it from there, as code of a level above ([Imports](imports.md)).
+  runs the entry. Neither is a violation; the rest of the root level's non-UI code goes to its logic folder and its
+  stores folder.
+- The users of a file in a level's logic folder or stores folder are counted by where they sit. The level's own
+  unit — its entry and the files of its logic folder and its stores folder — counts as one user; each child unit,
+  with everything inside it, counts as one more. Code used by the own unit and by one child unit has two users: it
+  stays in the level's folder, and the child imports it from there, as code of a level above ([Imports](imports.md)).
 - A file in a level's logic folder whose only user is one child unit is a violation: it belongs in that child's
-  logic folder. A unit in the components folder with only one user is a violation: it belongs in that user's
-  folder, as its child unit.
+  logic folder. A store in a level's stores folder whose only user is one child unit is a violation: it belongs in
+  that child's stores folder. A unit in the components folder with only one user is a violation: it belongs in that
+  user's folder, as its child unit.
 - A task whose only user is another task is a part of it: it lives in that task's file, or in the task's folder
   next to its entry ([Tasks](tasks.md)) — not as a task of its own in the tasks folder.
 - A child unit or a file used by two or more siblings, or from outside its parent level, is a violation: it
-  belongs at the lowest level that covers all its users — a unit in that level's components folder, other code in
-  its logic folder.
+  belongs at the lowest level that covers all its users — a unit in that level's components folder, a store in its
+  stores folder, other code in its logic folder.
 - A type or a constant used by one file lives in that file. One used by two or more files lives in the types file
   or the constants file of the logic folder of the lowest level that covers those files — not exported from one of
   its users, which would make one user look like its owner. A type or a constant in a types file or a constants
   file with only one user file is a violation: it belongs in that file.
-- An empty logic, tasks or components folder is a violation: a folder exists only when it has content.
+- An empty logic, tasks, stores or components folder is a violation: a folder exists only when it has content.
 - A child unit does not need the parent's name as a prefix.
 - The exception is the pure zone ([Pure zone](pure-zone.md)): it sits at the root level next to its shape, and pure
   code stays there whatever the number of its users.
@@ -77,12 +85,18 @@ OrdersPage/
                         OrderFilter — used by the presenter and orderFilters
     tasks/
       exportOrders      a task only the presenter calls
+  stores/
+    ordersStore         read by orderFilters and by exportOrders — one user, the own unit, yet a store: not in
+                        logic/
   components/
     StatusBadge/        used by OrderTable and OrderFilters
   OrderTable/           used only by OrdersPage
     OrderTable
     logic/
       presenter
+      selectedRows      stateful logic: subscribes to stores/selectionStore
+    stores/
+      selectionStore    used only inside OrderTable
     tests/              tests of OrderTable and its presenter — not a level
   OrderFilters/         used only by OrdersPage
     OrderFilters        no logic, so no logic/
@@ -102,6 +116,8 @@ src/
       types             used by orders and by the child units
       tasks/
         loadOrder       used by orders and by items
+    stores/
+      ordersCache       orders kept in memory, read and filled by loadOrder
     items/              the routes of /orders/:id/items — a child unit
       items             the entry
     payments/           the routes of /orders/:id/payments — a child unit
@@ -119,6 +135,9 @@ OrdersPage/
     orderFilters        a stateful logic folder at the level root — it belongs in logic/
   logic/
     formatTotal         used only by OrderTable — it belongs in OrderTable/logic/
+    ordersStore         a store in logic/ — it belongs in OrdersPage/stores/
+  stores/
+    selectionStore      used only by OrderTable — it belongs in OrderTable/stores/
   components/           empty
   OrderTable/
     OrderTable

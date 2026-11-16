@@ -82,8 +82,10 @@ this is the full file with the defaults:
     "components": "components",
     // The tasks folder inside the logic folder.
     "tasks": "tasks",
-    // All of a level's non-UI code — its own unit's and what its units share — next to its entry.
-    "logic": "logic"
+    // A level's non-UI code but its stores — its own unit's and what its units share — next to its entry.
+    "logic": "logic",
+    // A level's stores — data shared by the code that reads it — next to its entry.
+    "stores": "stores"
   },
   // Files longer than this are a violation; tests and generated files are not checked.
   "maxFileLines": 120
