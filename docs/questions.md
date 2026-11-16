@@ -325,7 +325,8 @@ types file only because that file already had other users, which judged the file
 
 **Status.** answered
 
-**Answer.** In a types file in the unit's logic folder (`logic/types`), and a constant in `logic/constants`. The
-logic folder holds everything of the unit's own (Q19), so its own types belong there too. The level's types file
-was rejected because it is for two or more units, and the file of the main user because "main" cannot be checked
-and the export makes one user look like the owner. Written into "Levels and placement".
+**Answer.** In the types file or the constants file of the unit's level, as before: those files are for types and
+constants used by two or more files of the level, of one unit or of several. A types file in the logic folder was
+tried first and dropped: the logic folder holds only the unit's own code, and what is reused stays where it was.
+The file of the main user was rejected because "main" cannot be checked and the export makes one user look like the
+owner. Written into "Levels and placement".

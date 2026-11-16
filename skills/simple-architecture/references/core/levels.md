@@ -28,25 +28,26 @@ logic in one folder, the View — the file people look for — is not lost among
   - shared folders, for code used by two or more units of this level: the components folder (default
     `components/`), the stateful logic folder (default `hooks/`), the helpers folder (default `helpers/`), the
     tasks folder (default `tasks/`);
-  - a types file and a constants file (`types` and `constants`) for types and constants shared by two or
-    more units of this level.
+  - a types file and a constants file (`types` and `constants`) for types and constants used by two or more
+    files of this level — of its own unit, or of two or more of its units.
 - The shared folders, the types file and the constants file stay at the level root, next to the child units, never
-  in the logic folder: they belong to the level, not to its own unit. A file only the own unit uses, at the level
-  root, is a violation: it belongs in the logic folder.
+  in the logic folder: the logic folder holds only the unit's own code. Any other file only the own unit uses, at
+  the level root, is a violation: it belongs in the logic folder.
 - The level's own unit counts as one of its units, next to its child units. Code used by the own unit and by one
   child unit has two users: it goes to a shared folder, the types file or the constants file of the level, and the
   child imports it from there, as code of a level above. Inside the child it would be a violation: the own unit
   would import from inside a child.
-- A file in a shared folder, a types file or a constants file of a level with only one user is a violation: it
-  belongs in that user's logic folder. When that one user is itself a file in a shared folder, the file is a part
+- A file in a shared folder of a level with only one user is a violation: it belongs in that user's logic folder.
+  A type or a constant in the types file or the constants file with only one user file is a violation: it belongs
+  in that file. When that one user is itself a file in a shared folder, the file is a part
   of it: a task becomes a folder with its parts ([Tasks](tasks.md)); stateful logic or a helper sits next to its
   user in the same shared folder.
 - A child unit or a file used by two or more siblings, or from outside its parent level, is a violation: it
   belongs in a shared folder of the lowest level that covers all its users.
 - A type or a constant used by one file lives in that file. One used by two or more files of one unit, and by no
-  other unit, lives in a types file or a constants file in that unit's logic folder (`logic/types`,
-  `logic/constants`) — not in the level's types file, which is for two or more units, and not exported from one of
-  its users, which would make one user look like its owner. The View imports it from there like its Presenter.
+  other unit, lives in the types file or the constants file of that unit's level — not in the logic folder, which
+  holds only the unit's own code, and not exported from one of its users, which would make one user look like its
+  owner.
 - An empty shared folder is a violation: a shared folder exists only when it has content.
 - A child unit does not need the parent's name as a prefix.
 - The exception is the pure zone ([Pure zone](pure-zone.md)): pure code stays there whatever the number of its
@@ -64,11 +65,11 @@ OrdersPage/
   logic/                the own unit's logic
     presenter           Presenter
     orderFilters        used only by the presenter
-    types               OrderFilter — used by the presenter and orderFilters, by no other unit
     tasks/
       exportOrders      a task only the presenter calls
   constants             PAGE_SIZE — used by the presenter and by OrderTable
   types                 StatusCount — used by orderFilters (the own unit) and by OrderFilters
+                        OrderFilter — used by the presenter and orderFilters, by no other unit
   components/
     StatusBadge/        used by OrderTable and OrderFilters
   OrderTable/           used only by OrdersPage
