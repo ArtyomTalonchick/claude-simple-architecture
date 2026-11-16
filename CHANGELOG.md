@@ -12,12 +12,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - In React, a `use…` function that calls no hook moves to where its kind belongs: a task if it reaches a store or
   the server, a helper otherwise — not always to helpers.
 - A config whose `apps` has no usable app — empty, not an object, or every app without `root` — is one app with
-  the top-level `root` and `stack`: the skill and the reviewer now say so, as the session-start hook already did.
+  the top-level `root` and `stack`: the skill, which the reviewer reads, now says so, as the session-start hook
+  already did.
   The hook's config problems line now also fits a skipped app.
 - The architecture-reviewer counts the lines of every added or changed file as a whole against `maxFileLines`,
   so a small edit to a file already over the limit is no longer missed.
-- The Good example in "Imports" no longer has a View call a task: every caller of a task is a Presenter that
-  imports it.
+- The Good example in "Imports" no longer has a View call a task: every caller of a task is a Presenter or another
+  task that imports it. Its stateful logic now imports the store it uses, and its shared component has two users.
+- "One thing per file" now exempts a file written by a tool from the file limit in its rule as well, not only in
+  How to check.
 
 ## [0.2.0] — 2026-11-16
 

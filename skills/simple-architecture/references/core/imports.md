@@ -61,8 +61,10 @@ OrdersPage/
     presenter           imports hooks/orderFilters, tasks/cancelOrder, helpers/formatPrice, the row type from
                         OrderTable
   hooks/
-    orderFilters        imports helpers/formatPrice, lib/helpers/debounce
+    orderFilters        imports hooks/ordersStore, helpers/formatPrice, lib/helpers/debounce
     ordersStore         a store, used by orderFilters and cancelOrder
+  components/
+    StatusBadge         used by OrderTable and OrderFilters
   tasks/
     cancelOrder         imports hooks/ordersStore (a store), tasks/notifyUser — called by the presenter and
                         by OrderTable/logic/presenter
@@ -74,7 +76,7 @@ OrdersPage/
     logic/
       presenter         imports OrdersPage/hooks/orderFilters, OrdersPage/tasks/cancelOrder
   OrderFilters/
-    OrderFilters        imports logic/presenter
+    OrderFilters        imports logic/presenter, OrdersPage/components/StatusBadge
     logic/
       presenter         imports OrdersPage/hooks/orderFilters, OrdersPage/tasks/notifyUser
 ```
