@@ -11,9 +11,9 @@ limits on code that does not need them, and a helper that calls a hook breaks at
 
 **How to check.**
 
-- A function named `use…` that calls no hook and is not created by a hook library is a violation: rename it and
-  move it where its kind belongs — to a tasks folder if it reaches a store or the server
-  ([Tasks in React](tasks.md)), to a helpers folder otherwise.
+- A function named `use…` that calls no hook and is not created by a hook library is a violation: rename it. If
+  it reaches a store or the server, it is a task and moves to the tasks folder, `logic/tasks/`
+  ([Tasks in React](tasks.md)); otherwise it is a helper and stays in `logic/`.
 - A function whose name does not start with `use` and that calls a hook is a violation.
 - A function that uses the DOM outside React — `document.activeElement`, `focus()`, `setSelectionRange`,
   `document.startViewTransition` — and calls no hook is a helper, not `use…`. One that keeps a ref, a listener or
@@ -26,19 +26,19 @@ limits on code that does not need them, and a helper that calls a hook breaks at
 **Good.**
 
 ```ts
-// hooks/useOrderFilters.ts
+// logic/useOrderFilters.ts
 export const useOrderFilters = () => {
   const [status, setStatus] = useState<OrderStatus>('new');
   return { status, setStatus };
 };
 
-// hooks/useCurrentUser.ts
+// logic/useCurrentUser.ts
 export const useCurrentUser = () => useUserStore((s) => s.user);
 
-// helpers/formatPrice.ts
+// logic/formatPrice.ts
 export const formatPrice = (sum: number) => sum.toFixed(2);
 
-// helpers/redrawCaret.ts — acts on the page, keeps nothing between calls
+// logic/redrawCaret.ts — acts on the page, keeps nothing between calls
 export const redrawCaret = () => {
   const field = document.activeElement;
   if (field instanceof HTMLInputElement) field.setSelectionRange(field.selectionStart, field.selectionEnd);
@@ -48,19 +48,19 @@ export const redrawCaret = () => {
 **Bad.**
 
 ```ts
-// hooks/useOrderFilters.ts
+// logic/useOrderFilters.ts
 export const useOrderFilters = () => {
   const [status, setStatus] = useState<OrderStatus>('new');
   return { status, setStatus };
 };
 
-// helpers/getCurrentUser.ts — calls a hook
+// logic/getCurrentUser.ts — calls a hook
 export const getCurrentUser = () => useUserStore((s) => s.user);
 
-// hooks/useFormatPrice.ts — calls no hook: a helper, formatPrice
+// logic/useFormatPrice.ts — calls no hook: a helper, formatPrice
 export const useFormatPrice = (sum: number) => sum.toFixed(2);
 
-// hooks/useCancelOrder.ts — calls no hook and reaches the server: a task, cancelOrder
+// logic/useCancelOrder.ts — calls no hook and reaches the server: a task, logic/tasks/cancelOrder
 export const useCancelOrder = async (id: string) => {
   await api.cancelOrder(id);
 };

@@ -77,12 +77,12 @@ this is the full file with the defaults:
     "lib": "lib",
     // The ui-kit, relative to "root". Set "ui-kit" to keep it at the root level.
     "uiKit": "lib/components",
-    // Shared folders: the same names on every level.
+    // The same names on every level.
+    // Child units that two or more units of a level share.
     "components": "components",
-    "hooks": "hooks",
-    "helpers": "helpers",
+    // The tasks folder inside the logic folder.
     "tasks": "tasks",
-    // A unit's own logic, next to its entry.
+    // All of a level's non-UI code — its own unit's and what its units share — next to its entry.
     "logic": "logic"
   },
   // Files longer than this are a violation; tests and generated files are not checked.

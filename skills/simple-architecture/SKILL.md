@@ -50,8 +50,6 @@ a missing key takes its default. The full file with the defaults:
     "lib": "lib",
     "uiKit": "lib/components",
     "components": "components",
-    "hooks": "hooks",
-    "helpers": "helpers",
     "tasks": "tasks",
     "logic": "logic"
   },
@@ -65,11 +63,11 @@ a missing key takes its default. The full file with the defaults:
 - **`root`** — the folder of the app's root level, relative to the project root.
 - **`folders.lib`** — the pure zone, relative to `root`.
 - **`folders.uiKit`** — the ui-kit, relative to `root`. Wherever it lives, it belongs to the pure zone.
-- **`folders.components`**, **`folders.hooks`**, **`folders.helpers`**, **`folders.tasks`** — the names of the
-  shared folders: for components, for stateful logic, for helpers and for tasks. The same names are used on every
-  level; the tasks name is also used for a unit's own tasks inside its logic folder.
-- **`folders.logic`** — the name of the folder next to a unit's View that holds the unit's own logic. The same
-  name is used in every unit.
+- **`folders.logic`** — the name of the folder next to a level's entry that holds all the level's non-UI code: its
+  own unit's and what its units share — stateful logic, helpers, tasks, types and constants.
+- **`folders.tasks`** — the name of the tasks folder inside the logic folder.
+- **`folders.components`** — the name of the folder for the child units that two or more units of a level share.
+- The same names are used on every level.
 - **`maxFileLines`** — a positive whole number: the size above which a file is a violation. Test files and files
   written by a tool are not checked.
 
@@ -95,8 +93,8 @@ A repository with several apps — a client, a server and a package of types the
 - **`shared`** — the shared types package, relative to the project root: types only, imported by every app,
   importing no app ([Imports](references/core/imports.md)). Optional, with or without `apps`.
 
-The rules name a folder by its role and its default, for example "the stateful logic folder (default
-`hooks/`)"; in a project, use the configured name.
+The rules name a folder by its role and its default, for example "the logic folder (default `logic/`)"; in a
+project, use the configured name.
 
 A value of the wrong type is ignored, its default is used, and the user is told; so is an unknown key. A file
 that is not valid JSON, or whose top level is not an object, means the config cannot be read: tell the user, and

@@ -47,8 +47,10 @@ test('empty config: every default', () => {
   assert.match(out, /This project follows Simple Architecture/);
   assert.match(out, /Stack: none - core rules only\./);
   assert.match(out, /Root level: src\/\. Pure zone: src\/lib\/\. UI kit: src\/lib\/components\/\./);
-  assert.match(out, /Shared folders on every level: components\/, hooks\/, helpers\/, tasks\/\./);
-  assert.match(out, /A unit's own logic: logic\/ next to its entry\./);
+  assert.match(
+    out,
+    /On every level: all its non-UI code in logic\/ next to its entry, tasks in logic\/tasks\/; shared child units in components\/\./
+  );
   assert.match(out, /File size limit: 120 lines; a longer file is a violation \(test files and generated files are not checked\)\./);
   assert.doesNotMatch(out, /problems|Unknown/);
 });
@@ -58,14 +60,16 @@ test('full config: its values are used', () => {
     JSON.stringify({
       stack: ['React', 'zustand', 'react'],
       root: 'app',
-      folders: { lib: 'shared', uiKit: 'ui-kit', components: 'parts', hooks: 'use', helpers: 'utils', tasks: 'actions', logic: 'own' },
+      folders: { lib: 'shared', uiKit: 'ui-kit', components: 'parts', tasks: 'actions', logic: 'own' },
       maxFileLines: 200,
     })
   );
   assert.match(out, /Stack: react, zustand\./);
   assert.match(out, /Root level: app\/\. Pure zone: app\/shared\/\. UI kit: app\/ui-kit\/\./);
-  assert.match(out, /Shared folders on every level: parts\/, use\/, utils\/, actions\/\./);
-  assert.match(out, /A unit's own logic: own\/ next to its entry\./);
+  assert.match(
+    out,
+    /On every level: all its non-UI code in own\/ next to its entry, tasks in own\/actions\/; shared child units in parts\/\./
+  );
   assert.match(out, /File size limit: 200 lines; a longer file is a violation \(/);
   assert.doesNotMatch(out, /problems|Unknown/);
 });
@@ -89,22 +93,31 @@ test('a top level that is not an object: the config cannot be read', () => {
 
 test('wrong types and unknown keys: defaults are used and each problem is named', () => {
   const out = runHook(
-    JSON.stringify({ stack: 'react', root: 1, folders: { store: 'x', hooks: 5 }, maxFileLines: 0, extra: true })
+    JSON.stringify({ stack: 'react', root: 1, folders: { store: 'x', toString: 'y', tasks: 5 }, maxFileLines: 0, extra: true })
   );
   assert.match(out, /Stack: none - core rules only\./);
   assert.match(out, /Root level: src\//);
-  assert.match(out, /hooks\/, helpers\//);
+  assert.match(out, /tasks in logic\/tasks\//);
   assert.match(out, /File size limit: 120 lines; a longer file is a violation \(/);
   for (const problem of [
     '"stack" is not a list of names',
     '"root" is not a folder name',
     '"folders.store" is not a known key',
-    '"folders.hooks" is not a folder name',
+    '"folders.toString" is not a known key',
+    '"folders.tasks" is not a folder name',
     '"maxFileLines" is not a positive whole number',
     '"extra" is not a known key',
   ]) {
     assert.ok(out.includes(problem), `names the problem: ${problem}`);
   }
+});
+
+test('the removed keys folders.hooks and folders.helpers get the unknown-key notice', () => {
+  const out = runHook(JSON.stringify({ folders: { hooks: 'use', helpers: 'utils', logic: 'own' } }));
+  assert.ok(out.includes('"folders.hooks" is not a known key'), 'names folders.hooks');
+  assert.ok(out.includes('"folders.helpers" is not a known key'), 'names folders.helpers');
+  assert.match(out, /all its non-UI code in own\/ next to its entry/);
+  assert.doesNotMatch(out, /use\/|utils\//);
 });
 
 test('a byte order mark at the start of the file is ignored', () => {

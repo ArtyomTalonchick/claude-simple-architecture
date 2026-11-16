@@ -1,11 +1,12 @@
 ## Pure zone
 
 **Rule.** Keep code that knows nothing of the app in the pure zone at the root level: the lib folder (default
-`lib/`) with its own stateful logic and helpers folders, and the ui-kit (default `lib/components/`) as its
-components folder. The design-system theme — tokens and the styles of ui-kit components — is pure too and lives
-in the lib folder. Pure code depends on nothing from the app — no domain types, store, data access, app
-components or app styles, by import or by key. Code that knows the app goes to the shared folders of the root
-level. Pure code stays in the pure zone whatever the number of its users.
+`lib/`) with folders of pure code named by the project (such as `lib/hooks/` and `lib/helpers/`), and the ui-kit
+(default `lib/components/`) as its components folder. The design-system theme — tokens and the styles of ui-kit
+components — is pure too and lives in the lib folder. Pure code depends on nothing from the app — no domain types,
+store, data access, app components or app styles, by import or by key. Code that knows the app goes to the logic
+folder or the components folder of the root level. Pure code stays in the pure zone whatever the number of its
+users.
 
 **Why.** Pure code is the base the rest of the app stands on. As long as it knows nothing of the app, it changes
 only for its own reasons, can be reused anywhere in the app, and can move to another project as it is. Once it
@@ -17,8 +18,8 @@ a base, not shared code, so it does not move down to its one user the way shared
 - Find the pure zone from the config: the lib folder and the ui-kit folder under the root level. The ui-kit is
   the pure zone's components folder: when it is set outside the lib folder, the lib folder has no components
   folder of its own.
-- The lib folder may hold other folders of pure code besides the stateful logic, helpers and components folders,
-  named by the project — the theme (e.g. `lib/theme/`), icons, styles. They follow this rule like the rest.
+- The lib folder holds folders of pure code named by the project — stateful logic, helpers, the theme (e.g.
+  `lib/theme/`), icons, styles — and the ui-kit when it is set inside it. They all follow this rule.
 - A file in the pure zone that imports from the app — any path under the root level outside the pure zone — is a
   violation. Imports from outside the project (packages), from elsewhere in the pure zone, and of files outside
   the root level that are not app code (design assets such as an icon sprite) are allowed.
@@ -49,10 +50,10 @@ src/
       tokens              colors, spacing
       searchField         the style of SearchField
   App                     mounts the theme from lib/theme/
+  logic/
+    currentUser           reads the store — app code, so outside lib/
   components/
     UserAvatar/           its presenter reads the current user from the store — app code, so outside lib/
-  hooks/
-    currentUser           reads the store
 ```
 
 **Bad.**

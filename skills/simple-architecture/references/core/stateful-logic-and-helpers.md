@@ -3,32 +3,36 @@
 **Rule.** Split non-UI logic into three kinds: stateful logic, tasks and helpers. Stateful logic uses state,
 lifecycle or a subscription to a store, or calls other stateful logic; a task carries out a user action, or a step
 of one, and reaches stores, the server or other tasks ([Tasks](tasks.md)); a helper is a plain function that does
-none of this. Stateful logic goes to the stateful logic folder (default `hooks/`), tasks to the tasks folder
-(default `tasks/`) and helpers to the helpers folder (default `helpers/`). A helper may be called from a Presenter,
-stateful logic, a task or another helper, except that a task never calls one that acts on the screen; a task from a
-Presenter, stateful logic or another task; stateful logic only from a Presenter or other stateful logic. One piece
-of stateful logic has one concern; the code that uses them joins them.
+none of this. Stateful logic and helpers go to the logic folder (default `logic/`), tasks to the tasks folder
+inside it (default `logic/tasks/`), on the level set by [Levels and placement](levels.md). A helper may be called
+from a Presenter, stateful logic, a task or another helper, except that a task never calls one that acts on the
+screen; a task from a Presenter, stateful logic or another task; stateful logic only from a Presenter or other
+stateful logic. One piece of stateful logic has one concern; the code that uses them joins them.
 
 **Why.** A helper keeps nothing between calls and needs nothing set up around it, so it can be moved, reused and
 tested anywhere; most helpers take input and return output, and some act on the screen at the moment they are
 called. Stateful logic is tied to the life of a UI unit and works only inside it. When the two are mixed, a plain
-function picks up a hidden dependency on that life cycle, and a reader cannot tell from where a function lies what
-it needs to run. Two concerns in one piece of stateful logic change for different reasons, so each change means
-reading both, and neither can be reused without the other.
+function picks up a hidden dependency on that life cycle, and a reader cannot tell what a function needs to run
+without reading all of it. Two concerns in one piece of stateful logic change for different reasons, so each
+change means reading both, and neither can be reused without the other.
 
 **How to check.**
 
 - A store is data that lives outside any one UI unit and is shared by the units that read it. A store, and the
   code that subscribes to it to show its data, are stateful logic, placed by [Levels and placement](levels.md):
-  in the logic folder of its one unit, or in the stateful logic folder of the lowest level that covers all its
-  users.
+  in the logic folder of the lowest level that covers all its users.
 - The store test: a plain function that reads or changes a store once, at the time it is called, is a task, not a
   misplaced helper — a step of an action, named with a verb (`readCart`, `clearSession`). Code that follows a
   store's changes is stateful logic.
-- A file in a helpers folder that uses state, lifecycle or a store, calls the server, or calls stateful logic or a
-  task, is a violation: it is stateful logic or a task.
-- A file in a stateful logic folder that uses no state, lifecycle or subscription and calls no stateful logic is a
-  violation: it is a task or a helper.
+- Stateful logic and helpers share the logic folder, so what a function does decides its kind, not where it lies.
+  A function used as a helper — called from a task or another helper — that uses state, lifecycle or a store,
+  calls the server, or calls stateful logic or a task, is a violation: it is stateful logic or a task.
+- A function marked as stateful logic by the stack's convention that uses no state, lifecycle or subscription and
+  calls no stateful logic is a violation: it is a task or a helper.
+- A function in the logic folder, outside its tasks folder, that uses no state, lifecycle or subscription but
+  reaches the server or reads or changes a store once is a violation: it is a task and goes to the tasks folder.
+  A file in the tasks folder that uses state, lifecycle or a subscription, or calls stateful logic, is a
+  violation: it is stateful logic and goes to the logic folder.
 - Stateful logic called from a helper or a task is a violation; a task reaching a store through the store's own
   API ([Tasks](tasks.md)) is not a call of stateful logic. Stateful logic called from a View is a violation
   of [View and Presenter](view-presenter.md).
@@ -36,8 +40,6 @@ reading both, and neither can be reused without the other.
   screen transition — and keeps no state of its own between calls is a helper, even though it returns nothing. It
   is part of the UI: a task that calls it is a violation of [Tasks](tasks.md). One that keeps state between calls
   or follows the screen's changes is stateful logic.
-- The same split holds for stateful logic or a helper in the logic folder of its only unit, outside a shared folder:
-  what it is decides what it may call and who may call it.
 - One piece of stateful logic that holds two concerns is a violation: its state and results fall into two groups,
   and one group needs from the other at most a plain value it could take as an argument — for example, the value
   of a field and the request made with that value. Split it into two, pass that value as an argument, and join
@@ -53,15 +55,14 @@ reading both, and neither can be reused without the other.
 
 ```
 OrdersPage/
-  hooks/
-    orderFilters        keeps the filter state
-    currentUser         subscribes to the store
-    statusFilter        options computed from the orders, the selected status, the filtered orders — one
-                        concern: the options have no state of their own
-  helpers/
-    formatPrice         number -> text, no state
-  tasks/
-    cancelOrder         server call, then the orders store: remove the order — read once, no subscription
+  logic/
+    orderFilters        stateful logic: keeps the filter state
+    currentUser         stateful logic: subscribes to the store
+    statusFilter        stateful logic: options computed from the orders, the selected status, the filtered
+                        orders — one concern: the options have no state of their own
+    formatPrice         a helper: number -> text, no state
+    tasks/
+      cancelOrder       server call, then the orders store: remove the order — read once, no subscription
   OrderSearch/
     OrderSearch         View
     logic/
@@ -74,12 +75,12 @@ OrdersPage/
 
 ```
 OrdersPage/
-  hooks/
+  logic/
     orderFilters        keeps the filter state
-    formatPrice         number -> text, no state — a helper
-  helpers/
-    currentUser         subscribes to the store — stateful logic
-    cancelOrder         server call, then a store change — a task
+    formatPrice         called by a task as a helper, but follows the currency in the store — stateful logic
+    cancelOrder         server call, then a store change — a task outside tasks/
+    tasks/
+      currentUser       subscribes to the store — stateful logic, not a task
   OrderSearch/
     OrderSearch         View
     logic/

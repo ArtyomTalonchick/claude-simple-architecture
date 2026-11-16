@@ -13,8 +13,6 @@ const DEFAULT_FOLDERS = {
   lib: 'lib',
   uiKit: 'lib/components',
   components: 'components',
-  hooks: 'hooks',
-  helpers: 'helpers',
   tasks: 'tasks',
   logic: 'logic',
 };
@@ -144,7 +142,7 @@ function resolveConfig(raw) {
   if ('folders' in raw) {
     if (raw.folders && typeof raw.folders === 'object' && !Array.isArray(raw.folders)) {
       for (const [key, value] of Object.entries(raw.folders)) {
-        if (!(key in DEFAULT_FOLDERS)) problems.push(`"folders.${key}" is not a known key`);
+        if (!Object.hasOwn(DEFAULT_FOLDERS, key)) problems.push(`"folders.${key}" is not a known key`);
         else if (isText(value)) config.folders[key] = value.trim();
         else problems.push(`"folders.${key}" is not a folder name`);
       }
@@ -162,7 +160,7 @@ function resolveConfig(raw) {
     else problems.push('"shared" is not a folder name');
   }
   for (const key of Object.keys(raw)) {
-    if (!(key in DEFAULTS)) problems.push(`"${key}" is not a known key`);
+    if (!Object.hasOwn(DEFAULTS, key)) problems.push(`"${key}" is not a known key`);
   }
   return { config, problems };
 }
@@ -219,7 +217,7 @@ function main() {
     lines.push(`Shared types package: ${config.shared}/ - types only; every app may import it, and it imports no app.`);
   }
   lines.push(
-    `Shared folders on every level: ${f.components}/, ${f.hooks}/, ${f.helpers}/, ${f.tasks}/. A unit's own logic: ${f.logic}/ next to its entry.`,
+    `On every level: all its non-UI code in ${f.logic}/ next to its entry, tasks in ${f.logic}/${f.tasks}/; shared child units in ${f.components}/.`,
     `File size limit: ${config.maxFileLines} lines; a longer file is a violation (test files and generated files are not checked).`
   );
   if (unknown.length) {

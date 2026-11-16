@@ -13,6 +13,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   what such an entry may import.
 - The root level holds the file that builds the app and the file the app starts from at its root; neither is a
   violation.
+- **Breaking:** a level keeps all its non-UI code in its `logic/` folder — its own unit's and the code its units
+  share: stateful logic, helpers, tasks (in `logic/tasks/`), types and constants. The shared `hooks/`, `helpers/`
+  and `tasks/` folders of a level and the `types` and `constants` files at its root are gone; a level root holds
+  only the entry, `logic/`, `components/` and the child units. Code lives in the `logic/` of the lowest level that
+  covers all its users, and a file there used by only one child unit belongs in that child's `logic/`. A unit may
+  import from the `logic/` of its own level and of any level above, except that level's Presenter. The config keys
+  `folders.hooks` and `folders.helpers` are removed: drop them from your config, or the session-start hook names
+  them as unknown keys. `folders.tasks` now names the tasks folder inside `logic/`.
 
 ## [0.2.1] — 2026-11-16
 

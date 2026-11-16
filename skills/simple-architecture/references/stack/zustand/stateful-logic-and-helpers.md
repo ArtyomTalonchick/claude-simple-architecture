@@ -19,9 +19,8 @@ change it, not a subscription, and `getState()` / `setState()` give exactly that
 - In a task, `useOrdersStore.getState()` and `useOrdersStore.setState()`, or an action read through `getState()`,
   are allowed. No middleware such as thunks is needed for that.
 - A store file — `create(...)` and its actions — is stateful logic and is placed by
-  [Levels and placement](../../core/levels.md): in the `logic/` folder of its one unit, or in the stateful logic
-  folder of the lowest level that covers all its users. Its `use…` name is right even though its own code calls no
-  hook.
+  [Levels and placement](../../core/levels.md): in the `logic/` folder of the lowest level that covers all its
+  users. Its `use…` name is right even though its own code calls no hook.
 
 **Good.**
 
@@ -32,10 +31,10 @@ export const OrderList = (props: OrderListProps) => {
   return orders.map((o) => <OrderRow key={o.id} row={o} />);
 };
 
-// hooks/useOrderCount.ts — stateful logic subscribes to the store
+// logic/useOrderCount.ts — stateful logic subscribes to the store
 export const useOrderCount = () => useOrdersStore((s) => s.orders.length);
 
-// tasks/cancelOrder.ts — a task changes the store once
+// logic/tasks/cancelOrder.ts — a task changes the store once
 export const cancelOrder = async (id: string) => {
   await api.cancelOrder(id);
   useOrdersStore.setState((s) => ({ orders: s.orders.filter((o) => o.id !== id) }));
@@ -51,7 +50,7 @@ export const OrderList = () => {
   return orders.map((o) => <OrderRow key={o.id} row={o} />);
 };
 
-// helpers/orderCount.ts — a helper reads the store
+// logic/orderCount.ts — a helper reads the store
 export const orderCount = () => useOrdersStore.getState().orders.length;
 ```
 

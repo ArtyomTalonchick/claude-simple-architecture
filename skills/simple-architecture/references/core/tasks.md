@@ -29,7 +29,7 @@ the UI's part: showing the call and going somewhere after it.
 - Steps of one user action — a server call, store changes, other actions — written in a Presenter or in stateful
   logic are a violation: they are a task. One call of a store's action is not.
 - Placement follows [Levels and placement](levels.md): in the tasks folder (default `tasks/`) inside the logic
-  folder of its one unit, or in the tasks folder of the lowest level that covers all its users. A task is one file,
+  folder (default `logic/`) of the lowest level that covers all its users. A task is one file,
   or a folder named as the task when it needs several files to stay within the file limit: the file of the same
   name is its entry, and the rest are parts only it uses — a smaller task or a helper only it calls. Others import
   only the entry.
@@ -39,12 +39,13 @@ the UI's part: showing the call and going somewhere after it.
 **Good.**
 
 ```
-tasks/
-  logout              await unsubscribePush(); await api.logout(); session store: clear
+logic/
+  tasks/
+    logout            await unsubscribePush(); await api.logout(); session store: clear
                       — called by LogoutButton and SessionExpired
-  unsubscribePush     await api.unsubscribe(push token from the settings store) — called by logout and
+    unsubscribePush   await api.unsubscribe(push token from the settings store) — called by logout and
                       deleteAccount
-  deleteAccount
+    deleteAccount
 SessionExpired/
 LogoutButton/
   LogoutButton        View
@@ -60,9 +61,10 @@ LogoutButton/
   logic/
     presenter         onClick: await api.unsubscribe(...); await api.logout(); session store: clear;
                       go to the start page — the action lives in the Presenter
-tasks/
-  logout              ...; navigate to the start page — navigation in a task
-  publishPost         try await api.publish(post) catch e: return { error: e } — the error as a value
+logic/
+  tasks/
+    logout            ...; navigate to the start page — navigation in a task
+    publishPost       try await api.publish(post) catch e: return { error: e } — the error as a value
 ```
 
 **Stack notes.**

@@ -24,7 +24,7 @@ show the call its own way.
 **Good.**
 
 ```ts
-// tasks/logout.ts
+// logic/tasks/logout.ts
 export const logout = async () => {
   await unsubscribePush();
   await api.logout();
@@ -54,7 +54,7 @@ export const usePresenter = () => {
 **Bad.**
 
 ```ts
-// tasks/logout.ts — a hook, navigation and the error as a value
+// logic/tasks/logout.ts — a hook, navigation and the error as a value
 export const useLogout = () => {
   const navigate = useNavigate();
   return async () => {
