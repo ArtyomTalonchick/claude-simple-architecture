@@ -16,6 +16,7 @@ const DEFAULT_FOLDERS = {
   hooks: 'hooks',
   helpers: 'helpers',
   tasks: 'tasks',
+  logic: 'logic',
 };
 const DEFAULTS = { stack: [], root: 'src', folders: DEFAULT_FOLDERS, maxFileLines: 120 };
 
@@ -160,7 +161,7 @@ function main() {
     `${versionLine()} Its rules: ${rulesFolder()}. Pass this folder to the architecture-reviewer agent, so it checks against the same rules as the skill.`,
     `Stack: ${used.length ? used.join(', ') : 'none - core rules only'}.`,
     `Root level: ${config.root}/. Pure zone: ${config.root}/${f.lib}/. UI kit: ${config.root}/${f.uiKit}/.`,
-    `Shared folders on every level: ${f.components}/, ${f.hooks}/, ${f.helpers}/, ${f.tasks}/.`,
+    `Shared folders on every level: ${f.components}/, ${f.hooks}/, ${f.helpers}/, ${f.tasks}/. A unit's own logic: ${f.logic}/ next to its View.`,
     `File size limit: ${config.maxFileLines} lines; a longer file is a violation.`,
   ];
   if (unknown.length) {

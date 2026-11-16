@@ -7,8 +7,8 @@ Each core rule gets its own file here, `<rule>.md`, written by the template in `
 plugin's repository.
 
 - [View and Presenter](view-presenter.md) — markup in the View, all logic in the Presenter.
-- [Levels and placement](levels.md) — every code folder has the same shape; code lives at the lowest level that
-  covers all its users.
+- [Levels and placement](levels.md) — every code folder has the same shape — the View, its own logic in `logic/`,
+  shared folders and child units; code lives at the lowest level that covers all its users.
 - [Stateful logic and helpers](stateful-logic-and-helpers.md) — three kinds of non-UI code: stateful logic uses
   state, lifecycle or a store subscription, a task carries out a user action, a helper is a plain function; one
   concern per piece of stateful logic.

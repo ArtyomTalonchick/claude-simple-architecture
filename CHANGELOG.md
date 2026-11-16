@@ -12,6 +12,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   failure. The Presenter awaits it, keeps loading and error, and navigates. Shared tasks go to the tasks folder,
   configured by the new key `folders.tasks` (default `tasks`). In Zustand, a task may use `getState()` and
   `setState()`; a View and a helper still may not.
+- A unit's own logic — the Presenter, its stateful logic, helpers and `tasks/` — lives in a `logic/` folder next to
+  its View, flat apart from `tasks/`; the level's shared folders stay at the level root. The folder name is set by
+  the new key `folders.logic` (default `logic`). In React, `usePresenter.ts` moves to `logic/`.
 
 ### Changed
 

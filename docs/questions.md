@@ -273,3 +273,24 @@ exists. It is part of the UI, so a task never calls it; one that keeps state bet
 changes is stateful logic. A kind of its own was rejected: it would differ from a helper only in who may call it.
 Written into "Stateful logic and helpers" (the «Why» included), "Tasks" and the React rule "Stateful logic in React
 is a hook".
+
+## Q19. Where does a unit's own logic live?
+
+**Question.** A unit folder held its View, Presenter, stateful logic and helpers, child units and shared folders side
+by side. With tasks (Q17) and a 120-line limit (Q15), a unit easily holds a dozen files of different kinds, and the
+View gets lost among them. Should the unit's own logic get a folder of its own, may that folder have subfolders,
+and is its name configurable?
+
+**Context.** #25. Q14 had rejected one fixed `(logic)/` group because it only moved the crowd; with tasks and smaller
+files the crowd is now the unit's own logic, and the View is the file people look for.
+
+**Status.** answered
+
+**Answer.** Yes: the View stays at the unit root, and everything else of the unit's own — the Presenter, its
+stateful logic, its helpers and a `tasks/` folder with its own tasks — lives in the logic folder next to it. A unit
+without logic has none. The folder is flat apart from `tasks/`: kinds in subfolders would add depth to every
+import for a handful of files. The level's shared folders, types and constants files stay at the level root, next
+to the child units. The logic folder is inside the unit: only its View and its own files import from it. Its name
+is configurable like the other folders (`folders.logic`, default `logic`). Written into "Levels and placement",
+"Imports", "View and Presenter", the examples of the other core rules, and the React rule "View and Presenter in
+React".

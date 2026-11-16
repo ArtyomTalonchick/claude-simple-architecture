@@ -21,7 +21,8 @@ neither can be reused without the other.
 
 - A store is data that lives outside any one UI unit and is shared by the units that read it. A store, and the
   code that subscribes to it to show its data, are stateful logic, placed by [Levels and placement](levels.md):
-  next to its one user, or in the stateful logic folder of the lowest level that covers all its users.
+  in the logic folder of its one unit, or in the stateful logic folder of the lowest level that covers all its
+  users.
 - The store test: a plain function that reads or changes a store once, at the time it is called, is a task, not a
   misplaced helper. Code that follows a store's changes is stateful logic.
 - A file in a helpers folder that uses state, lifecycle or a store, calls the server, or calls stateful logic or a
@@ -34,7 +35,7 @@ neither can be reused without the other.
   screen transition — and keeps no state of its own between calls is a helper, even though it returns nothing. It
   is part of the UI: a task that calls it is a violation of [Tasks](tasks.md). One that keeps state between calls
   or follows the screen's changes is stateful logic.
-- The same split holds for stateful logic or a helper that sits next to its only user, outside a shared folder:
+- The same split holds for stateful logic or a helper in the logic folder of its only unit, outside a shared folder:
   what it is decides what it may call and who may call it.
 - One piece of stateful logic that holds two concerns is a violation: its state and results fall into two groups,
   and one group needs from the other at most a plain value it could take as an argument — for example, the value
@@ -62,9 +63,10 @@ OrdersPage/
     cancelOrder         server call, then the orders store: remove the order — read once, no subscription
   OrderSearch/
     OrderSearch         View
-    presenter           query = searchQuery(); result = ordersRequest(query.value)
-    searchQuery         the field: value, change, clear
-    ordersRequest       the request for a query: wait for typing to stop, cancel, retry
+    logic/
+      presenter         query = searchQuery(); result = ordersRequest(query.value)
+      searchQuery       the field: value, change, clear
+      ordersRequest     the request for a query: wait for typing to stop, cancel, retry
 ```
 
 **Bad.**
@@ -79,8 +81,9 @@ OrdersPage/
     cancelOrder         server call, then a store change — a task
   OrderSearch/
     OrderSearch         View
-    presenter           search = orderSearch()
-    orderSearch         the field and the request in one — two concerns
+    logic/
+      presenter         search = orderSearch()
+      orderSearch       the field and the request in one — two concerns
 ```
 
 **Stack notes.**

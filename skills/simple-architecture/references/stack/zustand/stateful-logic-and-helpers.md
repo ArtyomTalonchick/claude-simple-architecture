@@ -19,8 +19,9 @@ change it, not a subscription, and `getState()` / `setState()` give exactly that
 - In a task, `useOrdersStore.getState()` and `useOrdersStore.setState()`, or an action read through `getState()`,
   are allowed. No middleware such as thunks is needed for that.
 - A store file — `create(...)` and its actions — is stateful logic and is placed by
-  [Levels and placement](../../core/levels.md): next to its one user, or in the stateful logic folder of the
-  lowest level that covers all its users. Its `use…` name is right even though its own code calls no hook.
+  [Levels and placement](../../core/levels.md): in the `logic/` folder of its one unit, or in the stateful logic
+  folder of the lowest level that covers all its users. Its `use…` name is right even though its own code calls no
+  hook.
 
 **Good.**
 

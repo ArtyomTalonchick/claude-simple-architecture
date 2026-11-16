@@ -23,7 +23,8 @@ belongs to the level that holds the folder.
   - the pure zone, from anywhere;
   - packages from outside the project, from any kind of code.
 - A violation:
-  - an import from inside a child unit — its Presenter, its stateful logic, its own children or shared folders;
+  - an import from inside a child unit — anything in its logic folder, its own children or shared folders. A
+    unit's logic folder is inside the unit: only the unit's own View and the files in that folder import from it;
   - an import from another branch — a unit inside a sibling, or anything under a level that is not the own level
     or one above it. The code belongs in a shared folder of the lowest common level;
   - an import of a parent's or an ancestor's View or Presenter. Data comes down through props;
@@ -50,8 +51,9 @@ belongs to the level that holds the folder.
 
 ```
 OrdersPage/
-  OrdersPage            imports OrderTable (its child's View)
-  presenter             imports hooks/orderFilters, tasks/cancelOrder, helpers/formatPrice, the row type from
+  OrdersPage            imports OrderTable (its child's View), logic/presenter
+  logic/
+    presenter           imports hooks/orderFilters, tasks/cancelOrder, helpers/formatPrice, the row type from
                         OrderTable
   hooks/
     orderFilters        imports helpers/formatPrice, lib/helpers/debounce
@@ -62,8 +64,9 @@ OrdersPage/
   helpers/
     formatPrice
   OrderTable/
-    OrderTable          imports its presenter, OrdersPage/components/StatusBadge
-    presenter           imports OrdersPage/hooks/orderFilters
+    OrderTable          imports logic/presenter, OrdersPage/components/StatusBadge
+    logic/
+      presenter         imports OrdersPage/hooks/orderFilters
   OrderFilters/
 ```
 
@@ -71,12 +74,13 @@ OrdersPage/
 
 ```
 OrdersPage/
-  OrdersPage            imports OrderTable/presenter — inside a child
+  OrdersPage            imports OrderTable/logic/presenter — inside a child
   tasks/
     cancelOrder         imports hooks/orderFilters — a task importing stateful logic that is not a store
   OrderTable/
-    presenter           imports OrdersPage/presenter — a parent's Presenter
-                        imports OrderFilters/helpers/statusLabel — another branch
+    logic/
+      presenter         imports OrdersPage/logic/presenter — a parent's Presenter
+                        imports OrderFilters/logic/statusLabel — another branch
                         imports OrdersPage/components/StatusBadge — a Presenter importing a component
   OrderFilters/
 ```

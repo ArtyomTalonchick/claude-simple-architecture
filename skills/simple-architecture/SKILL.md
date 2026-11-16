@@ -50,7 +50,8 @@ a missing key takes its default. The full file with the defaults:
     "components": "components",
     "hooks": "hooks",
     "helpers": "helpers",
-    "tasks": "tasks"
+    "tasks": "tasks",
+    "logic": "logic"
   },
   "maxFileLines": 120
 }
@@ -65,6 +66,8 @@ a missing key takes its default. The full file with the defaults:
 - **`folders.components`**, **`folders.hooks`**, **`folders.helpers`**, **`folders.tasks`** — the names of the
   shared folders: for components, for stateful logic, for helpers and for tasks. The same names are used on every
   level.
+- **`folders.logic`** — the name of the folder next to a unit's View that holds the unit's own logic. The same
+  name is used in every unit.
 - **`maxFileLines`** — a positive whole number: the size above which a file is a violation.
 
 The rules name a folder by its role and its default, for example "the stateful logic folder (default

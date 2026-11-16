@@ -28,7 +28,7 @@ export const logout = async () => {
   useSessionStore.setState({ user: null });
 };
 
-// LogoutButton/usePresenter.ts
+// LogoutButton/logic/usePresenter.ts
 export const usePresenter = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);

@@ -81,7 +81,9 @@ this is the full file with the defaults:
     "components": "components",
     "hooks": "hooks",
     "helpers": "helpers",
-    "tasks": "tasks"
+    "tasks": "tasks",
+    // A unit's own logic, next to its View.
+    "logic": "logic"
   },
   // Files longer than this are a violation.
   "maxFileLines": 120

@@ -27,8 +27,8 @@ the UI's part: showing the call and going somewhere after it.
   its own, and the actions call it.
 - Steps of one user action — a server call, store changes, other actions — written in a Presenter or in stateful
   logic are a violation: they are a task. One call of a store's action is not.
-- Placement follows [Levels and placement](levels.md): next to its one user, or in the tasks folder (default
-  `tasks/`) of the lowest level that covers all its users. A task is one file, or a folder named as the task when
+- Placement follows [Levels and placement](levels.md): in `logic/tasks/` of its one unit, or in the tasks folder
+  (default `tasks/`) of the lowest level that covers all its users. A task is one file, or a folder named as the task when
   it needs several files to stay within the file limit: the file of the same name is its entry, and the rest are
   parts only it uses. Others import only the entry.
 - Recommended, not checked: a task talks to the server through a small project module (`api.logout()`), not
@@ -42,7 +42,8 @@ tasks/
   unsubscribePush     await api.unsubscribe(push token from the settings store)
 LogoutButton/
   LogoutButton        View
-  presenter           onClick: loading = true; try await logout(), go to the start page
+  logic/
+    presenter         onClick: loading = true; try await logout(), go to the start page
                       catch error -> error; finally loading = false
 ```
 
@@ -50,7 +51,8 @@ LogoutButton/
 
 ```
 LogoutButton/
-  presenter           onClick: await api.unsubscribe(...); await api.logout(); session store: clear;
+  logic/
+    presenter         onClick: await api.unsubscribe(...); await api.logout(); session store: clear;
                       go to the start page — the action lives in the Presenter
 tasks/
   logout              ...; navigate to the start page — navigation in a task

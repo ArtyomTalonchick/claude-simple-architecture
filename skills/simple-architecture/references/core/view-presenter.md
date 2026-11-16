@@ -41,8 +41,8 @@ OrderList/
   OrderList   (View)       p = presenter(props)
                            if p.isLoading: Spinner
                            for row in p.rows: OrderRow(row, onOpen = () => p.open(row.id))
-
-  presenter   (Presenter)  orders = load orders
+  logic/
+    presenter (Presenter)  orders = load orders
                            isLoading = orders are not loaded yet
                            rows = orders with status == props.status, each with total = round(sum * 1.2, 2)
                            open(id) = go to the order page
@@ -56,7 +56,8 @@ screen or state its own child unit. A change to one state then touches one unit.
 OrderPage/
   OrderPage   (View)       p = presenter(props)
                            p.isEmpty ? OrderStart : OrderResults
-  presenter   (Presenter)  isEmpty = no filter is set
+  logic/
+    presenter (Presenter)  isEmpty = no filter is set
   OrderStart/
   OrderResults/
     OrderResults (View)    p = presenter(props)
@@ -64,7 +65,8 @@ OrderPage/
                            if p.isError:   ResultsError(onRetry = p.retry)
                            if p.isEmpty:   ResultsEmpty
                            if p.hasRows:   ResultsList(p.rows)
-    presenter              isLoading, isError, isEmpty, hasRows — one is true at a time
+    logic/
+      presenter            isLoading, isError, isEmpty, hasRows — one is true at a time
     ResultsLoading/
     ResultsError/
     ResultsEmpty/
@@ -81,7 +83,8 @@ violation: passing a ready value is not a computation.
 OrderList/
   OrderList   (View)       p = presenter(props)
                            if p.pagination: Pagination(p.pagination as its props)
-  presenter   (Presenter)  pagination = page count > 1 ? { page, total, onPageChange = go to page } : nothing
+  logic/
+    presenter (Presenter)  pagination = page count > 1 ? { page, total, onPageChange = go to page } : nothing
   Pagination/
 ```
 

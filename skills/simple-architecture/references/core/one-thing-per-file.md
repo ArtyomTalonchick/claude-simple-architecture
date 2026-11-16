@@ -31,8 +31,9 @@ is only a signal gets waved away, so it is a rule.
 ```
 OrderForm/
   OrderForm           View, 90 lines
-  presenter           Presenter
-  validateOrder       helper
+  logic/
+    presenter         Presenter
+    validateOrder     helper
   OrderTotals/        child unit
 ```
 
