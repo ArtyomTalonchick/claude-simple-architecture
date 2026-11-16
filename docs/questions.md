@@ -205,7 +205,8 @@ rule for the shape of a level, changing "Levels and placement" and "Imports".
 
 **Status.** open
 
-**Answer.**
+**Answer.** Partly: the own unit's logic goes to a `logic/` folder next to its View (Q19). The child units and the
+level's shared code stay as they were; whether they get groups of their own is still open.
 
 ## Q15. Is a file over the line limit a violation, and which files does the limit cover?
 
