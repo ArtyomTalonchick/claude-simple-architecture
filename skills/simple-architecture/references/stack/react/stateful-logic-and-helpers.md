@@ -14,6 +14,9 @@ limits on code that does not need them, and a helper that calls a hook breaks at
 - A function named `use…` that calls no hook and is not created by a hook library is a violation: rename it and
   move it to a helpers folder.
 - A function whose name does not start with `use` and that calls a hook is a violation.
+- A function that uses the DOM outside React — `document.activeElement`, `focus()`, `setSelectionRange`,
+  `document.startViewTransition` — and calls no hook is a helper, not `use…`. One that keeps a ref, a listener or
+  other state between calls is a hook.
 - The Presenter, `usePresenter`, is a hook: it may call hooks and helpers. A `usePresenter` that calls no hook
   but computes something from its props is not a violation of this rule — the View always calls its Presenter
   the same way, so a hook added later changes nothing for the View. A Presenter with no computation at all is
@@ -33,6 +36,12 @@ export const useCurrentUser = () => useUserStore((s) => s.user);
 
 // helpers/formatPrice.ts
 export const formatPrice = (sum: number) => sum.toFixed(2);
+
+// helpers/redrawCaret.ts — acts on the page, keeps nothing between calls
+export const redrawCaret = () => {
+  const field = document.activeElement;
+  if (field instanceof HTMLInputElement) field.setSelectionRange(field.selectionStart, field.selectionEnd);
+};
 ```
 
 **Bad.**

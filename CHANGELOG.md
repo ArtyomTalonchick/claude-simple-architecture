@@ -17,6 +17,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - The file limit `maxFileLines` defaults to 120 lines, and a longer file is a violation, not a warning. A file
   written by a tool is not checked against it; a type declaration file written by hand is.
+- A function that acts on the screen — focus, selection, a screen transition — and keeps nothing between calls is
+  a helper; a task never calls it.
 - A test file is not checked against the file limit: its cases are read one at a time, and a split by case would
   spread the tests of one thing over several files.
 

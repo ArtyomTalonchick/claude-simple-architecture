@@ -4,11 +4,14 @@
 lifecycle or a subscription to a store, or calls other stateful logic; a task carries out a user action and
 reaches stores, the server or other tasks ([Tasks](tasks.md)); a helper is a plain function that does none of
 this. Stateful logic goes to the stateful logic folder (default `hooks/`), tasks to the tasks folder (default
-`tasks/`) and helpers to the helpers folder (default `helpers/`). A helper may be called from anywhere; a task from
-a Presenter, stateful logic or another task; stateful logic only from a Presenter or other stateful logic. One
-piece of stateful logic has one concern; the code that uses them joins them.
+`tasks/`) and helpers to the helpers folder (default `helpers/`). A helper may be called from anywhere, except that
+a task never calls one that acts on the screen; a task from a Presenter, stateful logic or another task; stateful
+logic only from a Presenter or other stateful logic. One piece of stateful logic has one concern; the code that
+uses them joins them.
 
-**Why.** A helper takes input and returns output, so it can be moved, reused and tested anywhere. Stateful logic
+**Why.** A helper keeps nothing between calls and needs nothing set up around it, so it can be moved, reused and
+tested anywhere; most helpers take input and return output, and some act on the screen at the moment they are
+called. Stateful logic
 is tied to the life of a UI unit and works only inside it. When the two are mixed, a plain function picks up a
 hidden dependency on that life cycle, and a reader cannot tell from where a function lies what it needs to run.
 Two concerns in one piece of stateful logic change for different reasons, so each change means reading both, and
@@ -27,6 +30,10 @@ neither can be reused without the other.
   violation: it is a task or a helper.
 - Stateful logic called from a helper or a task is a violation. Stateful logic called from a View is a violation
   of [View and Presenter](view-presenter.md).
+- A function that acts on the screen — reads or changes the focus, the selection, the elements on it, or starts a
+  screen transition — and keeps no state of its own between calls is a helper, even though it returns nothing. It
+  is part of the UI: a task that calls it is a violation of [Tasks](tasks.md). One that keeps state between calls
+  or follows the screen's changes is stateful logic.
 - The same split holds for stateful logic or a helper that sits next to its only user, outside a shared folder:
   what it is decides what it may call and who may call it.
 - One piece of stateful logic that holds two concerns is a violation: its state and results fall into two groups,

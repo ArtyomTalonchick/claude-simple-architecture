@@ -256,3 +256,20 @@ store's changes to show them is stateful logic. The Presenter keeps loading and 
 go to the tasks folder (`folders.tasks`, default `tasks/`). Written into a new core rule "Tasks", into "Stateful
 logic and helpers", "Imports", "Levels and placement", "View and Presenter", "One thing per file", the React rule
 "Tasks in React" and the Zustand rule "A store is stateful logic".
+
+## Q18. Is a function that acts on the screen a helper?
+
+**Question.** A function reads the focused field and resets its selection so a mobile browser redraws its caret. It
+uses no state, lifecycle or store, so the rules called it a helper, yet it returns nothing and depends on the state
+of the page — against the helper's «Why», which said a helper takes input and returns output.
+
+**Context.** #21, found by the architecture-reviewer, which passed the file and noted that the rule does not
+describe it. A wrapper around a screen transition is a similar case.
+
+**Status.** answered
+
+**Answer.** A helper, when it keeps nothing between calls: it can still be moved and tested anywhere a screen
+exists. It is part of the UI, so a task never calls it; one that keeps state between calls or follows the screen's
+changes is stateful logic. A kind of its own was rejected: it would differ from a helper only in who may call it.
+Written into "Stateful logic and helpers" (the «Why» included), "Tasks" and the React rule "Stateful logic in React
+is a hook".

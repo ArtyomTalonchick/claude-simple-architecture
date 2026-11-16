@@ -16,7 +16,7 @@ the UI's part: showing the call and going somewhere after it.
 - A task is one action and one function from the outside; inside it may be split into smaller functions. Its name
   is a verb (`logout`, `addUser`, `publishPost`).
 - A task uses nothing from the UI framework: no import from it, no call of stateful logic (a store is reached
-  through its own API, below), no navigation. Navigation depends on where the app runs, so it stays in the
+  through its own API, below), no helper that acts on the screen, no navigation. Navigation depends on where the app runs, so it stays in the
   Presenter. Any of these in a task is a violation.
 - A task reads and changes a store once, through the store's own API, at the time it is called; it does not
   subscribe. Code that follows a store's changes to show them is stateful logic
