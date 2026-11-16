@@ -235,3 +235,24 @@ already says tests are not part of the shape, while "One thing per file" named n
 a split by case makes the tests of one thing harder to find. A separate limit for tests was rejected as one more
 number with no ground, and a rule for how to split a test file as a constraint nobody asked for. Written into "One
 thing per file".
+
+## Q17. Where does business logic live, and how does it reach a store?
+
+**Question.** The rules knew stateful logic and helpers. A user action — log in, log out, place an order — ended up
+in a hook, tied to the UI framework and to a component's life, or in a helper, where touching a store is a
+violation. Where does it go, and may it reach a store without a hook? Three points followed: may stateful logic
+call it, how does it report an error, and where is the line between it and stateful logic that reads a store?
+
+**Context.** #24. A user action means the same in any UI, so the code that describes it should survive a change of
+the UI layer.
+
+**Status.** answered
+
+**Answer.** A third kind of code, the task: a plain function named with a verb, with nothing from the UI framework,
+that reaches stores through their own API and may call other tasks. A Presenter or stateful logic may call it: a
+hook that keeps the state of a request calls the task that makes it. A task returns its result and throws on
+failure; the caller keeps the error. A task reads or changes a store once, when it is called; code that follows a
+store's changes to show them is stateful logic. The Presenter keeps loading and error and navigates. Shared tasks
+go to the tasks folder (`folders.tasks`, default `tasks/`). Written into a new core rule "Tasks", into "Stateful
+logic and helpers", "Imports", "Levels and placement", "View and Presenter", "One thing per file", the React rule
+"Tasks in React" and the Zustand rule "A store is stateful logic".

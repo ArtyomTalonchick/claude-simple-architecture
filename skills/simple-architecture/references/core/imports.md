@@ -2,8 +2,8 @@
 
 **Rule.** Import only along the structure: from your own children through their entry, from the shared folders
 of your own level and of any level above, and from the pure zone. Never reach into a child, into another
-branch or into a parent. Between kinds of code, imports go one way: View → Presenter → stateful logic →
-helpers.
+branch or into a parent. Between kinds of code, imports go one way: View → Presenter → stateful logic → tasks →
+helpers; a task may also import a store.
 
 **Why.** When imports follow the folders, the folders tell the truth: a unit can be changed inside without
 breaking anyone, moved or deleted with its folder, and every dependency is visible from where a file lies. A
@@ -30,8 +30,10 @@ belongs to the level that holds the folder.
   - a pure zone file importing from the app ([Pure zone](pure-zone.md)).
 - By kind, among the allowed targets, a violation is any import outside this list:
   - View → its own Presenter, child units, components from shared folders and the pure zone, types, constants;
-  - Presenter → stateful logic, helpers, types, constants — never a View or a component;
-  - stateful logic → stateful logic, helpers, types, constants;
+  - Presenter → stateful logic, tasks, helpers, types, constants — never a View or a component;
+  - stateful logic → stateful logic, tasks, helpers, types, constants;
+  - task → tasks, stores, helpers, types, constants — never a View, a Presenter or other stateful logic
+    ([Tasks](tasks.md));
   - helper → helpers, types, constants.
 - A type-only import is allowed for every kind from any allowed target, including a child's View: a Presenter may
   import the props type its child passes on. It brings in no markup and no logic.
@@ -49,9 +51,14 @@ belongs to the level that holds the folder.
 ```
 OrdersPage/
   OrdersPage            imports OrderTable (its child's View)
-  presenter             imports hooks/orderFilters, helpers/formatPrice, the row type from OrderTable
+  presenter             imports hooks/orderFilters, tasks/cancelOrder, helpers/formatPrice, the row type from
+                        OrderTable
   hooks/
     orderFilters        imports helpers/formatPrice, lib/helpers/debounce
+    ordersStore         a store
+  tasks/
+    cancelOrder         imports hooks/ordersStore (a store), tasks/notifyUser
+    notifyUser
   helpers/
     formatPrice
   OrderTable/
@@ -65,6 +72,8 @@ OrdersPage/
 ```
 OrdersPage/
   OrdersPage            imports OrderTable/presenter — inside a child
+  tasks/
+    cancelOrder         imports hooks/orderFilters — a task importing stateful logic that is not a store
   OrderTable/
     presenter           imports OrdersPage/presenter — a parent's Presenter
                         imports OrderFilters/helpers/statusLabel — another branch

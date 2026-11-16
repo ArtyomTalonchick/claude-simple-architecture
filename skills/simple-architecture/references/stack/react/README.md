@@ -8,3 +8,5 @@ Each rule has its own file, named as the core rule it carries out.
 - [View and Presenter in React](view-presenter.md) — `MyComponent.tsx` and the `usePresenter` hook.
 - [Stateful logic in React is a hook](stateful-logic-and-helpers.md) — the `use` prefix only on functions that
   call hooks, and on `usePresenter`.
+- [Tasks in React](tasks.md) — a task calls no hook; the Presenter awaits it, keeps loading and error, and
+  navigates.

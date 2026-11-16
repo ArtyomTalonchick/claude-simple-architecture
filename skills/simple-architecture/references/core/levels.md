@@ -18,10 +18,11 @@ level means one set of rules to know: a module reads the same way as the app, at
     subtree is a branch.
 - The shape of a level, every part optional:
   - its own unit — the View (named as the folder), the Presenter, and files only they use, such as stateful
-    logic only the Presenter calls;
+    logic or a task only the Presenter calls;
   - child units — unit folders used only by this level, with the same shape inside;
   - shared folders, for code used by two or more units of this level: the components folder (default
-    `components/`), the stateful logic folder (default `hooks/`), the helpers folder (default `helpers/`);
+    `components/`), the stateful logic folder (default `hooks/`), the helpers folder (default `helpers/`), the
+    tasks folder (default `tasks/`);
   - a types file and a constants file (default `types` and `constants`) for types and constants shared by two or
     more units of this level.
 - The level's own unit counts as one of its units, next to its child units. Code used by the own unit and by one

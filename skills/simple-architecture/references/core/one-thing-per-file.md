@@ -1,8 +1,8 @@
 ## One thing per file
 
-**Rule.** A file holds one thing: one View, one Presenter, one piece of stateful logic or one helper. Types and
-constants that only this thing uses belong to it and stay in its file. A file other than a test is no longer than
-the configured limit (`maxFileLines`, default 120).
+**Rule.** A file holds one thing: one View, one Presenter, one piece of stateful logic, one task or one helper.
+Types and constants that only this thing uses belong to it and stay in its file. A file other than a test is no
+longer than the configured limit (`maxFileLines`, default 120).
 
 **Why.** A file that holds one thing is found by its name, read in one go and changed without touching anything
 else. Once a second thing moves in, the file grows by habit: the next piece of logic lands there because it is

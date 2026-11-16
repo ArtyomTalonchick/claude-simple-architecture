@@ -80,7 +80,8 @@ this is the full file with the defaults:
     // Shared folders: the same names on every level.
     "components": "components",
     "hooks": "hooks",
-    "helpers": "helpers"
+    "helpers": "helpers",
+    "tasks": "tasks"
   },
   // Files longer than this are a violation.
   "maxFileLines": 120

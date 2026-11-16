@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Tasks, a third kind of non-UI code next to stateful logic and helpers: a user action as a plain function named
+  with a verb, with nothing from the UI framework, that reaches stores through their own API and throws on
+  failure. The Presenter awaits it, keeps loading and error, and navigates. Shared tasks go to the tasks folder,
+  configured by the new key `folders.tasks` (default `tasks`). In Zustand, a task may use `getState()` and
+  `setState()`; a View and a helper still may not.
+
 ### Changed
 
 - The file limit `maxFileLines` defaults to 120 lines, and a longer file is a violation, not a warning. A file

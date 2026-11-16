@@ -27,6 +27,9 @@ of the screen.
   mapped from another list, text joined from parts) is a computation in the View. It goes to the Presenter: a
   unit that needs it has logic, so it has a Presenter. Reading styles from the design system is not stateful
   logic and is not a violation of [Stateful logic and helpers](stateful-logic-and-helpers.md).
+- A user action is a task the Presenter calls ([Tasks](tasks.md)): the Presenter awaits it, keeps the state of
+  the call — loading, error — and decides what follows, navigation included. The steps of the action itself do
+  not belong in the Presenter.
 - A violation: a Presenter file with no logic in it (an empty or pass-through Presenter).
 - The props type lives in the Presenter, and the View passes it on to its users, so they import it from the
   View; a View without a Presenter declares its own props type.
@@ -43,6 +46,7 @@ OrderList/
                            isLoading = orders are not loaded yet
                            rows = orders with status == props.status, each with total = round(sum * 1.2, 2)
                            open(id) = go to the order page
+                           cancel(id) = await the task cancelOrder(id); keep its loading and error
 ```
 
 A pattern, not a check: a View with several screens or states may only choose which one to show, with each
