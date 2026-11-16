@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.2.2] — 2026-11-16
+
+### Added
+
+- The config key `folders.stores` (default `stores`): the name of a level's stores folder.
+
 ### Changed
 
 - A unit is a folder with an entry file named as the folder: the View in an app with a UI, and in an app with no
@@ -34,10 +40,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   in the app that does I/O is still a task. Folders inside `lib/` are named by what they hold (`lib/http/`,
   `lib/errors/`, `lib/theme/`), and a tasks folder in `lib/` is now a violation, since the pure zone has no
   business logic: move generic I/O from `lib/tasks/` to a folder named by its content, and app tasks to the app.
-
-### Added
-
-- The config key `folders.stores` (default `stores`): the name of a level's stores folder.
 
 ## [0.2.1] — 2026-11-16
 
