@@ -38,11 +38,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - A warning in "View and Presenter": a Presenter whose own state and lifecycle form two or more groups by the
   two-concerns test should move them out as stateful logic and only join it; a Presenter with one group stays
   whole.
-- A type or a constant used by several files of one unit, and by no other unit, lives in the types file or the
-  constants file of that unit's level, not in `logic/`.
 
 ### Changed
 
+- Imports between kinds of code go one way: View → Presenter → stateful logic → tasks → helpers; a task may also
+  import a store.
+- A View takes components from shared folders and from the ui-kit only, no longer from anywhere in the pure zone.
+- A file in a shared folder whose one user is itself a file of a shared folder is a part of that user: a task
+  becomes a folder with its parts; stateful logic or a helper sits next to its user in the same shared folder.
+- The types file and the constants file of a level hold what two or more files of the level use — of one unit or
+  of several — not only what two or more units share. A type or a constant used by several files of one unit, and
+  by no other unit, lives there, not in `logic/`.
 - The file limit `maxFileLines` defaults to 120 lines, and a longer file is a violation, not a warning. A file
   written by a tool is not checked against it; a type declaration file written by hand is.
 - A function that acts on the screen — focus, selection, a screen transition — and keeps nothing between calls is
