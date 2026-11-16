@@ -38,10 +38,13 @@ logic in one folder, the View — the file people look for — is not lost among
   child imports it from there, as code of a level above. Inside the child it would be a violation: the own unit
   would import from inside a child.
 - A file in a shared folder, a types file or a constants file of a level with only one user is a violation: it
-  belongs next to that user.
+  belongs in that user's logic folder.
 - A child unit or a file used by two or more siblings, or from outside its parent level, is a violation: it
   belongs in a shared folder of the lowest level that covers all its users.
-- A type or a constant used by one file lives in that file.
+- A type or a constant used by one file lives in that file. One used by two or more files of one unit, and by no
+  other unit, lives in a types file or a constants file in that unit's logic folder (`logic/types`,
+  `logic/constants`) — not in the level's types file, which is for two or more units, and not exported from one of
+  its users, which would make one user look like its owner. The View imports it from there like its Presenter.
 - An empty shared folder is a violation: a shared folder exists only when it has content.
 - A child unit does not need the parent's name as a prefix.
 - The exception is the pure zone ([Pure zone](pure-zone.md)): pure code stays there whatever the number of its
@@ -59,6 +62,7 @@ OrdersPage/
   logic/                the own unit's logic
     presenter           Presenter
     orderFilters        used only by the presenter
+    types               OrderFilter — used by the presenter and orderFilters, by no other unit
     tasks/
       exportOrders      a task only the presenter calls
   constants             PAGE_SIZE — used by the presenter and by OrderTable

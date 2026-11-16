@@ -313,3 +313,19 @@ props or from that logic, and the loading and error of a task kept by the handle
 group of its own stays. It is a warning, not a violation: which jobs are simple enough to stay is a judgement, and
 a violation would make the reviewer's verdict depend on the run. The moved-out logic goes to the unit's logic
 folder while the Presenter is its only user. Written into "View and Presenter".
+
+## Q21. Where does a type shared by several files of one unit live?
+
+**Question.** "A type used by one file lives in that file" covers one file, and the level's types file is for types
+shared by two or more units. Where does a type go when several files of the same unit use it — its stateful logic,
+a helper next to it and its Presenter?
+
+**Context.** #19, found in a project that follows the plugin: the reviewer accepted such a type in the level's
+types file only because that file already had other users, which judged the file, not the type.
+
+**Status.** answered
+
+**Answer.** In a types file in the unit's logic folder (`logic/types`), and a constant in `logic/constants`. The
+logic folder holds everything of the unit's own (Q19), so its own types belong there too. The level's types file
+was rejected because it is for two or more units, and the file of the main user because "main" cannot be checked
+and the export makes one user look like the owner. Written into "Levels and placement".
