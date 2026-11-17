@@ -90,6 +90,9 @@ surrounding file when a rule depends on where the file lives or what it imports.
   of its whole new version and compare them with `maxFileLines`. Skip the files the rule exempts — a test file and
   a file written by a tool (`references/core/one-thing-per-file.md`). A file over the limit is
   a violation even when the diff touches only a few of its lines.
+- A folder inside a logic folder or a tasks folder that holds a file named as the folder is an entry folder, not a
+  unit or a level (`references/core/levels.md`): judge where it lies and who uses it by its entry, and its other
+  files as parts of that entry.
 - Core rules always apply. A stack rule carries out a core rule with one technology and never overrides it.
 - Line numbers are in the new version of the file (the `+` side of the diff). For a deleted file or a moved
   file, name the path and say so.

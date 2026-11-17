@@ -33,10 +33,12 @@ the UI's part: showing the call and going somewhere after it.
 - Steps of one user action — a server call, store changes, other actions — written in a Presenter or in stateful
   logic are a violation: they are a task. One call of a store's action is not.
 - Placement follows [Levels and placement](levels.md): in the tasks folder (default `_tasks/`) inside the logic
-  folder (default `_logic/`) of the lowest level that covers all its users. A task is one file,
-  or a folder named as the task when it needs several files to stay within the file limit: the file of the same
-  name is its entry, and the rest are parts only it uses — a smaller task or a helper only it calls. Others import
-  only the entry.
+  folder (default `_logic/`) of the lowest level that covers all its users. A task is one file, or, when it has
+  parts only it uses — a smaller task or a helper only it calls — an entry folder named as the task: the file of
+  the same name is its entry, the parts sit next to it, and others import only the entry. The parts decide, not
+  the line count: a small task with private parts may be a folder, and a smaller task only it calls is always one
+  of its parts, never a task of its own in the tasks folder. A task folder is not a unit
+  ([Levels and placement](levels.md)).
 - Recommended, not checked: a task talks to the server through a small project module of tasks, one per
   request (`api.logout()`), which call the pure zone's generic I/O — not through generic I/O directly.
 
@@ -50,6 +52,11 @@ _logic/
     unsubscribePush   await api.unsubscribe(push token from the settings store) — called by logout and
                       deleteAccount
     deleteAccount
+    placeOrder/       an entry folder, 50 lines in all: a folder because it has parts only it uses
+      placeOrder      await reserveItems(cart); await api.placeOrder(toOrderRequest(cart)); cart store: clear
+      reserveItems    a smaller task: reserves the cart's items on the server — called only by placeOrder
+      toOrderRequest  a helper: cart -> request body — called only by placeOrder
+      tests/          tests of placeOrder and its parts
 SessionExpired/
 LogoutButton/
   LogoutButton        View
@@ -72,6 +79,8 @@ _logic/
   _tasks/
     logout            ...; navigate to the start page — navigation in a task
     publishPost       try await api.publish(post) catch e: return { error: e } — the error as a value
+    placeOrder        await reserveItems(cart); ...
+    reserveItems      called only by placeOrder — a part of it: it belongs in _tasks/placeOrder/
 ```
 
 **Stack notes.**

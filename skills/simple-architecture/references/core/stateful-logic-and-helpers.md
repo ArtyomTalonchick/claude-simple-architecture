@@ -6,12 +6,13 @@ task carries out a user action, or a step of one, and reaches stores, the server
 ([Tasks](tasks.md)); a helper is a plain function that does none of this; a store is data that lives longer than one
 call and is shared by the code that reads it. Stateful logic and helpers go to the logic folder (default `_logic/`),
 tasks to the tasks folder inside it (default `_logic/_tasks/`), stores to the stores folder (default `_stores/`), on
-the level set by [Levels and placement](levels.md). A helper may be called from a Presenter, stateful logic, a task
-or another helper, except that a task never calls one that acts on the screen; a task from a Presenter, stateful
-logic or another task; stateful logic only from a Presenter or other stateful logic; a store is reached only by a
-task, through its own API, and on a client by a Presenter or stateful logic; generic I/O of the pure zone — I/O
-that knows nothing of the app ([Pure zone](pure-zone.md)) — only by a task. One piece of stateful logic has one
-concern; the code that uses them joins them.
+the level set by [Levels and placement](levels.md); stateful logic, a task or a helper with parts only it uses may
+be a folder that holds them. A helper may be called from a Presenter, stateful logic, a task or another helper,
+except that a task never calls one that acts on the screen; a task from a Presenter, stateful logic or another
+task; stateful logic only from a Presenter or other stateful logic; a store is reached only by a task, through its
+own API, and on a client by a Presenter or stateful logic; generic I/O of the pure zone — I/O that knows nothing of
+the app ([Pure zone](pure-zone.md)) — only by a task. One piece of stateful logic has one concern; the code that
+uses them joins them.
 
 **Why.** A helper keeps nothing between calls and needs nothing set up around it, so it can be moved, reused and
 tested anywhere; most helpers take input and return output, and some act on the screen at the moment they are
@@ -48,6 +49,11 @@ logic around it, and the few kinds of code that reach it show who depends on it.
   and it lives only in the pure zone. Only a task, and other generic I/O, calls it. A Presenter, stateful logic, a
   helper, a View, a store or the entry of a unit with no UI that calls it is a violation, as reaching the server
   outside a task is. In the app, a function that does I/O is a task, whatever it calls to do it.
+- Stateful logic, a task or a helper with parts only it uses may be an entry folder: a folder named as it, with
+  the entry and its parts ([Levels and placement](levels.md)). A part keeps its own kind, and every check here
+  applies to it as to any file of the logic folder: a part of stateful logic is stateful logic or a helper, a part
+  of a task a smaller task or a helper, a part of a helper a helper. A part of stateful logic or of a helper that
+  reaches the server or a store once is a task, and a task is never such a part: it goes to the tasks folder.
 - A function marked as stateful logic by the stack's convention that uses no state, lifecycle or subscription and
   calls no stateful logic is a violation: it is a task or a helper.
 - A function in the logic folder, outside its tasks folder, that uses no state, lifecycle or subscription but
@@ -88,6 +94,15 @@ OrdersPage/
   _stores/
     ordersStore         a store: the orders and its API — read, set, remove
     userStore           a store: the current user and its API
+  Checkout/
+    Checkout            View
+    _logic/
+      presenter         steps = checkoutSteps(cart)
+      checkoutSteps/    an entry folder: stateful logic with the parts only it uses — not a unit
+        checkoutSteps   stateful logic: the current step, next, back; imports stepOrder and canLeaveStep
+        stepOrder       a helper: the steps for a cart, in order — used only by checkoutSteps
+        canLeaveStep    a helper: whether a step's fields are filled — used only by checkoutSteps
+        tests/          tests of checkoutSteps, stepOrder and canLeaveStep
   OrderSearch/
     OrderSearch         View
     _logic/
@@ -122,6 +137,11 @@ OrdersPage/
       currentUser       subscribes to the store — stateful logic, not a task
   _stores/
     cartStore           the cart and its API, and loadCart, which calls the server — a task inside a store
+  Checkout/
+    _logic/
+      checkoutSteps/
+        checkoutSteps   stateful logic: the current step, next, back
+        saveDraft       a part that sends the draft to the server — a task: it belongs in Checkout/_logic/_tasks/
   OrderSearch/
     OrderSearch         View
     _logic/

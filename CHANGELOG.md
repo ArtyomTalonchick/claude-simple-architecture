@@ -16,6 +16,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   custom names; the React and Zustand rules named the default folders as if they were fixed.
 - The ui-kit's name (`folders.uiKit`) is set on its own and does not follow `folders.components`: the ui-kit is
   part of the pure zone, not a level's shared components folder.
+- Any entry of the logic folder — stateful logic, a helper or a task — with parts only it uses may be an entry
+  folder named as its entry file: the entry, its parts and their tests. Others import only the entry; a part used
+  from outside the folder is a violation and moves out next to it. The parts decide, not the line count: a task
+  folder no longer depends on the file limit, and a task used only by another task always lives in its folder.
+  The logic folder is no longer flat apart from the tasks folder, and an entry folder is not a unit or a level.
 
 ## [0.2.2] — 2026-11-16
 

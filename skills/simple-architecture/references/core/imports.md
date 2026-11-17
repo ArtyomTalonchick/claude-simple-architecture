@@ -2,8 +2,9 @@
 
 **Rule.** Import only along the structure: from your own children through their entry, from the logic folder, the
 stores folder and the components folder of your own level and of any level above — except that level's Presenter —
-from the pure zone, and from the shared types package. Never reach into a child, into another branch, into a
-parent's entry or Presenter, or into another app. Between kinds of code, imports go one way: View → Presenter →
+from the pure zone, and from the shared types package; from an entry folder in a logic folder, only its entry.
+Never reach into a child, into another branch, into a parent's entry or Presenter, into the parts of an entry
+folder from outside it, or into another app. Between kinds of code, imports go one way: View → Presenter →
 stateful logic → tasks → helpers; a Presenter, stateful logic and a task may also import a store, and only a task
 (and generic I/O itself) imports the generic I/O of the pure zone.
 
@@ -21,7 +22,9 @@ stores folder or a components folder belongs to the level that holds the folder.
   - an own child unit, through its entry ([Levels and placement](levels.md)) — in an app with a UI the child's
     View, which also passes on its props type ([View and Presenter](view-presenter.md));
   - anything in the logic folder of the own level and of any level above it — stateful logic, tasks, helpers,
-    types, constants — except that level's Presenter, which only its own entry imports;
+    types, constants — except that level's Presenter, which only its own entry imports. An entry folder there
+    ([Levels and placement](levels.md)) is imported only through its entry;
+  - inside an entry folder, the entry imports its parts and the parts import each other;
   - the stores in the stores folder of the own level and of any level above it, from a Presenter, stateful logic or
     a task;
   - the units in the components folder of the own level and of any level above it, through their entry;
@@ -35,6 +38,8 @@ stores folder or a components folder belongs to the level that holds the folder.
   - an import from another branch — a unit inside a sibling, or anything under a level that is not the own level
     or one above it. The code belongs in the logic folder or the components folder of the lowest common level;
   - an import of a parent's or an ancestor's entry or Presenter. Data comes down through props;
+  - an import of a part of an entry folder — any file in it but its entry — from outside that folder, whatever
+    the level. The part is not a part then: it moves out next to the folder ([Levels and placement](levels.md));
   - in a project with several apps (`apps` in the config), an import from another app — its code, its pure zone,
     anything under its root. What two apps share goes to the shared types package, if it is a type;
   - in the shared types package, an import from any app, and any runtime code — a function, a constant, a value. It
@@ -79,6 +84,10 @@ OrdersPage/
       cancelOrder       imports _stores/ordersStore, _logic/_tasks/notifyUser, lib/http/fetchJson — called by the
                         presenter and by OrderTable/_logic/presenter
       notifyUser        called by cancelOrder and by OrderFilters/_logic/presenter
+      exportOrders/     an entry folder: the presenter imports exportOrders, its entry, and nothing else in it
+        exportOrders    imports toCsvRow (its part), _stores/ordersStore
+        toCsvRow        imports formatCsvCell — parts import each other
+        formatCsvCell
   _stores/
     ordersStore         a store, used by orderFilters and cancelOrder
   _components/
@@ -125,6 +134,8 @@ OrdersPage/
                         imports OrderFilters/_logic/statusLabel — another branch
                         imports OrdersPage/_components/StatusBadge — a Presenter importing a component
                         imports lib/http/fetchJson — generic I/O outside a task
+                        imports OrdersPage/_logic/_tasks/exportOrders/toCsvRow — a part, from outside its entry
+                        folder
   OrderFilters/
     _stores/
       filterStore       imported by OrdersPage/_logic/orderFilters — inside a child
