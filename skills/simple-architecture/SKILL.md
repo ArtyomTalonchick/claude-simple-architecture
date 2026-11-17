@@ -67,7 +67,8 @@ a missing key takes its default. The full file with the defaults:
   is set here on its own and does not follow `folders.components`: the ui-kit is part of the pure zone, not a
   level's shared components folder.
 - **`folders.logic`** — the name of the folder next to a level's entry that holds the level's non-UI code but its
-  stores: its own unit's and what its units share — stateful logic, plain functions, tasks, types and constants.
+  stores: its own unit's and what its units share — the Presenter, stateful logic, plain functions, tasks, types
+  and constants, as files or entry folders.
 - **`folders.tasks`** — the name of the tasks folder inside the logic folder.
 - **`folders.stores`** — the name of the folder next to a level's entry that holds the level's stores: data that
   lives longer than one call and is shared by the code that reads it.

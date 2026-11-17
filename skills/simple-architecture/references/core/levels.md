@@ -40,8 +40,8 @@ parts of one function, kept in its folder, are not mistaken for code the level s
     folder (default `_tasks/`) with the tasks and the plain functions only tasks use
     ([Stateful logic and plain functions](stateful-logic-and-functions.md)). It holds both the own unit's code and
     the code the level's units share. The logic folder holds files, entry folders and the tasks folder; the tasks
-    folder holds task files, task entry folders and the plain functions of tasks. A level with no such code has no
-    logic folder;
+    folder holds task files, task entry folders, and the plain functions only tasks use, as files or entry folders.
+    Tests aside (below), these lists name the whole shape. A level with no such code has no logic folder;
   - the stores folder (default `_stores/`) with the stores of the level
     ([Stateful logic and plain functions](stateful-logic-and-functions.md)), flat: both the own unit's stores and
     the ones the level's units share. A level with no store has no stores folder;
@@ -86,7 +86,8 @@ parts of one function, kept in its folder, are not mistaken for code the level s
 - A task whose only user is another task is a part of it: it lives in that task's entry folder, next to its entry
   ([Tasks](tasks.md)) — not as a task of its own in the tasks folder.
 - Inside a level, a plain function lies by the kinds of its users: in the tasks folder when only tasks use it, in
-  the logic folder outside the tasks folder when a Presenter or stateful logic uses it, with or without tasks
+  the logic folder outside the tasks folder when a Presenter, stateful logic or the entry of a unit with no UI uses
+  it, with or without tasks
   ([Stateful logic and plain functions](stateful-logic-and-functions.md)).
 - A child unit or a file used by two or more siblings, or from outside its parent level, is a violation: it
   belongs at the lowest level that covers all its users — a unit in that level's components folder, a store in its

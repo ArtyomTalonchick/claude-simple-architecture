@@ -110,7 +110,7 @@ SearchPage/
   _logic/
     presenter  (Presenter) field = searchField(); results = searchRequest(field.value); screen = searchScreen()
     searchField            the field: value, change, clear
-    searchRequest          the request for a value
+    searchRequest          the request for a value: calls the task search
     searchScreen           which screen is shown, and the switch between them with a transition
 ```
 

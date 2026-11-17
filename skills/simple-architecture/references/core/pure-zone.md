@@ -60,10 +60,10 @@ src/
   lib/
     components/
       Button/             no app imports
-      Modal/              uses lib/hooks/disclosure
+      Modal/              uses lib/disclosure/disclosure
       SearchField/        looks up the style "searchField", registered in lib/theme/
-    hooks/
-      disclosure          open / closed state, no app imports
+    disclosure/
+      disclosure          stateful logic: open / closed state, no app imports
     dates/
       formatDate          a pure function, no app imports
     http/

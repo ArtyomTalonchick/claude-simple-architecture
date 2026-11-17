@@ -10,8 +10,9 @@ and is shared by the code that reads it. Stateful logic goes to the logic folder
 tasks folder inside it (default `_logic/_tasks/`), a plain function by its users — to the tasks folder when only
 tasks use it, to the logic folder otherwise — and stores to the stores folder (default `_stores/`), on the level
 set by [Levels and placement](levels.md); an entry with parts only it uses may be a folder that holds them. A plain
-function is called from a Presenter, stateful logic, a task or another plain function, and one that a task calls
-has nothing from the UI; a task from a Presenter, stateful logic or another task; stateful logic only from a
+function is called from a Presenter, stateful logic, a task, another plain function, the entry of a unit with no
+UI, or a store, if the plain function reaches no store, and one that a task calls has nothing from the UI; a task
+from a Presenter, stateful logic, another task or the entry of a unit with no UI; stateful logic only from a
 Presenter or other stateful logic; a store is reached by a task and a plain function, through its own API, and on a
 client by a Presenter or stateful logic; generic I/O of the pure zone — I/O that knows nothing of the app
 ([Pure zone](pure-zone.md)) — only by a task. One piece of stateful logic has one concern; the code that uses them
@@ -50,7 +51,8 @@ without touching the logic around it, and the few kinds of code that reach it sh
 - A plain function that does I/O — calls the server or generic I/O — is a violation: a request in the app is a step
   of a business action, so it is a task. A plain function that calls a task or stateful logic is a violation: the
   order of the steps stays with its caller, and one that calls stateful logic is stateful logic. A plain function
-  may call other plain functions and the pure zone (not generic I/O), and use types and constants.
+  may call other plain functions, use types and constants, and use pure functions, types and constants of the pure
+  zone.
 - A plain function that subscribes to a store, or uses state or lifecycle, is a violation: it is stateful logic.
 - The UI boundary follows from the users. A plain function that a task calls, directly or through other plain
   functions, has nothing from the UI: it does not act on the screen — read or change the focus, the selection, the
@@ -61,10 +63,11 @@ without touching the logic around it, and the few kinds of code that reach it sh
   state between calls or follows the screen's changes is stateful logic.
 - Placement by users, on the level set by [Levels and placement](levels.md): a plain function used only by tasks
   lives in the tasks folder — a file next to the tasks, or a part in the entry folder of its one task; one used by a
-  Presenter or stateful logic, whether or not tasks use it too, lives in the logic folder outside the tasks folder,
-  or as a part in the entry folder of its one user. A plain function used only by tasks that lies in the logic
-  folder outside the tasks folder, or one used by a Presenter or stateful logic that lies in the tasks folder, is a
-  violation. Code that knows nothing of the app goes to the pure zone ([Pure zone](pure-zone.md)).
+  Presenter, stateful logic or the entry of a unit with no UI, whether or not tasks use it too, lives in the logic
+  folder outside the tasks folder, or as a part in the entry folder of its one user. A plain function used only by
+  tasks that lies in the logic folder outside the tasks folder, or one used by a Presenter, stateful logic or the
+  entry of a unit with no UI that lies in the tasks folder, is a violation. Code that knows nothing of the app goes
+  to the pure zone ([Pure zone](pure-zone.md)).
 - Generic I/O ([Pure zone](pure-zone.md)) is neither a task nor a plain function: it does I/O and knows nothing of
   the app, and it lives only in the pure zone. Only a task, and other generic I/O, calls it. A Presenter, stateful
   logic, a plain function, a View, a store or the entry of a unit with no UI that calls it is a violation, as
@@ -124,7 +127,10 @@ OrdersPage/
     _logic/
       presenter         query = searchQuery(); result = ordersRequest(query.value)
       searchQuery       the field: value, change, clear
-      ordersRequest     the request for a query: wait for typing to stop, cancel, retry
+      ordersRequest     the request for a query: calls the task searchOrders; waits for typing to stop, cancels,
+                        retries
+      _tasks/
+        searchOrders    the server call for a query
 SearchPage/
   _logic/
     presenter           onSubmit: showResults(query)

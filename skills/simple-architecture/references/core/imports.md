@@ -45,20 +45,23 @@ stores folder or a components folder belongs to the level that holds the folder.
   - in the shared types package, an import from any app, and any runtime code — a function, a constant, a value. It
     holds types only, so every app can use it and none depends on another through it;
   - a pure zone file importing from the app ([Pure zone](pure-zone.md)).
-- By kind, among the allowed targets, a violation is any import outside this list:
+- By kind, among the allowed targets, a violation is any import outside this list. Code of the pure zone counts
+  under its own kind: a pure function as a plain function, pure stateful logic as stateful logic, a ui-kit
+  component as a component, generic I/O as generic I/O ([Pure zone](pure-zone.md)):
   - View → its own Presenter, child units, components from components folders and from the ui-kit, types,
     constants;
-  - the entry of a unit with no UI → child units, stateful logic, tasks, plain functions, types, constants;
+  - the entry of a unit with no UI → child units, tasks, plain functions, types, constants — never stateful logic,
+    which is tied to the life of a UI unit ([Stateful logic and plain functions](stateful-logic-and-functions.md));
   - Presenter → stateful logic, tasks, stores, plain functions, types, constants — never a View or a component;
   - stateful logic → stateful logic, tasks, stores, plain functions, types, constants;
   - task → tasks, stores, plain functions, generic I/O, types, constants — never a View, a Presenter, stateful
     logic, the UI framework, or a plain function that acts on the screen or imports from the UI framework
     ([Tasks](tasks.md));
-  - plain function → plain functions, stores, the pure zone but its generic I/O, types, constants — never a task,
-    stateful logic or generic I/O. One that only the UI side uses may also import the UI framework's API that is
-    not stateful logic ([Stateful logic and plain functions](stateful-logic-and-functions.md));
-  - store → plain functions that reach no store, directly or through other plain functions, the pure zone but its
-    generic I/O, types, constants — never another store, a task or stateful logic
+  - plain function → plain functions, stores, types, constants, and pure functions, types and constants of the pure
+    zone — never a task, stateful logic or generic I/O. One that only the UI side uses may also import the UI
+    framework's API that is not stateful logic ([Stateful logic and plain functions](stateful-logic-and-functions.md));
+  - store → plain functions that reach no store, directly or through other plain functions, types, constants, and
+    pure functions, types and constants of the pure zone — never another store, a task or stateful logic
     ([Stateful logic and plain functions](stateful-logic-and-functions.md));
   - generic I/O ([Pure zone](pure-zone.md)) → generic I/O, pure functions, types, constants of the pure zone. No
     kind but a task and generic I/O imports it.

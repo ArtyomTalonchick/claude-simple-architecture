@@ -15,8 +15,8 @@ plugin's repository.
   function has no business logic, does no I/O and calls no task or stateful logic, and lives by its users; one
   concern per piece of stateful logic. A store is data shared by the code that reads it, kept apart in the stores
   folder and reached only by tasks, plain functions and, on a client, by a Presenter or stateful logic.
-- [Tasks](tasks.md) — a business action, one that stays the same in any UI, is a function that reaches stores
-  directly; the Presenter or stateful logic awaits it and keeps loading and error; the Presenter navigates.
+- [Tasks](tasks.md) — a business action, one that stays the same in any UI, is a task: a function with nothing from
+  the UI framework; the Presenter or stateful logic awaits it and keeps loading and error; the Presenter navigates.
 - [Pure zone](pure-zone.md) — code that knows nothing of the app lives in `lib/` and the ui-kit at the root,
   with the design-system theme, in folders named by what they hold, and depends on nothing from the app, by import
   or by key. Generic I/O — I/O that knows nothing of the app — is its own kind there, called only by tasks; `lib/`

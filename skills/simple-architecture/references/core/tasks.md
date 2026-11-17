@@ -4,8 +4,9 @@
 another UI, or in another app on another UI framework — log in, log out, place an order, clear the cart. A task is
 a function named with a verb, with nothing from the UI framework. It reaches stores through their own API, the
 server through generic I/O, may call other tasks and plain functions, returns its result and fails by throwing. A
-Presenter or stateful logic calls it, awaits it and keeps the state of the call (loading, error); the Presenter
-decides what follows, navigation included.
+Presenter, stateful logic, another task or the entry of a unit with no UI calls it; a Presenter or stateful logic
+awaits it and keeps the state of the call (loading, error); the Presenter decides what follows, navigation
+included.
 
 **Why.** What a business action means does not depend on the UI: logging out is the same in a web app and in a
 mobile app, in any UI framework. Written inside stateful logic, it is tied to the life of a component and can run
