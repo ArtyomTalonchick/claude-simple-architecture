@@ -36,22 +36,24 @@ parts of one function, kept in its folder, are not mistaken for code the level s
 - The shape of a level, every part optional:
   - the entry, named as the folder, at the level root;
   - the logic folder (default `_logic/`) with all the non-UI code of the level but its stores: the Presenter,
-    stateful logic, helpers, a types file and a constants file (`types` and `constants`), and a tasks folder
-    (default `_tasks/`) with the tasks. It holds both the own unit's code and the code the level's units share. The
-    logic folder holds files, entry folders and the tasks folder; the tasks folder holds task files and task entry
-    folders. A level with no such code has no logic folder;
+    stateful logic, plain functions, a types file and a constants file (`types` and `constants`), and a tasks
+    folder (default `_tasks/`) with the tasks and the plain functions only tasks use
+    ([Stateful logic and plain functions](stateful-logic-and-functions.md)). It holds both the own unit's code and
+    the code the level's units share. The logic folder holds files, entry folders and the tasks folder; the tasks
+    folder holds task files, task entry folders and the plain functions of tasks. A level with no such code has no
+    logic folder;
   - the stores folder (default `_stores/`) with the stores of the level
-    ([Stateful logic and helpers](stateful-logic-and-helpers.md)), flat: both the own unit's stores and the ones
-    the level's units share. A level with no store has no stores folder;
+    ([Stateful logic and plain functions](stateful-logic-and-functions.md)), flat: both the own unit's stores and
+    the ones the level's units share. A level with no store has no stores folder;
   - the components folder (default `_components/`) with the child units used by two or more units of this level;
   - child units — unit folders used only by this level, with the same shape inside.
-- An entry folder: stateful logic, a helper or a task — an entry of the logic folder or the tasks folder, not the
-  Presenter — that has parts only it uses may be a folder named as its entry file, holding the entry and those
-  parts. A part is code that only this entry uses, directly or through its other parts: stateful logic or a helper
-  of stateful logic, a smaller task or a helper of a task, a helper of a helper, and a types or a constants file
-  used only inside the folder. A task is never a part of stateful logic or of a helper: it stays in the tasks
-  folder. The parts decide, not the line count: an entry with parts only it uses may be a folder at any size. In
-  the folder:
+- An entry folder: stateful logic, a plain function or a task — an entry of the logic folder or the tasks folder,
+  not the Presenter — that has parts only it uses may be a folder named as its entry file, holding the entry and
+  those parts. A part is code that only this entry uses, directly or through its other parts: stateful logic or a
+  plain function of stateful logic, a smaller task or a plain function of a task, a plain function of a plain
+  function, and a types or a constants file used only inside the folder. A task is never a part of stateful logic
+  or of a plain function: it stays in the tasks folder. The parts decide, not the line count: an entry with parts
+  only it uses may be a folder at any size. In the folder:
   - the entry is the file named as the folder; the parts are files next to it, one thing each, and keep their own
     kinds. An entry folder holds no folder but its tests;
   - its tests — of the entry and of its parts — sit in it, in a tests folder or beside the files, by the project's
@@ -64,7 +66,7 @@ parts of one function, kept in its folder, are not mistaken for code the level s
   next to the folder — to the logic folder, or to the tasks folder if it is a task — or higher, by the rules
   below, when its users sit elsewhere. An entry folder that holds only its entry, or its entry and its tests, is a
   violation: it is a file.
-- Any other file or folder at a level root is a violation: a stateful logic, helpers or tasks folder, a types or
+- Any other file or folder at a level root is a violation: a folder of stateful logic, functions or tasks, a types or
   constants file, or a file of non-UI code goes to the logic folder; a store goes to the stores folder; a unit goes
   next to the entry or to the components folder. Tests and the pure zone are not part of the shape (below).
 - A store in the logic folder or in its tasks folder is a violation, even when one unit uses it: it goes to the
@@ -83,6 +85,9 @@ parts of one function, kept in its folder, are not mistaken for code the level s
   user's folder, as its child unit.
 - A task whose only user is another task is a part of it: it lives in that task's entry folder, next to its entry
   ([Tasks](tasks.md)) — not as a task of its own in the tasks folder.
+- Inside a level, a plain function lies by the kinds of its users: in the tasks folder when only tasks use it, in
+  the logic folder outside the tasks folder when a Presenter or stateful logic uses it, with or without tasks
+  ([Stateful logic and plain functions](stateful-logic-and-functions.md)).
 - A child unit or a file used by two or more siblings, or from outside its parent level, is a violation: it
   belongs at the lowest level that covers all its users — a unit in that level's components folder, a store in its
   stores folder, other code in its logic folder.
@@ -115,7 +120,7 @@ OrdersPage/
     _tasks/
       exportOrders/     an entry folder — not a unit and not a level
         exportOrders    the entry: a task only the presenter calls
-        toCsvRow        a part: a helper only exportOrders uses
+        toCsvRow        a part: a plain function only exportOrders uses
         tests/          tests of exportOrders and toCsvRow
   _stores/
     ordersStore         read by orderFilters and by exportOrders — one user, the own unit, yet a store: not in

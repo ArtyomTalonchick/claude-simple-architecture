@@ -93,6 +93,12 @@ surrounding file when a rule depends on where the file lives or what it imports.
 - A folder inside a logic folder or a tasks folder that holds a file named as the folder is an entry folder, not a
   unit or a level (`references/core/levels.md`): judge where it lies and who uses it by its entry, and its other
   files as parts of that entry.
+- Whether a function is a task or a plain function is decided by meaning, not by whether it reaches a store
+  (`references/core/tasks.md`, `references/core/stateful-logic-and-functions.md`): a business action, one that
+  would stay the same in another UI, is a task; code that only changes UI state or acts on the screen is a plain
+  function. When the call is a judgement, say so in the finding. Before judging a plain function's folder or what
+  it may touch — the screen, the UI framework — find its users: a plain function a task calls has nothing from the
+  UI, and one used only by tasks lies in the tasks folder.
 - Core rules always apply. A stack rule carries out a core rule with one technology and never overrides it.
 - Line numbers are in the new version of the file (the `+` side of the diff). For a deleted file or a moved
   file, name the path and say so.

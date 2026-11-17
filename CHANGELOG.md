@@ -16,11 +16,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   custom names; the React and Zustand rules named the default folders as if they were fixed.
 - The ui-kit's name (`folders.uiKit`) is set on its own and does not follow `folders.components`: the ui-kit is
   part of the pure zone, not a level's shared components folder.
-- Any entry of the logic folder — stateful logic, a helper or a task — with parts only it uses may be an entry
-  folder named as its entry file: the entry, its parts and their tests. Others import only the entry; a part used
-  from outside the folder is a violation and moves out next to it. The parts decide, not the line count: a task
+- Any entry of the logic folder — stateful logic, a plain function or a task — with parts only it uses may be an
+  entry folder named as its entry file: the entry, its parts and their tests. Others import only the entry; a part
+  used from outside the folder is a violation and moves out next to it. The parts decide, not the line count: a task
   folder no longer depends on the file limit, and a task used only by another task always lives in its folder.
   The logic folder is no longer flat apart from the tasks folder, and an entry folder is not a unit or a level.
+- **Breaking:** a task is defined by meaning: a business action, or a step of one, that would stay the same action
+  in another UI or in another app on another UI framework (log out, place an order, clear the cart). The store
+  test — a function that reads or changes a store once is a task — is gone. The helper kind is replaced by the
+  plain function: non-UI code with no business logic that is neither a task nor stateful logic. It may be pure or
+  reach a store through its own API (in Zustand, `getState()` / `setState()`), never subscribes, does no I/O and
+  calls no task and no stateful logic. Its place follows its users: one used only by tasks lives in the tasks
+  folder; one used by a Presenter or stateful logic lives in the logic folder. A plain function a task calls has
+  nothing from the UI; one only the UI side uses may act on the screen and use the UI framework's API that is not
+  a hook (in React, `flushSync`). The one-way order is View → Presenter → stateful logic → tasks → plain functions.
+  A Presenter may hand a change of UI state, such as which screen is shown, to a plain function. The rule
+  "Stateful logic and helpers" is now "Stateful logic and plain functions" (`stateful-logic-and-functions.md`, in
+  the core and in the React and Zustand stacks). To update: a function that only changes UI state in a store moves
+  out of the tasks folder into the logic folder; a plain function used only by tasks moves into the tasks folder;
+  a plain function a task calls stops acting on the screen.
 
 ## [0.2.2] — 2026-11-16
 

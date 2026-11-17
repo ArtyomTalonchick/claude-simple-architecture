@@ -5,14 +5,14 @@ stores folder and the components folder of your own level and of any level above
 from the pure zone, and from the shared types package; from an entry folder in a logic folder, only its entry.
 Never reach into a child, into another branch, into a parent's entry or Presenter, into the parts of an entry
 folder from outside it, or into another app. Between kinds of code, imports go one way: View → Presenter →
-stateful logic → tasks → helpers; a Presenter, stateful logic and a task may also import a store, and only a task
-(and generic I/O itself) imports the generic I/O of the pure zone.
+stateful logic → tasks → plain functions; a Presenter, stateful logic, a task and a plain function may also import a
+store, and only a task (and generic I/O itself) imports the generic I/O of the pure zone.
 
 **Why.** When imports follow the folders, the folders tell the truth: a unit can be changed inside without
 breaking anyone, moved or deleted with its folder, and every dependency is visible from where a file lies. A
 single import into another branch or a parent ties two places that look apart, and the next change to one
-breaks the other. The one-way order between kinds of code keeps logic out of Views and keeps helpers free to run
-anywhere.
+breaks the other. The one-way order between kinds of code keeps logic out of Views, keeps the order of a business
+action's steps with its caller, and keeps plain functions free to run wherever their users are.
 
 **How to check.** For each import in the diff, find where its target lies and what kind of code both sides are.
 Level, parent, sibling and branch are as defined in [Levels and placement](levels.md); a file in a logic folder, a
@@ -21,12 +21,12 @@ stores folder or a components folder belongs to the level that holds the folder.
 - Allowed targets:
   - an own child unit, through its entry ([Levels and placement](levels.md)) — in an app with a UI the child's
     View, which also passes on its props type ([View and Presenter](view-presenter.md));
-  - anything in the logic folder of the own level and of any level above it — stateful logic, tasks, helpers,
-    types, constants — except that level's Presenter, which only its own entry imports. An entry folder there
-    ([Levels and placement](levels.md)) is imported only through its entry;
+  - anything in the logic folder of the own level and of any level above it — stateful logic, tasks, plain
+    functions, types, constants — except that level's Presenter, which only its own entry imports. An entry folder
+    there ([Levels and placement](levels.md)) is imported only through its entry;
   - inside an entry folder, the entry imports its parts and the parts import each other;
-  - the stores in the stores folder of the own level and of any level above it, from a Presenter, stateful logic or
-    a task;
+  - the stores in the stores folder of the own level and of any level above it, from a Presenter, stateful logic, a
+    task or a plain function;
   - the units in the components folder of the own level and of any level above it, through their entry;
   - the pure zone of the own app, from anywhere in it, by the kinds below;
   - the shared types package (`shared` in the config), from any app and any kind of code;
@@ -48,16 +48,20 @@ stores folder or a components folder belongs to the level that holds the folder.
 - By kind, among the allowed targets, a violation is any import outside this list:
   - View → its own Presenter, child units, components from components folders and from the ui-kit, types,
     constants;
-  - the entry of a unit with no UI → child units, stateful logic, tasks, helpers, types, constants;
-  - Presenter → stateful logic, tasks, stores, helpers, types, constants — never a View or a component;
-  - stateful logic → stateful logic, tasks, stores, helpers, types, constants;
-  - task → tasks, stores, helpers, generic I/O, types, constants — never a View, a Presenter, stateful logic or
-    a helper that acts on the screen ([Tasks](tasks.md));
-  - store → helpers, types, constants — never another store, a task or stateful logic
-    ([Stateful logic and helpers](stateful-logic-and-helpers.md));
-  - helper → helpers, types, constants;
-  - generic I/O ([Pure zone](pure-zone.md)) → generic I/O, helpers, types, constants of the pure zone. No kind but
-    a task and generic I/O imports it.
+  - the entry of a unit with no UI → child units, stateful logic, tasks, plain functions, types, constants;
+  - Presenter → stateful logic, tasks, stores, plain functions, types, constants — never a View or a component;
+  - stateful logic → stateful logic, tasks, stores, plain functions, types, constants;
+  - task → tasks, stores, plain functions, generic I/O, types, constants — never a View, a Presenter, stateful
+    logic, the UI framework, or a plain function that acts on the screen or imports from the UI framework
+    ([Tasks](tasks.md));
+  - plain function → plain functions, stores, the pure zone but its generic I/O, types, constants — never a task,
+    stateful logic or generic I/O. One that only the UI side uses may also import the UI framework's API that is
+    not stateful logic ([Stateful logic and plain functions](stateful-logic-and-functions.md));
+  - store → plain functions that reach no store, directly or through other plain functions, the pure zone but its
+    generic I/O, types, constants — never another store, a task or stateful logic
+    ([Stateful logic and plain functions](stateful-logic-and-functions.md));
+  - generic I/O ([Pure zone](pure-zone.md)) → generic I/O, pure functions, types, constants of the pure zone. No
+    kind but a task and generic I/O imports it.
 - A type-only import is allowed for every kind from any allowed target, including a child's View: a Presenter may
   import the props type its child passes on. It brings in no markup and no logic.
 - When two units need the same logic, it goes to the logic folder of the lowest level above them. When they need
@@ -78,8 +82,9 @@ OrdersPage/
   _logic/
     presenter           imports _logic/orderFilters, _logic/_tasks/cancelOrder, _logic/formatPrice, the row type
                         from OrderTable
-    orderFilters        imports _stores/ordersStore, _logic/formatPrice, lib/helpers/debounce
+    orderFilters        imports _stores/ordersStore, _logic/formatPrice, lib/timing/debounce
     formatPrice
+    selectedCount       a plain function: imports _stores/ordersStore and reads it once — used by the presenter
     _tasks/
       cancelOrder       imports _stores/ordersStore, _logic/_tasks/notifyUser, lib/http/fetchJson — called by the
                         presenter and by OrderTable/_logic/presenter
@@ -124,6 +129,7 @@ shared/src/             the shared types package
 OrdersPage/
   OrdersPage            imports OrderTable/_logic/presenter — inside a child
   _logic/
+    formatPrice         imports _logic/_tasks/notifyUser — a plain function importing a task
     _tasks/
       cancelOrder       imports _logic/orderFilters — a task importing stateful logic
   _stores/

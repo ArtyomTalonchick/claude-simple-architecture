@@ -13,8 +13,9 @@ level. Pure code stays in the pure zone whatever the number of its users.
 only for its own reasons, can be reused anywhere in the app, and can move to another project as it is. Once it
 picks up one app dependency, a change in the app can break the base, and the base can no longer be moved. It is
 a base, not shared code, so it does not move down to its one user the way shared code does. Generic I/O is
-neither a task nor a helper: it holds no business logic, so it is no task, and it reaches outside the program, so
-it is no helper. Called only from tasks, it keeps the app's I/O where it already is — in the tasks.
+neither a task nor a plain function: it holds no business logic, so it is no task, and it reaches outside the
+program, so it is no plain function. Called only from tasks, it keeps the app's I/O where it already is — in the
+tasks.
 
 **How to check.**
 
@@ -24,18 +25,20 @@ it is no helper. Called only from tasks, it keeps the app's I/O where it already
   follow the name of a level's components folder (`folders.components`): the ui-kit is part of the pure zone, not a
   level's shared components folder.
 - The lib folder holds folders named by what they hold — generic I/O (e.g. `lib/http/`), errors, the theme
-  (e.g. `lib/theme/`), icons, styles, stateful logic, helpers — and the ui-kit when it is set inside it. They all
-  follow this rule. A name such as `hooks/` or `helpers/` is a name by content too; what a function does decides
-  its kind ([Stateful logic and helpers](stateful-logic-and-helpers.md)), not the folder it lies in.
+  (e.g. `lib/theme/`), icons, styles, stateful logic, pure functions (e.g. `lib/dates/`) — and the ui-kit when it
+  is set inside it. They all follow this rule. A name by kind, such as `hooks/`, is a name by content too; what a
+  function does decides its kind ([Stateful logic and plain functions](stateful-logic-and-functions.md)), not the
+  folder it lies in. A pure function is a plain function of the pure zone: it knows nothing of the app, so it
+  reaches no store.
 - A tasks folder in the lib folder (`tasks/`, or named as the configured tasks folder, default `_tasks/`) is a
-  violation: a task
-  is the app's business logic, and the pure zone has none. Code in it that knows nothing of the app is generic I/O
-  or a helper and goes to a folder named by what it holds; code that knows the app is a task and goes to the app.
+  violation: a task is the app's business logic, and the pure zone has none. Code in it that knows nothing of the
+  app is generic I/O or a pure function and goes to a folder named by what it holds; code that knows the app is a
+  task and goes to the app.
 - Generic I/O is a function in the pure zone that does I/O — a request, a storage access — and knows nothing of
   the app: no endpoint, key or data shape of the app, only what its caller passes in. Only a task and other
-  generic I/O call it. A Presenter, stateful logic, a helper, a View, a store or the entry of a unit with no UI
-  that calls it is a violation, as reaching the server outside a task is ([Tasks](tasks.md)). In the app, code
-  that does I/O is a task, even when it calls generic I/O.
+  generic I/O call it. A Presenter, stateful logic, a plain function, a View, a store or the entry of a unit with
+  no UI that calls it is a violation, as reaching the server outside a task is ([Tasks](tasks.md)). In the app,
+  code that does I/O is a task, even when it calls generic I/O.
 - A file in the pure zone that imports from the app — any path under the root level outside the pure zone — is a
   violation. Imports from outside the project (packages), from elsewhere in the pure zone, and of files outside
   the root level that are not app code (design assets such as an icon sprite) are allowed.
@@ -47,8 +50,8 @@ it is no helper. Called only from tasks, it keeps the app's I/O where it already
 - A pure zone folder below the root level (a module with its own lib folder) is a violation: the pure zone exists
   only at the root.
 - A pure zone file with one user is not a violation of [Levels and placement](levels.md).
-- [View and Presenter](view-presenter.md) and [Stateful logic and helpers](stateful-logic-and-helpers.md) hold
-  inside the pure zone too.
+- [View and Presenter](view-presenter.md) and
+  [Stateful logic and plain functions](stateful-logic-and-functions.md) hold inside the pure zone too.
 
 **Good.**
 
@@ -61,8 +64,8 @@ src/
       SearchField/        looks up the style "searchField", registered in lib/theme/
     hooks/
       disclosure          open / closed state, no app imports
-    helpers/
-      formatDate          no app imports
+    dates/
+      formatDate          a pure function, no app imports
     http/
       fetchJson           generic I/O: a request to the URL it is given, the body parsed; throws HttpError
     errors/
@@ -91,7 +94,7 @@ src/
       Button/             no app imports
       UserAvatar/         its presenter reads the current user from the store — app code inside the pure zone
       SearchField/        looks up the style "searchField", registered in theme/ — an app dependency by key
-    helpers/
+    dates/
       formatDate          imports the Order type from the app
     _tasks/
       fetchJson           a tasks folder in the pure zone — generic I/O goes to lib/http/

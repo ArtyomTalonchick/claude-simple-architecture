@@ -10,18 +10,19 @@ plugin's repository.
 - [Levels and placement](levels.md) — every level has the same shape — the entry, its non-UI code in the logic
   folder, its stores in the stores folder, shared units in the components folder and child units; code lives at
   the lowest level that covers all its users.
-- [Stateful logic and helpers](stateful-logic-and-helpers.md) — three kinds of non-UI code: stateful logic uses
-  state, lifecycle or a store subscription, a task carries out a user action or a step of one, a helper is a plain
-  function; one concern per piece of stateful logic. A store is data shared by the code that reads it, kept apart in
-  the stores folder and reached only by tasks and, on a client, by a Presenter or stateful logic.
-- [Tasks](tasks.md) — a user action is a plain function that reaches stores directly; the Presenter or stateful
-  logic awaits it and keeps loading and error; the Presenter navigates.
+- [Stateful logic and plain functions](stateful-logic-and-functions.md) — three kinds of non-UI code: stateful logic
+  uses state, lifecycle or a store subscription, a task carries out a business action or a step of one, a plain
+  function has no business logic, does no I/O and calls no task or stateful logic, and lives by its users; one
+  concern per piece of stateful logic. A store is data shared by the code that reads it, kept apart in the stores
+  folder and reached only by tasks, plain functions and, on a client, by a Presenter or stateful logic.
+- [Tasks](tasks.md) — a business action, one that stays the same in any UI, is a function that reaches stores
+  directly; the Presenter or stateful logic awaits it and keeps loading and error; the Presenter navigates.
 - [Pure zone](pure-zone.md) — code that knows nothing of the app lives in `lib/` and the ui-kit at the root,
   with the design-system theme, in folders named by what they hold, and depends on nothing from the app, by import
   or by key. Generic I/O — I/O that knows nothing of the app — is its own kind there, called only by tasks; `lib/`
   holds no tasks.
-- [One thing per file](one-thing-per-file.md) — one View, Presenter, stateful logic, task or helper per file; a file
-  over the line limit is a violation.
+- [One thing per file](one-thing-per-file.md) — one View, Presenter, stateful logic, task or plain function per file;
+  a file over the line limit is a violation.
 - [Imports](imports.md) — import along the structure only, never into another app; between kinds of code, View →
-  Presenter → stateful logic → tasks → helpers, a Presenter, stateful logic or a task may import a store, and
-  only a task imports generic I/O.
+  Presenter → stateful logic → tasks → plain functions, a Presenter, stateful logic, a task or a plain function may
+  import a store, and only a task imports generic I/O.

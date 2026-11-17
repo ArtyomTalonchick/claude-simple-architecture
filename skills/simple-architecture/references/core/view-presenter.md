@@ -28,17 +28,19 @@ of the screen.
 - The whole View file counts, not only its markup: a constant built by a computation outside the markup (a list
   mapped from another list, text joined from parts) is a computation in the View. It goes to the Presenter: a
   unit that needs it has logic, so it has a Presenter. Reading styles from the design system is not stateful
-  logic and is not a violation of [Stateful logic and helpers](stateful-logic-and-helpers.md).
-- A user action is a task the Presenter calls ([Tasks](tasks.md)): the Presenter awaits it, keeps the state of
-  the call — loading, error — and decides what follows, navigation included. The steps of the action itself do
-  not belong in the Presenter.
+  logic and is not a violation of [Stateful logic and plain functions](stateful-logic-and-functions.md).
+- A business action is a task the Presenter calls ([Tasks](tasks.md)): the Presenter awaits it, keeps the state
+  of the call — loading, error — and decides what follows, navigation included. The steps of the action itself do
+  not belong in the Presenter. A change of UI state — which screen is shown, a flag for an animation — is not a
+  business action: the Presenter may make it itself or hand it to a plain function
+  ([Stateful logic and plain functions](stateful-logic-and-functions.md)).
 - A violation: a Presenter file with no logic in it (an empty or pass-through Presenter).
 - A **warning**, not a violation: a Presenter whose own state and lifecycle fall into two or more groups by the
-  two-concerns test of [Stateful logic and helpers](stateful-logic-and-helpers.md). Name the groups and say which
-  could move out as stateful logic, so the Presenter only joins it. Not counted: the stateful logic it calls, the
-  values it computes from props or from that logic, and the loading and error of a task kept by the handler that
-  calls it. A Presenter with one group of its own stays whole: splitting it would add a file for nothing. The
-  moved-out logic goes to the unit's logic folder while the Presenter is its only user
+  two-concerns test of [Stateful logic and plain functions](stateful-logic-and-functions.md). Name the groups and
+  say which could move out as stateful logic, so the Presenter only joins it. Not counted: the stateful logic it
+  calls, the values it computes from props or from that logic, and the loading and error of a task kept by the
+  handler that calls it. A Presenter with one group of its own stays whole: splitting it would add a file for
+  nothing. The moved-out logic goes to the unit's logic folder while the Presenter is its only user
   ([Levels and placement](levels.md)). Which jobs are simple enough to stay is a judgement, so it is not a
   violation.
 - The props type lives in the Presenter, and the View passes it on to its users, so they import it from the
