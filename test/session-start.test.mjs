@@ -49,7 +49,7 @@ test('empty config: every default', () => {
   assert.match(out, /Root level: src\/\. Pure zone: src\/lib\/\. UI kit: src\/lib\/components\/\./);
   assert.match(
     out,
-    /On every level: its non-UI code in logic\/ next to its entry, tasks in logic\/tasks\/; its stores in stores\/, never in logic\/; shared child units in components\/\./
+    /On every level: its non-UI code in _logic\/ next to its entry, tasks in _logic\/_tasks\/; its stores in _stores\/, never in _logic\/; shared child units in _components\/\./
   );
   assert.match(out, /File size limit: 120 lines; a longer file is a violation \(test files and generated files are not checked\)\./);
   assert.doesNotMatch(out, /problems|Unknown/);
@@ -97,7 +97,7 @@ test('wrong types and unknown keys: defaults are used and each problem is named'
   );
   assert.match(out, /Stack: none - core rules only\./);
   assert.match(out, /Root level: src\//);
-  assert.match(out, /tasks in logic\/tasks\//);
+  assert.match(out, /tasks in _logic\/_tasks\//);
   assert.match(out, /File size limit: 120 lines; a longer file is a violation \(/);
   for (const problem of [
     '"stack" is not a list of names',
@@ -120,14 +120,20 @@ test('the removed keys folders.hooks and folders.helpers get the unknown-key not
   assert.doesNotMatch(out, /use\/|utils\//);
 });
 
-test('folders.stores: a custom name is used, and a value of the wrong type falls back to stores', () => {
+test('folders.stores: a custom name is used, and a value of the wrong type falls back to _stores', () => {
   const custom = runHook(JSON.stringify({ folders: { stores: 'data' } }));
-  assert.match(custom, /its stores in data\/, never in logic\//);
+  assert.match(custom, /its stores in data\/, never in _logic\//);
   assert.doesNotMatch(custom, /problems|stores\//);
 
   const wrong = runHook(JSON.stringify({ folders: { stores: 3 } }));
-  assert.match(wrong, /its stores in stores\/, never in logic\//);
+  assert.match(wrong, /its stores in _stores\/, never in _logic\//);
   assert.ok(wrong.includes('"folders.stores" is not a folder name'), 'names folders.stores');
+});
+
+test('folders.components does not rename the ui-kit', () => {
+  const out = runHook(JSON.stringify({ folders: { components: 'parts' } }));
+  assert.match(out, /UI kit: src\/lib\/components\/\./);
+  assert.match(out, /shared child units in parts\/\./);
 });
 
 test('a byte order mark at the start of the file is ignored', () => {

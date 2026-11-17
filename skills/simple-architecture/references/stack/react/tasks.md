@@ -24,14 +24,14 @@ show the call its own way.
 **Good.**
 
 ```ts
-// logic/tasks/logout.ts
+// _logic/_tasks/logout.ts
 export const logout = async () => {
   await unsubscribePush();
   await api.logout();
   useSessionStore.setState({ user: null });
 };
 
-// LogoutButton/logic/usePresenter.ts
+// LogoutButton/_logic/usePresenter.ts
 export const usePresenter = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -54,7 +54,7 @@ export const usePresenter = () => {
 **Bad.**
 
 ```ts
-// logic/tasks/logout.ts — a hook, navigation and the error as a value
+// _logic/_tasks/logout.ts — a hook, navigation and the error as a value
 export const useLogout = () => {
   const navigate = useNavigate();
   return async () => {

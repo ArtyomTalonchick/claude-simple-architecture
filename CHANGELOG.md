@@ -5,6 +5,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- **Breaking:** the default service folder names start with `_`: `_logic`, `_tasks`, `_stores` and `_components`
+  (`lib` and the ui-kit, `lib/components`, stay). A service folder now stands apart from the unit folders at a
+  glance and sorts above them. A project that keeps the old names sets them in `folders`:
+  `{"folders": {"logic": "logic", "tasks": "tasks", "stores": "stores", "components": "components"}}`.
+- The rules name a service folder by its role — the logic folder, the tasks folder, the stores folder, the
+  components folder — and give the default only in parentheses and in the examples, so they read right with
+  custom names; the React and Zustand rules named the default folders as if they were fixed.
+- The ui-kit's name (`folders.uiKit`) is set on its own and does not follow `folders.components`: the ui-kit is
+  part of the pure zone, not a level's shared components folder.
+
 ## [0.2.2] — 2026-11-16
 
 ### Added

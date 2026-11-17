@@ -12,10 +12,10 @@ const CONFIG_PATH = '.claude/simple-architecture/config.json';
 const DEFAULT_FOLDERS = {
   lib: 'lib',
   uiKit: 'lib/components',
-  components: 'components',
-  tasks: 'tasks',
-  logic: 'logic',
-  stores: 'stores',
+  components: '_components',
+  tasks: '_tasks',
+  logic: '_logic',
+  stores: '_stores',
 };
 const DEFAULTS = { stack: [], root: 'src', folders: DEFAULT_FOLDERS, maxFileLines: 120, apps: null, shared: null };
 

@@ -49,10 +49,10 @@ a missing key takes its default. The full file with the defaults:
   "folders": {
     "lib": "lib",
     "uiKit": "lib/components",
-    "components": "components",
-    "tasks": "tasks",
-    "logic": "logic",
-    "stores": "stores"
+    "components": "_components",
+    "tasks": "_tasks",
+    "logic": "_logic",
+    "stores": "_stores"
   },
   "maxFileLines": 120
 }
@@ -63,7 +63,9 @@ a missing key takes its default. The full file with the defaults:
   it has no stack folder. An empty list means core rules only.
 - **`root`** — the folder of the app's root level, relative to the project root.
 - **`folders.lib`** — the pure zone, relative to `root`.
-- **`folders.uiKit`** — the ui-kit, relative to `root`. Wherever it lives, it belongs to the pure zone.
+- **`folders.uiKit`** — the ui-kit, relative to `root`. Wherever it lives, it belongs to the pure zone. Its name
+  is set here on its own and does not follow `folders.components`: the ui-kit is part of the pure zone, not a
+  level's shared components folder.
 - **`folders.logic`** — the name of the folder next to a level's entry that holds the level's non-UI code but its
   stores: its own unit's and what its units share — stateful logic, helpers, tasks, types and constants.
 - **`folders.tasks`** — the name of the tasks folder inside the logic folder.
@@ -96,7 +98,7 @@ A repository with several apps — a client, a server and a package of types the
 - **`shared`** — the shared types package, relative to the project root: types only, imported by every app,
   importing no app ([Imports](references/core/imports.md)). Optional, with or without `apps`.
 
-The rules name a folder by its role and its default, for example "the logic folder (default `logic/`)"; in a
+The rules name a folder by its role and its default, for example "the logic folder (default `_logic/`)"; in a
 project, use the configured name.
 
 A value of the wrong type is ignored, its default is used, and the user is told; so is an unknown key. A file

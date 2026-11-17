@@ -1,11 +1,11 @@
 ## Levels and placement
 
 **Rule.** The app root and every unit folder are levels, and every level has the same shape: the unit's entry at its
-root, the level's non-UI code in its logic folder (default `logic/`) — apart from its stores, which go to its stores
-folder (default `stores/`) — the shared components folder (default `components/`) and the child units next to them.
-Put code at the lowest level that covers all its users: in the logic folder or the stores folder of the one unit
-that uses it, or of the level that holds all its users. When a user appears outside that level, move the code up to
-the level that covers them all.
+root, the level's non-UI code in its logic folder (default `_logic/`) — apart from its stores, which go to its
+stores folder (default `_stores/`) — the shared components folder (default `_components/`) and the child units next
+to them. Put code at the lowest level that covers all its users: in the logic folder or the stores folder of the one
+unit that uses it, or of the level that holds all its users. When a user appears outside that level, move the code
+up to the level that covers them all.
 
 **Why.** Code that sits next to its only user can be changed without checking anyone else; code that sits higher
 than needed looks shared, so every change to it needs a search for users that do not exist. One shape on every
@@ -23,19 +23,19 @@ level when its users change: only the level it sits on says who may use it.
     several apps, the root of each app (`apps` in the config) is a root level of its own; no level spans two apps,
     and the shared types package is not a level;
   - the logic folder, the stores folder and the components folder, and the files in them, belong to the level that
-    holds them; a unit folder inside the components folder (`components/StatusBadge/`) is a level of its own;
+    holds them; a unit folder inside the components folder (`_components/StatusBadge/`) is a level of its own;
   - the parent of a level is the nearest level above it; levels with the same parent are siblings; one level's
     subtree is a branch.
 - The shape of a level, every part optional:
   - the entry, named as the folder, at the level root;
-  - the logic folder (default `logic/`) with all the non-UI code of the level but its stores: the Presenter,
+  - the logic folder (default `_logic/`) with all the non-UI code of the level but its stores: the Presenter,
     stateful logic, helpers, a types file and a constants file (`types` and `constants`), and a tasks folder
-    (default `tasks/`) with the tasks. It holds both the own unit's code and the code the level's units share. The
+    (default `_tasks/`) with the tasks. It holds both the own unit's code and the code the level's units share. The
     logic folder is flat apart from the tasks folder. A level with no such code has no logic folder;
-  - the stores folder (default `stores/`) with the stores of the level
+  - the stores folder (default `_stores/`) with the stores of the level
     ([Stateful logic and helpers](stateful-logic-and-helpers.md)), flat: both the own unit's stores and the ones
     the level's units share. A level with no store has no stores folder;
-  - the components folder (default `components/`) with the child units used by two or more units of this level;
+  - the components folder (default `_components/`) with the child units used by two or more units of this level;
   - child units — unit folders used only by this level, with the same shape inside.
 - Any other file or folder at a level root is a violation: a stateful logic, helpers or tasks folder, a types or
   constants file, or a file of non-UI code goes to the logic folder; a store goes to the stores folder; a unit goes
@@ -66,7 +66,8 @@ level when its users change: only the level it sits on says who may use it.
 - An empty logic, tasks, stores or components folder is a violation: a folder exists only when it has content.
 - A child unit does not need the parent's name as a prefix.
 - The exception is the pure zone ([Pure zone](pure-zone.md)): it sits at the root level next to its shape, and pure
-  code stays there whatever the number of its users.
+  code stays there whatever the number of its users. The ui-kit is part of the pure zone, not a components folder
+  of the root level: its name is set on its own and does not follow the components folder's name.
 - Tests are not part of the shape. A test lives next to the code it tests — a test file beside it, or a tests
   folder in the folder that holds it, by the project's convention — and is not a unit, a folder of the shape or a
   level. A test is not a user: it does not count when deciding where code goes, and a file used by one unit and by
@@ -77,29 +78,29 @@ level when its users change: only the level it sits on says who may use it.
 ```
 OrdersPage/
   OrdersPage            View
-  logic/
+  _logic/
     presenter           Presenter
     orderFilters        used only by the presenter
     constants           PAGE_SIZE — used by the presenter and by OrderTable
     types               StatusCount — used by orderFilters and by OrderFilters
                         OrderFilter — used by the presenter and orderFilters
-    tasks/
+    _tasks/
       exportOrders      a task only the presenter calls
-  stores/
+  _stores/
     ordersStore         read by orderFilters and by exportOrders — one user, the own unit, yet a store: not in
-                        logic/
-  components/
+                        _logic/
+  _components/
     StatusBadge/        used by OrderTable and OrderFilters
   OrderTable/           used only by OrdersPage
     OrderTable
-    logic/
+    _logic/
       presenter
-      selectedRows      stateful logic: subscribes to stores/selectionStore
-    stores/
+      selectedRows      stateful logic: subscribes to _stores/selectionStore
+    _stores/
       selectionStore    used only inside OrderTable
     tests/              tests of OrderTable and its presenter — not a level
   OrderFilters/         used only by OrdersPage
-    OrderFilters        no logic, so no logic/
+    OrderFilters        no logic, so no _logic/
 ```
 
 An app with no UI has the same levels, with an entry in place of a View:
@@ -110,13 +111,13 @@ src/
   createApp             the root unit's entry: builds the app with its route modules
   orders/
     orders              the entry: builds the routes of /orders
-    logic/
+    _logic/
       requireUser       used by orders
       parseOrderId      used by two child units
       types             used by orders and by the child units
-      tasks/
+      _tasks/
         loadOrder       used by orders and by items
-    stores/
+    _stores/
       ordersCache       orders kept in memory, read and filled by loadOrder
     items/              the routes of /orders/:id/items — a child unit
       items             the entry
@@ -129,24 +130,24 @@ src/
 ```
 OrdersPage/
   OrdersPage
-  presenter             at the level root — it belongs in logic/
-  types                 at the level root — it belongs in logic/
+  presenter             at the level root — it belongs in _logic/
+  types                 at the level root — it belongs in _logic/
   hooks/
-    orderFilters        a stateful logic folder at the level root — it belongs in logic/
-  logic/
-    formatTotal         used only by OrderTable — it belongs in OrderTable/logic/
-    ordersStore         a store in logic/ — it belongs in OrdersPage/stores/
-  stores/
-    selectionStore      used only by OrderTable — it belongs in OrderTable/stores/
-  components/           empty
+    orderFilters        a stateful logic folder at the level root — it belongs in _logic/
+  _logic/
+    formatTotal         used only by OrderTable — it belongs in OrderTable/_logic/
+    ordersStore         a store in _logic/ — it belongs in OrdersPage/_stores/
+  _stores/
+    selectionStore      used only by OrderTable — it belongs in OrderTable/_stores/
+  _components/          empty
   OrderTable/
     OrderTable
-    StatusBadge/        OrderFilters uses it too — it belongs in OrdersPage/components/
+    StatusBadge/        OrderFilters uses it too — it belongs in OrdersPage/_components/
   OrderFilters/
     OrderFilters
-    logic/
+    _logic/
       types             StatusCount — orderFilters of OrdersPage uses it too, so OrdersPage would import from
-                        inside a child — it belongs in OrdersPage/logic/types
+                        inside a child — it belongs in OrdersPage/_logic/types
 ```
 
 **Stack notes.** [react/view-presenter.md](../stack/react/view-presenter.md) — the View and Presenter files of a

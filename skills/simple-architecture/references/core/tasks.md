@@ -32,8 +32,8 @@ the UI's part: showing the call and going somewhere after it.
   its own, and the actions call it.
 - Steps of one user action — a server call, store changes, other actions — written in a Presenter or in stateful
   logic are a violation: they are a task. One call of a store's action is not.
-- Placement follows [Levels and placement](levels.md): in the tasks folder (default `tasks/`) inside the logic
-  folder (default `logic/`) of the lowest level that covers all its users. A task is one file,
+- Placement follows [Levels and placement](levels.md): in the tasks folder (default `_tasks/`) inside the logic
+  folder (default `_logic/`) of the lowest level that covers all its users. A task is one file,
   or a folder named as the task when it needs several files to stay within the file limit: the file of the same
   name is its entry, and the rest are parts only it uses — a smaller task or a helper only it calls. Others import
   only the entry.
@@ -43,8 +43,8 @@ the UI's part: showing the call and going somewhere after it.
 **Good.**
 
 ```
-logic/
-  tasks/
+_logic/
+  _tasks/
     logout            await unsubscribePush(); await api.logout(); session store: clear
                       — called by LogoutButton and SessionExpired
     unsubscribePush   await api.unsubscribe(push token from the settings store) — called by logout and
@@ -53,7 +53,7 @@ logic/
 SessionExpired/
 LogoutButton/
   LogoutButton        View
-  logic/
+  _logic/
     presenter         onClick: loading = true; try await logout(), go to the start page
                       catch error -> error; finally loading = false
 ```
@@ -62,14 +62,14 @@ LogoutButton/
 
 ```
 LogoutButton/
-  logic/
+  _logic/
     presenter         onClick: await api.unsubscribe(...); await api.logout(); session store: clear;
                       go to the start page — the action lives in the Presenter
 UserMenu/
-  logic/
+  _logic/
     presenter         onOpen: user = await fetchJson('/user') from lib/http/ — generic I/O outside a task
-logic/
-  tasks/
+_logic/
+  _tasks/
     logout            ...; navigate to the start page — navigation in a task
     publishPost       try await api.publish(post) catch e: return { error: e } — the error as a value
 ```

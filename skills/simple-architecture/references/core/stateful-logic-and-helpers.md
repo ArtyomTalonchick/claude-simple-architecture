@@ -4,8 +4,8 @@
 them in stores. Stateful logic uses state, lifecycle or a subscription to a store, or calls other stateful logic; a
 task carries out a user action, or a step of one, and reaches stores, the server or other tasks
 ([Tasks](tasks.md)); a helper is a plain function that does none of this; a store is data that lives longer than one
-call and is shared by the code that reads it. Stateful logic and helpers go to the logic folder (default `logic/`),
-tasks to the tasks folder inside it (default `logic/tasks/`), stores to the stores folder (default `stores/`), on
+call and is shared by the code that reads it. Stateful logic and helpers go to the logic folder (default `_logic/`),
+tasks to the tasks folder inside it (default `_logic/_tasks/`), stores to the stores folder (default `_stores/`), on
 the level set by [Levels and placement](levels.md). A helper may be called from a Presenter, stateful logic, a task
 or another helper, except that a task never calls one that acts on the screen; a task from a Presenter, stateful
 logic or another task; stateful logic only from a Presenter or other stateful logic; a store is reached only by a
@@ -30,7 +30,7 @@ logic around it, and the few kinds of code that reach it show who depends on it.
 - A store file holds the data and its own API — reading and changing that data — and nothing else. A server call,
   a step of a user action, a subscription to show the data, or a computation for one of its users in a store file
   is a violation: it goes to a task, to stateful logic or to a helper.
-- A store lives in the stores folder (default `stores/`) of the lowest level that covers all its users
+- A store lives in the stores folder (default `_stores/`) of the lowest level that covers all its users
   ([Levels and placement](levels.md)). A store in a logic folder or a tasks folder is a violation, even with one
   user.
 - Who reaches a store: a task, through the store's own API, on any app; on a client also a Presenter or stateful
@@ -77,20 +77,20 @@ logic around it, and the few kinds of code that reach it show who depends on it.
 
 ```
 OrdersPage/
-  logic/
+  _logic/
     orderFilters        stateful logic: keeps the filter state
-    currentUser         stateful logic: subscribes to stores/userStore
+    currentUser         stateful logic: subscribes to _stores/userStore
     statusFilter        stateful logic: options computed from the orders, the selected status, the filtered
                         orders — one concern: the options have no state of their own
     formatPrice         a helper: number -> text, no state
-    tasks/
-      cancelOrder       server call, then stores/ordersStore: remove the order — once, no subscription
-  stores/
+    _tasks/
+      cancelOrder       server call, then _stores/ordersStore: remove the order — once, no subscription
+  _stores/
     ordersStore         a store: the orders and its API — read, set, remove
     userStore           a store: the current user and its API
   OrderSearch/
     OrderSearch         View
-    logic/
+    _logic/
       presenter         query = searchQuery(); result = ordersRequest(query.value)
       searchQuery       the field: value, change, clear
       ordersRequest     the request for a query: wait for typing to stop, cancel, retry
@@ -100,11 +100,11 @@ A server keeps its stores the same way:
 
 ```
 orders/
-  orders                the entry: builds the routes of /orders, calls logic/tasks/loadOrder
-  logic/
-    tasks/
-      loadOrder         reads stores/ordersCache; on a miss, loads the order and puts it there
-  stores/
+  orders                the entry: builds the routes of /orders, calls _logic/_tasks/loadOrder
+  _logic/
+    _tasks/
+      loadOrder         reads _stores/ordersCache; on a miss, loads the order and puts it there
+  _stores/
     ordersCache         a store: orders by id in memory, with get, put and clear
 ```
 
@@ -112,19 +112,19 @@ orders/
 
 ```
 OrdersPage/
-  logic/
+  _logic/
     orderFilters        keeps the filter state
     formatPrice         called by a task as a helper, but follows the currency in the store — stateful logic
-    cancelOrder         server call, then a store change — a task outside tasks/
+    cancelOrder         server call, then a store change — a task outside _tasks/
     toOrderLines        a helper that loads the products with lib/http/fetchJson — I/O in the app is a task
-    ordersStore         a store in logic/ — it belongs in stores/
-    tasks/
+    ordersStore         a store in _logic/ — it belongs in _stores/
+    _tasks/
       currentUser       subscribes to the store — stateful logic, not a task
-  stores/
+  _stores/
     cartStore           the cart and its API, and loadCart, which calls the server — a task inside a store
   OrderSearch/
     OrderSearch         View
-    logic/
+    _logic/
       presenter         search = orderSearch()
       orderSearch       the field and the request in one — two concerns
 ```

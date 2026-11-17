@@ -1,8 +1,8 @@
 ## View and Presenter in React
 
 **Rule.** A component is a View: `MyComponent/MyComponent.tsx`, named as its folder. Its Presenter is the hook
-`usePresenter.ts` in the unit's `logic/` folder, which declares the props type; the View re-exports that type
-for its users. The only hooks a View calls are its own `usePresenter` and styling hooks.
+`usePresenter.ts` in the unit's logic folder (default `_logic/`), which declares the props type; the View
+re-exports that type for its users. The only hooks a View calls are its own `usePresenter` and styling hooks.
 
 **Why.** One file name per role makes the pair easy to find, and a short list of allowed hooks is easy to check:
 any other hook in a component means logic has leaked into the View. Styling hooks only return styles, and styles
@@ -33,13 +33,13 @@ are the View's concern.
   A literal array or object is allowed.
 - `usePresenter.ts` with no hook call and no computation — it only returns its props — is a violation.
 - The props type is declared in `usePresenter.ts` and re-exported from the component file (`export type {
-  OrderListProps } from './logic/usePresenter'`), so users import it from the View; a component without a Presenter
+  OrderListProps } from './_logic/usePresenter'`), so users import it from the View; a component without a Presenter
   declares its props type in its own file.
 
 **Good.**
 
 ```tsx
-// OrderList/logic/usePresenter.ts
+// OrderList/_logic/usePresenter.ts
 export type OrderListProps = { status: OrderStatus };
 
 export const usePresenter = ({ status }: OrderListProps) => {
@@ -54,9 +54,9 @@ export const usePresenter = ({ status }: OrderListProps) => {
 };
 
 // OrderList/OrderList.tsx
-import { usePresenter, type OrderListProps } from './logic/usePresenter';
+import { usePresenter, type OrderListProps } from './_logic/usePresenter';
 
-export type { OrderListProps } from './logic/usePresenter';
+export type { OrderListProps } from './_logic/usePresenter';
 
 export const OrderList = (props: OrderListProps) => {
   const { rows, isLoading, open } = usePresenter(props);
@@ -68,7 +68,7 @@ export const OrderList = (props: OrderListProps) => {
 A value the View passes to a prop is ready too, even when it only turns `null` into `undefined`:
 
 ```tsx
-// UserCard/logic/usePresenter.ts
+// UserCard/_logic/usePresenter.ts
 export const usePresenter = ({ userId }: UserCardProps) => {
   const { user } = useUser(userId);
   return { name: user?.name ?? 'Guest', imageSrc: user?.image ?? undefined };
@@ -86,7 +86,7 @@ A pattern, not a check: the Presenter returns a child's props as one value, type
 `{pagination && …}` only chooses markup by a ready value:
 
 ```tsx
-// OrderList/logic/usePresenter.ts
+// OrderList/_logic/usePresenter.ts
 import type { PaginationProps } from '../Pagination/Pagination';
 
 export const usePresenter = ({ status }: OrderListProps) => {

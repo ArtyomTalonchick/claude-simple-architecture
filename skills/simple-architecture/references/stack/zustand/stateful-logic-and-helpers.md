@@ -1,7 +1,7 @@
 ## A Zustand store
 
 **Rule.** A Zustand store (`useOrdersStore`, made by `create`) is a store: its file lives in the stores folder
-(`stores/`) and holds `create(...)` with the state and its actions, nothing else. Call its hook only from a
+(default `_stores/`) and holds `create(...)` with the state and its actions, nothing else. Call its hook only from a
 Presenter or other stateful logic — never from a View, a task or a helper. A task reaches the store outside hooks
 through `getState()` and `setState()`; a View and a helper never do.
 
@@ -12,9 +12,9 @@ change it, not a subscription, and `getState()` / `setState()` give exactly that
 
 **How to check.**
 
-- A store file — `create(...)` and its actions — goes to the `stores/` folder of the lowest level that covers all
-  its users ([Levels and placement](../../core/levels.md)). A store file in `logic/` or `logic/tasks/` is a
-  violation, even with one user. Its `use…` name is right even though its own code calls no hook.
+- A store file — `create(...)` and its actions — goes to the stores folder of the lowest level that covers all
+  its users ([Levels and placement](../../core/levels.md)). A store file in the logic folder or its tasks
+  folder is a violation, even with one user. Its `use…` name is right even though its own code calls no hook.
 - An action of the store that calls the server, calls a task, or does more than read and change the store's state is
   a violation: that part is a task ([Tasks](../../core/tasks.md)), and the action only sets the result.
 - A store hook called in a component file (a View) is a violation — also of
@@ -30,16 +30,16 @@ change it, not a subscription, and `getState()` / `setState()` give exactly that
 **Good.**
 
 ```ts
-// stores/useOrdersStore.ts — the store: its state and actions only
+// _stores/useOrdersStore.ts — the store: its state and actions only
 export const useOrdersStore = create<OrdersState>()((set) => ({
   orders: [],
   setOrders: (orders) => set({ orders }),
 }));
 
-// logic/useOrderCount.ts — stateful logic subscribes to the store
+// _logic/useOrderCount.ts — stateful logic subscribes to the store
 export const useOrderCount = () => useOrdersStore((s) => s.orders.length);
 
-// logic/tasks/cancelOrder.ts — a task changes the store once
+// _logic/_tasks/cancelOrder.ts — a task changes the store once
 export const cancelOrder = async (id: string) => {
   await api.cancelOrder(id);
   useOrdersStore.setState((s) => ({ orders: s.orders.filter((o) => o.id !== id) }));
@@ -49,7 +49,7 @@ export const cancelOrder = async (id: string) => {
 **Bad.**
 
 ```tsx
-// logic/useOrdersStore.ts — a store in logic/, and an action that calls the server
+// _logic/useOrdersStore.ts — a store in _logic/, and an action that calls the server
 export const useOrdersStore = create<OrdersState>()((set) => ({
   orders: [],
   load: async () => set({ orders: await api.getOrders() }),
@@ -61,7 +61,7 @@ export const OrderList = () => {
   return orders.map((o) => <OrderRow key={o.id} row={o} />);
 };
 
-// logic/orderCount.ts — a helper reads the store
+// _logic/orderCount.ts — a helper reads the store
 export const orderCount = () => useOrdersStore.getState().orders.length;
 ```
 

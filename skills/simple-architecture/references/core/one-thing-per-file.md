@@ -32,7 +32,7 @@ is only a signal gets waved away, so it is a rule.
 ```
 OrderForm/
   OrderForm           View, 90 lines
-  logic/
+  _logic/
     presenter         Presenter
     validateOrder     helper
   OrderTotals/        child unit

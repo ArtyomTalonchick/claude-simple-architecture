@@ -75,17 +75,18 @@ this is the full file with the defaults:
   "folders": {
     // The pure zone, relative to "root". It knows nothing of the app.
     "lib": "lib",
-    // The ui-kit, relative to "root". Set "ui-kit" to keep it at the root level.
+    // The ui-kit, relative to "root". Set "ui-kit" to keep it at the root level. It is part of the pure zone,
+    // so its name does not follow "components".
     "uiKit": "lib/components",
     // The same names on every level.
     // Child units that two or more units of a level share.
-    "components": "components",
+    "components": "_components",
     // The tasks folder inside the logic folder.
-    "tasks": "tasks",
+    "tasks": "_tasks",
     // A level's non-UI code but its stores — its own unit's and what its units share — next to its entry.
-    "logic": "logic",
+    "logic": "_logic",
     // A level's stores — data shared by the code that reads it — next to its entry.
-    "stores": "stores"
+    "stores": "_stores"
   },
   // Files longer than this are a violation; tests and generated files are not checked.
   "maxFileLines": 120

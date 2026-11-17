@@ -20,12 +20,15 @@ it is no helper. Called only from tasks, it keeps the app's I/O where it already
 
 - Find the pure zone from the config: the lib folder and the ui-kit folder under the root level. The ui-kit is
   the pure zone's components folder: when it is set outside the lib folder, the lib folder has no components
-  folder of its own.
+  folder of its own. The ui-kit's name is set on its own (`folders.uiKit`, default `lib/components/`) and does not
+  follow the name of a level's components folder (`folders.components`): the ui-kit is part of the pure zone, not a
+  level's shared components folder.
 - The lib folder holds folders named by what they hold — generic I/O (e.g. `lib/http/`), errors, the theme
   (e.g. `lib/theme/`), icons, styles, stateful logic, helpers — and the ui-kit when it is set inside it. They all
   follow this rule. A name such as `hooks/` or `helpers/` is a name by content too; what a function does decides
   its kind ([Stateful logic and helpers](stateful-logic-and-helpers.md)), not the folder it lies in.
-- A tasks folder in the lib folder (named as the configured tasks folder, default `tasks/`) is a violation: a task
+- A tasks folder in the lib folder (`tasks/`, or named as the configured tasks folder, default `_tasks/`) is a
+  violation: a task
   is the app's business logic, and the pure zone has none. Code in it that knows nothing of the app is generic I/O
   or a helper and goes to a folder named by what it holds; code that knows the app is a task and goes to the app.
 - Generic I/O is a function in the pure zone that does I/O — a request, a storage access — and knows nothing of
@@ -68,14 +71,14 @@ src/
       tokens              colors, spacing
       searchField         the style of SearchField
   App                     mounts the theme from lib/theme/
-  logic/
-    currentUser           subscribes to stores/userStore — app code, so outside lib/
-    tasks/
+  _logic/
+    currentUser           subscribes to _stores/userStore — app code, so outside lib/
+    _tasks/
       loadUser            calls lib/http/fetchJson with the app's /user URL — a task, the step that reaches the
                           server
-  stores/
+  _stores/
     userStore             the current user — app data, so outside lib/
-  components/
+  _components/
     UserAvatar/           its presenter reads the current user from the store — app code, so outside lib/
 ```
 
@@ -90,12 +93,12 @@ src/
       SearchField/        looks up the style "searchField", registered in theme/ — an app dependency by key
     helpers/
       formatDate          imports the Order type from the app
-    tasks/
+    _tasks/
       fetchJson           a tasks folder in the pure zone — generic I/O goes to lib/http/
   theme/
     searchField           the style of a ui-kit component outside the pure zone — it belongs in lib/theme/
   UserProfile/
-    logic/
+    _logic/
       presenter           calls lib/http/fetchJson for the user — generic I/O outside a task
   OrdersPage/
     lib/                  a pure zone below the root level

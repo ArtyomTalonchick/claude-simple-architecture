@@ -69,41 +69,41 @@ stores folder or a components folder belongs to the level that holds the folder.
 
 ```
 OrdersPage/
-  OrdersPage            imports OrderTable (its child's View), logic/presenter
-  logic/
-    presenter           imports logic/orderFilters, logic/tasks/cancelOrder, logic/formatPrice, the row type
+  OrdersPage            imports OrderTable (its child's View), _logic/presenter
+  _logic/
+    presenter           imports _logic/orderFilters, _logic/_tasks/cancelOrder, _logic/formatPrice, the row type
                         from OrderTable
-    orderFilters        imports stores/ordersStore, logic/formatPrice, lib/helpers/debounce
+    orderFilters        imports _stores/ordersStore, _logic/formatPrice, lib/helpers/debounce
     formatPrice
-    tasks/
-      cancelOrder       imports stores/ordersStore, logic/tasks/notifyUser, lib/http/fetchJson — called by the
-                        presenter and by OrderTable/logic/presenter
-      notifyUser        called by cancelOrder and by OrderFilters/logic/presenter
-  stores/
+    _tasks/
+      cancelOrder       imports _stores/ordersStore, _logic/_tasks/notifyUser, lib/http/fetchJson — called by the
+                        presenter and by OrderTable/_logic/presenter
+      notifyUser        called by cancelOrder and by OrderFilters/_logic/presenter
+  _stores/
     ordersStore         a store, used by orderFilters and cancelOrder
-  components/
+  _components/
     StatusBadge         used by OrderTable and OrderFilters
   OrderTable/
-    OrderTable          imports logic/presenter, OrdersPage/components/StatusBadge
-    logic/
-      presenter         imports OrdersPage/logic/orderFilters, OrdersPage/logic/tasks/cancelOrder — the
+    OrderTable          imports _logic/presenter, OrdersPage/_components/StatusBadge
+    _logic/
+      presenter         imports OrdersPage/_logic/orderFilters, OrdersPage/_logic/_tasks/cancelOrder — the
                         parent's logic folder, not its Presenter
   OrderFilters/
-    OrderFilters        imports logic/presenter, OrdersPage/components/StatusBadge
-    logic/
-      presenter         imports OrdersPage/logic/orderFilters, OrdersPage/logic/tasks/notifyUser
+    OrderFilters        imports _logic/presenter, OrdersPage/_components/StatusBadge
+    _logic/
+      presenter         imports OrdersPage/_logic/orderFilters, OrdersPage/_logic/_tasks/notifyUser
 ```
 
 ```
 client/src/             app "client"
   OrderList/
-    logic/
+    _logic/
       presenter         imports shared/src/order (the Order type)
 server/src/             app "server"
   orders/
-    orders              the entry: imports logic/tasks/createOrder
-    logic/
-      tasks/
+    orders              the entry: imports _logic/_tasks/createOrder
+    _logic/
+      _tasks/
         createOrder     imports shared/src/order
 shared/src/             the shared types package
   order                 type Order — types only
@@ -113,28 +113,28 @@ shared/src/             the shared types package
 
 ```
 OrdersPage/
-  OrdersPage            imports OrderTable/logic/presenter — inside a child
-  logic/
-    tasks/
-      cancelOrder       imports logic/orderFilters — a task importing stateful logic
-  stores/
-    ordersStore         imports logic/tasks/notifyUser — a store importing a task
+  OrdersPage            imports OrderTable/_logic/presenter — inside a child
+  _logic/
+    _tasks/
+      cancelOrder       imports _logic/orderFilters — a task importing stateful logic
+  _stores/
+    ordersStore         imports _logic/_tasks/notifyUser — a store importing a task
   OrderTable/
-    logic/
-      presenter         imports OrdersPage/logic/presenter — a parent's Presenter
-                        imports OrderFilters/logic/statusLabel — another branch
-                        imports OrdersPage/components/StatusBadge — a Presenter importing a component
+    _logic/
+      presenter         imports OrdersPage/_logic/presenter — a parent's Presenter
+                        imports OrderFilters/_logic/statusLabel — another branch
+                        imports OrdersPage/_components/StatusBadge — a Presenter importing a component
                         imports lib/http/fetchJson — generic I/O outside a task
   OrderFilters/
-    stores/
-      filterStore       imported by OrdersPage/logic/orderFilters — inside a child
+    _stores/
+      filterStore       imported by OrdersPage/_logic/orderFilters — inside a child
 ```
 
 ```
 client/src/
   OrderList/
-    logic/
-      presenter         imports server/src/orders/logic/tasks/createOrder — another app
+    _logic/
+      presenter         imports server/src/orders/_logic/_tasks/createOrder — another app
 shared/src/
   order                 imports client/src/OrderList — the shared package importing an app
   orderStatuses         ORDER_STATUSES = ['new', 'paid'] — runtime code in the shared package
