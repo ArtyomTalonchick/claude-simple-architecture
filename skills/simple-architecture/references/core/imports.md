@@ -68,7 +68,12 @@ stores folder or a components folder belongs to the level that holds the folder.
   the same data, it goes to a store in the stores folder of that level: shared stateful logic gives each user its
   own copy of the state, not one state.
 - A test ([Levels and placement](levels.md)) may import the code it tests, even when that code sits one folder
-  up from a tests folder, and anything that code itself may import. It is not an import from a parent.
+  up from a tests folder, and anything that code itself may import — nothing more. It is not an import from a
+  parent.
+- An integration test of a level tests it through its entry: it renders the View, or calls the entry of a unit
+  with no UI, and the child units come in through their entries. A test importing the inside of a child unit — its
+  logic folder, its stores folder — is a violation, as it is for code: the test would break on any change inside
+  the child.
 - The rule is about targets, not path syntax: a relative path and a path alias are judged the same, and the path
   style is never a finding. Recommended:
   import own child units and the code a test tests by a relative path, everything else through the project's
@@ -145,6 +150,9 @@ OrdersPage/
   OrderFilters/
     _stores/
       filterStore       imported by OrdersPage/_logic/orderFilters — inside a child
+  tests/
+    OrdersPage          a test of the page: imports OrderTable/_logic/selectedRows to check the page with it —
+                        inside a child; it renders OrdersPage instead
 ```
 
 ```

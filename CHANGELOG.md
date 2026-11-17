@@ -35,6 +35,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   the core and in the React and Zustand stacks). To update: a function that only changes UI state in a store moves
   out of the tasks folder into the logic folder; a plain function used only by tasks moves into the tasks folder;
   a plain function a task calls stops acting on the screen.
+- A test imports only what the code it tests may import. An integration test of a level goes through the level's
+  entry; a test that imports the inside of a child unit is a violation, as it is for code.
 
 ## [0.2.2] — 2026-11-16
 
