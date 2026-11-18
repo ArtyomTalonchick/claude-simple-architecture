@@ -61,6 +61,11 @@ without touching the logic around it, and the few kinds of code that reach it sh
   that only the UI side uses — a Presenter, stateful logic, other such plain functions — may act on the screen and
   use the UI framework's API that is not stateful logic, as long as it keeps no state between calls. One that keeps
   state between calls or follows the screen's changes is stateful logic.
+- Following the screen's changes means over time, across calls. A function that subscribes to a screen event and
+  unsubscribes within the same call, keeping nothing between calls, is a plain function, not stateful logic — for
+  example, one that waits once for the screen's next resize: it finishes on the first event or after a timeout,
+  and removes its listener before it finishes. It acts on the screen, so only the UI side calls it. One whose
+  listener outlives the call is stateful logic.
 - Placement by users, on the level set by [Levels and placement](levels.md): a plain function used only by tasks
   lives in the tasks folder — a file next to the tasks, or a part in the entry folder of its one task; one used by a
   Presenter, stateful logic or the entry of a unit with no UI, whether or not tasks use it too, lives in the logic
@@ -140,6 +145,8 @@ SearchPage/
     presenter           onSubmit: showResults(query)
     showResults         a plain function: screen store: show the results; search store: set the query — inside
                         a screen transition, then it redraws the caret. UI state, not a business action
+    waitForResize       a plain function: waits once for the screen's next resize, or a timeout, and removes its
+                        listener before it finishes — keeps nothing between calls; called by the presenter
 ```
 
 A server keeps its stores the same way:
@@ -181,6 +188,10 @@ OrdersPage/
     _logic/
       presenter         search = orderSearch()
       orderSearch       the field and the request in one — two concerns
+SearchPage/
+  _logic/
+    watchResize         a plain function that adds a resize listener and returns, leaving it in place — it follows
+                        the screen's changes: stateful logic
 ```
 
 **Stack notes.**

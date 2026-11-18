@@ -19,6 +19,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- Two cases left to judgement are settled. A function that subscribes to a screen event and unsubscribes within
+  the same call, keeping nothing between calls — such as an async function that waits once for a resize or a
+  transition end, or a timeout, and removes its listener before it resolves — is a plain function of the UI side,
+  not stateful logic: "follows the screen's changes" means over time, across calls. A file that derives a type
+  from another file's value or type — in TypeScript `typeof fn`, `Parameters<typeof fn>`, `ReturnType<…>` — is
+  not a user of that type, so the type stays where it is declared. The React stack has a new rule file,
+  `levels.md`, with the TypeScript example. To update: nothing to change; a type moved to a types file only
+  because another file derived it can move back to the file that declares it.
 - A test's imports are no longer checked: a test may import whatever it needs to set up, reset and check state —
   any store, task or function of the app — and the reviewer does not report them. "Nothing more than the tested
   code may import" (0.2.3) is gone. An integration test of a level going through the level's entry is now advice,

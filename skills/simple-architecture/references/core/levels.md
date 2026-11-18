@@ -105,6 +105,9 @@ reader sees which files belong together — a flat list of files does not say wh
   folder that holds them all — not exported from one of its users, which would make one user look like its
   owner. A type or a constant in a types file or a constants file with only one user file is a violation: it
   belongs in that file.
+- A type is used by a file that names it. A file that derives a type from another file's value or type — the type
+  of a function, of its parameters or of its result — without naming the type it reaches does not use that type:
+  it does not count among the type's users, and the type stays where it is declared.
 - An empty logic, tasks, stores or components folder is a violation: a folder exists only when it has content.
 - A child unit does not need the parent's name as a prefix.
 - The exception is the pure zone ([Pure zone](pure-zone.md)): it sits at the root level next to its shape — or,
@@ -124,6 +127,8 @@ OrdersPage/
   _logic/
     presenter           Presenter
     orderFilters        used only by the presenter
+    openOrder           declares OpenOrderOptions; the presenter derives the type of openOrder's parameters
+                        without naming it — one user, so the type stays in openOrder
     constants           PAGE_SIZE — used by the presenter and by OrderTable
     types               StatusCount — used by orderFilters and by OrderFilters
                         OrderFilter — used by the presenter and orderFilters
@@ -202,6 +207,9 @@ OrdersPage/
   _logic/
     formatTotal         used only by OrderTable — it belongs in OrderTable/_logic/
     ordersStore         a store in _logic/ — it belongs in OrdersPage/_stores/
+    openOrder
+    types               OpenOrderOptions — moved out of openOrder because the presenter derives the type of
+                        openOrder's parameters; that is no use of the type: it belongs in openOrder
     orderFilters/
       orderFilters
       statusOptions     a part of orderFilters, but OrderFilters/_logic/presenter uses it too — not a part: it
@@ -251,5 +259,8 @@ ProductSearch/
       toSearchView      used only by productRequest — it belongs in productSearch/productRequest/
 ```
 
-**Stack notes.** [react/view-presenter.md](../stack/react/view-presenter.md) — the View and Presenter files of a
-level.
+**Stack notes.**
+
+- [react/view-presenter.md](../stack/react/view-presenter.md) — the View and Presenter files of a level.
+- [react/levels.md](../stack/react/levels.md) — a type reached through `typeof`, `Parameters` or `ReturnType` is
+  not used by the file that derives it.

@@ -24,6 +24,10 @@ limits on code that does not need them, and a plain function that calls a hook b
   hook is a plain function, not `use…`. Only the UI side — a Presenter, a hook, other such plain functions — may
   call it; a task never does, directly or through other plain functions ([Tasks in React](tasks.md)). One that keeps
   a ref, a listener or other state between calls is a hook.
+- A listener added and removed within one call does not count: it is not kept between calls. An async function
+  that waits once for the window's `resize` or an element's `transitionend` — it resolves on the first event or
+  after a timeout, and removes its listener before it resolves — is a plain function of the UI side, not `use…`.
+  One that adds a listener and returns with it still in place is a hook.
 - The Presenter, `usePresenter`, is a hook: it may call hooks and plain functions. A `usePresenter` that calls no
   hook but computes something from its props is not a violation of this rule — the View always calls its Presenter
   the same way, so a hook added later changes nothing for the View. A Presenter with no computation at all is
@@ -61,6 +65,19 @@ export const openResults = (query: string) => {
     redrawCaret();
   });
 };
+
+// _logic/waitForResize.ts — waits once inside one call: the listener is removed before the promise resolves, so
+// nothing is kept between calls. A plain function of the UI side, called by the Presenter.
+export const waitForResize = (timeout: number) =>
+  new Promise<void>((resolve) => {
+    const done = () => {
+      window.removeEventListener('resize', done);
+      clearTimeout(timer);
+      resolve();
+    };
+    const timer = setTimeout(done, timeout);
+    window.addEventListener('resize', done);
+  });
 ```
 
 **Bad.**
@@ -86,6 +103,9 @@ export const useCancelOrder = async (id: string) => {
 // _logic/useShowDetails.ts — calls no hook; changes UI state in a store, not a business action:
 // a plain function, _logic/showDetails
 export const useShowDetails = () => useScreenStore.getState().setScreen('details');
+
+// _logic/watchResize.ts — the listener stays after the call and follows the window: a hook, useWindowSize
+export const watchResize = (onResize: () => void) => window.addEventListener('resize', onResize);
 ```
 
 **Stack notes.** Carries out the core rule

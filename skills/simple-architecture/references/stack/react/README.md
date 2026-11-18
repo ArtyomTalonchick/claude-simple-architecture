@@ -12,3 +12,5 @@ Each rule has its own file, named as the core rule it carries out.
   calls it.
 - [Tasks in React](tasks.md) — a task calls no hook; the Presenter awaits it, keeps loading and error, and
   navigates.
+- [A derived type in TypeScript](levels.md) — a file that derives a type with `typeof`, `Parameters` or
+  `ReturnType` is not a user of that type, so the type stays where it is declared.

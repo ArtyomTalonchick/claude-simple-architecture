@@ -108,6 +108,11 @@ surrounding file when a rule depends on where the file lives or what it imports.
   function. When the call is a judgement, say so in the finding. Before judging a plain function's folder or what
   it may touch — the screen, the UI framework — find its users: a plain function a task calls has nothing from the
   UI, and one used only by tasks lies in the tasks folder.
+- A function that subscribes to a screen event and unsubscribes within the same call, keeping nothing between
+  calls — one that waits once for an event or a timeout — is a plain function of the UI side, not stateful logic
+  (`references/core/stateful-logic-and-functions.md`); one whose listener outlives the call is stateful logic.
+- When counting the users of a type, count the files that name it. A file that only derives a type from another
+  file's value or type does not use it, and the type stays where it is declared (`references/core/levels.md`).
 - A ui-kit component is checked by meaning, not only by its imports (`references/core/pure-zone.md`): read each
   added or changed component in the ui-kit and judge whether it is named after or shaped by a domain entity, holds
   the app's own text, or is a placeholder or a part of such a component. Plain props do not make it pure. When the
