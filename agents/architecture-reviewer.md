@@ -94,7 +94,13 @@ surrounding file when a rule depends on where the file lives or what it imports.
   up, reset and check state. Where the test lives is still checked (`references/core/levels.md`).
 - A folder inside a logic folder or a tasks folder that holds a file named as the folder is an entry folder, not a
   unit or a level (`references/core/levels.md`): judge where it lies and who uses it by its entry, and its other
-  files as parts of that entry.
+  files as parts of that entry. Entry folders nest: a folder inside an entry folder that holds a file named as the
+  folder is the entry folder of a part, judged the same way at any depth.
+- Before judging the logic folder, the tasks folder or an entry folder, find who uses each file in it
+  (`references/core/levels.md`). An entry — not the Presenter — with parts only it uses that lie flat next to it is a
+  violation: it is an entry folder, and those parts move into it; the same for a part whose own parts lie flat in
+  its entry's folder. A part used from outside its entry's folder is a violation: it moves out to the nearest folder
+  that covers all its users.
 - Whether a function is a task or a plain function is decided by meaning, not by whether it reaches a store
   (`references/core/tasks.md`, `references/core/stateful-logic-and-functions.md`): a business action, one that
   would stay the same in another UI, is a task; code that only changes UI state or acts on the screen is a plain

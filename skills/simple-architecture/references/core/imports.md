@@ -2,7 +2,7 @@
 
 **Rule.** Import only along the structure: from your own children through their entry, from the logic folder, the
 stores folder and the components folder of your own level and of any level above — except that level's Presenter —
-from the pure zone, and from the shared types package; from an entry folder in a logic folder, only its entry.
+from the pure zone, and from the shared types package; from an entry folder, at any depth, only its entry.
 Never reach into a child, into another branch, into a parent's entry or Presenter, into the parts of an entry
 folder from outside it, or into another app. Between kinds of code, imports go one way: View → Presenter →
 stateful logic → tasks → plain functions; a Presenter, stateful logic, a task and a plain function may also import a
@@ -24,7 +24,8 @@ stores folder or a components folder belongs to the level that holds the folder.
   - anything in the logic folder of the own level and of any level above it — stateful logic, tasks, plain
     functions, types, constants — except that level's Presenter, which only its own entry imports. An entry folder
     there ([Levels and placement](levels.md)) is imported only through its entry;
-  - inside an entry folder, the entry imports its parts and the parts import each other;
+  - inside an entry folder, the entry imports its parts and the parts import each other; a part that is an entry
+    folder of its own is imported only through its entry, from its outer folder too;
   - the stores in the stores folder of the own level and of any level above it, from a Presenter, stateful logic, a
     task or a plain function;
   - the units in the components folder of the own level and of any level above it, through their entry;
@@ -39,7 +40,8 @@ stores folder or a components folder belongs to the level that holds the folder.
     or one above it. The code belongs in the logic folder or the components folder of the lowest common level;
   - an import of a parent's or an ancestor's entry or Presenter. Data comes down through props;
   - an import of a part of an entry folder — any file in it but its entry — from outside that folder, whatever
-    the level. The part is not a part then: it moves out next to the folder ([Levels and placement](levels.md));
+    the level and however deep the folder is nested. The part is not a part then: it moves out to the nearest
+    folder that covers all its users ([Levels and placement](levels.md));
   - in a project with several apps (`apps` in the config), an import from another app — its code, its pure zone,
     anything under its root. What two apps share goes to the shared types package, if it is a type;
   - in the shared types package, an import from any app, and any runtime code — a function, a constant, a value. It
@@ -98,9 +100,13 @@ OrdersPage/
                         presenter and by OrderTable/_logic/presenter
       notifyUser        called by cancelOrder and by OrderFilters/_logic/presenter
       exportOrders/     an entry folder: the presenter imports exportOrders, its entry, and nothing else in it
-        exportOrders    imports toCsvRow (its part), _stores/ordersStore
-        toCsvRow        imports formatCsvCell — parts import each other
-        formatCsvCell
+        exportOrders    imports csvHeader and toCsvRow/toCsvRow — its parts, a nested entry folder through its
+                        entry — and _stores/ordersStore
+        csvHeader       a part: the header line, in the order of the columns
+        toCsvRow/       a part with a part only it uses: an entry folder inside exportOrders/
+          toCsvRow      imports formatCsvCell, its own part, and csvHeader for the order of the columns — parts
+                        import each other
+          formatCsvCell
   _stores/
     ordersStore         a store, used by orderFilters and cancelOrder
   _components/
@@ -143,6 +149,12 @@ OrdersPage/
     formatPrice         imports _logic/_tasks/notifyUser — a plain function importing a task
     _tasks/
       cancelOrder       imports _logic/orderFilters — a task importing stateful logic
+      exportOrders/
+        exportOrders    imports toCsvRow/formatCsvCell — a part of the nested entry folder toCsvRow/, from
+                        outside it
+        toCsvRow/
+          toCsvRow
+          formatCsvCell
   _stores/
     ordersStore         imports _logic/_tasks/notifyUser — a store importing a task
   OrderTable/

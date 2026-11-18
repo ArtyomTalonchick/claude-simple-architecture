@@ -5,16 +5,18 @@ root, the level's non-UI code in its logic folder (default `_logic/`) — apart 
 stores folder (default `_stores/`) — the shared components folder (default `_components/`) and the child units next
 to them. Put code at the lowest level that covers all its users: in the logic folder or the stores folder of the one
 unit that uses it, or of the level that holds all its users. When a user appears outside that level, move the code
-up to the level that covers them all. An entry of the logic folder with parts only it uses may be a folder that
-holds them, and only its entry is used from outside.
+up to the level that covers them all. An entry of the logic folder or the tasks folder with parts only it uses is a
+folder that holds them, and only its entry is used from outside; a part with parts only it uses is such a folder
+inside it, at any depth.
 
 **Why.** Code that sits next to its only user can be changed without checking anyone else; code that sits higher
 than needed looks shared, so every change to it needs a search for users that do not exist. One shape on every
 level means one set of rules to know: a module reads the same way as the app, at any depth. With a level's non-UI
 code in one folder and its stores in another, the View — the file people look for — is not lost among a dozen files
 of other kinds, the data is seen apart from the logic around it, and code does not move between folders of one
-level when its users change: only the level it sits on says who may use it. The same holds one step down: the
-parts of one function, kept in its folder, are not mistaken for code the level shares.
+level when its users change: only the level it sits on says who may use it. The same holds one step down, at
+every depth: the parts of one function, kept in its folder, are not mistaken for code the level shares, and a
+reader sees which files belong together — a flat list of files does not say what uses what.
 
 **How to check.**
 
@@ -29,8 +31,8 @@ parts of one function, kept in its folder, are not mistaken for code the level s
     holds them; a unit folder inside the components folder (`_components/StatusBadge/`) is a level of its own;
   - an entry folder in the logic folder or the tasks folder (below) is not a level and not a unit, even though it
     holds a file named as the folder: the unit definition applies to the folders of a level's shape, not to the
-    folders inside the logic folder or the tasks folder. An entry folder and its files belong to the level that
-    holds the logic folder;
+    folders inside the logic folder or the tasks folder. An entry folder, the entry folders nested in it and their
+    files belong to the level that holds the logic folder;
   - the parent of a level is the nearest level above it; levels with the same parent are siblings; one level's
     subtree is a branch.
 - The shape of a level, every part optional:
@@ -48,24 +50,30 @@ parts of one function, kept in its folder, are not mistaken for code the level s
   - the components folder (default `_components/`) with the child units used by two or more units of this level;
   - child units — unit folders used only by this level, with the same shape inside.
 - An entry folder: stateful logic, a plain function or a task — an entry of the logic folder or the tasks folder,
-  not the Presenter — that has parts only it uses may be a folder named as its entry file, holding the entry and
+  not the Presenter — that has parts only it uses is a folder named as its entry file, holding the entry and
   those parts. A part is code that only this entry uses, directly or through its other parts: stateful logic or a
   plain function of stateful logic, a smaller task or a plain function of a task, a plain function of a plain
   function, and a types or a constants file used only inside the folder. A task is never a part of stateful logic
   or of a plain function: it stays in the tasks folder. The parts decide, not the line count: an entry with parts
-  only it uses may be a folder at any size. In the folder:
+  only it uses is a folder at any size. In the folder:
   - the entry is the file named as the folder; the parts are files next to it, one thing each, and keep their own
-    kinds. An entry folder holds no folder but its tests;
-  - its tests — of the entry and of its parts — sit in it, in a tests folder or beside the files, by the project's
-    convention (below);
-  - from outside the folder only the entry is imported; the entry imports its parts, and the parts import each
-    other ([Imports](imports.md));
-  - its users are the users of its entry: the folder counts as one file of the logic folder or the tasks folder
-    that holds it.
-- A part used by anything outside its entry's folder, tests aside, is a violation: it is not a part. It moves out
-  next to the folder — to the logic folder, or to the tasks folder if it is a task — or higher, by the rules
-  below, when its users sit elsewhere. An entry folder that holds only its entry, or its entry and its tests, is a
-  violation: it is a file.
+    kinds;
+  - a part that has parts only it uses is an entry folder of its own, inside its entry's folder: named as the part,
+    holding it and those parts — at any depth, by the same rules. An entry folder holds no folder but its tests and
+    the entry folders of its parts;
+  - its tests — of the entry and of the parts that lie in it as files — sit in it, in a tests folder or beside the
+    files, by the project's convention (below);
+  - from outside the folder only the entry is imported; the entry imports its parts — a part that is an entry
+    folder through its entry — and the parts import each other ([Imports](imports.md));
+  - its users are the users of its entry: the folder counts as one file of the folder that holds it — the logic
+    folder, the tasks folder, or the folder of the entry it is a part of.
+- An entry with parts only it uses whose parts lie next to it — in the logic folder, in the tasks folder, or in
+  the folder of the entry it is a part of — is a violation: it is an entry folder, and those parts move into it.
+- A part used by anything outside its entry's folder, tests aside, is a violation: it is not a part of that entry.
+  It moves out to the nearest folder that covers all its users: next to the folder — in the outer entry folder
+  when all its users are there, else in the logic folder, or in the tasks folder if it is a task — or higher, by
+  the rules below, when its users sit elsewhere. An entry folder that holds only its entry, or its entry and its
+  tests, is a violation: it is a file.
 - Any other file or folder at a level root is a violation: a folder of stateful logic, functions or tasks, a types or
   constants file, or a file of non-UI code goes to the logic folder; a store goes to the stores folder; a unit goes
   next to the entry or to the components folder. Tests and the pure zone are not part of the shape (below).
@@ -93,10 +101,10 @@ parts of one function, kept in its folder, are not mistaken for code the level s
   belongs at the lowest level that covers all its users — a unit in that level's components folder, a store in its
   stores folder, other code in its logic folder.
 - A type or a constant used by one file lives in that file. One used by two or more files lives in the types file
-  or the constants file of the logic folder of the lowest level that covers those files, or of the entry folder
-  that holds them all — not exported from one of its users, which would make one user look like its owner. A type
-  or a constant in a types file or a constants file with only one user file is a violation: it belongs in that
-  file.
+  or the constants file of the logic folder of the lowest level that covers those files, or of the innermost entry
+  folder that holds them all — not exported from one of its users, which would make one user look like its
+  owner. A type or a constant in a types file or a constants file with only one user file is a violation: it
+  belongs in that file.
 - An empty logic, tasks, stores or components folder is a violation: a folder exists only when it has content.
 - A child unit does not need the parent's name as a prefix.
 - The exception is the pure zone ([Pure zone](pure-zone.md)): it sits at the root level next to its shape, and pure
@@ -138,6 +146,25 @@ OrdersPage/
     tests/              tests of OrderTable and its presenter — not a level
   OrderFilters/         used only by OrdersPage
     OrderFilters        no logic, so no _logic/
+```
+
+Entry folders nest: a part with parts only it uses is an entry folder inside its entry's folder.
+
+```
+ProductSearch/
+  ProductSearch         View
+  _logic/
+    presenter           Presenter: search = productSearch()
+    productSearch/      an entry folder — productSearch is used only by the presenter
+      productSearch     the entry: stateful logic, joins productParams and productRequest
+      productParams     a part: the query and the filters kept in the address — used only by productSearch
+      productRequest/   a part with a part only it uses — an entry folder inside productSearch/
+        productRequest  its entry: stateful logic, calls the task searchProducts, keeps loading and error
+        toSearchView    a part of productRequest: a plain function, response -> the list to show
+        tests/          tests of productRequest and toSearchView
+      tests/            tests of productSearch and productParams
+    _tasks/
+      searchProducts    the server call for a query — a task is never a part of stateful logic
 ```
 
 An app with no UI has the same levels, with an entry in place of a View:
@@ -192,6 +219,35 @@ OrdersPage/
     _logic/
       types             StatusCount — orderFilters of OrdersPage uses it too, so OrdersPage would import from
                         inside a child — it belongs in OrdersPage/_logic/types
+```
+
+The search above, with the parts lying flat:
+
+```
+ProductSearch/
+  ProductSearch
+  _logic/
+    presenter
+    productSearch       its parts lie next to it — it is an entry folder: productSearch/
+    productParams       used only by productSearch — a part: it belongs in productSearch/
+    productRequest      used only by productSearch — a part: it belongs in productSearch/
+    toSearchView        used only by productRequest — a part of a part: it belongs in productSearch/productRequest/
+    _tasks/
+      searchProducts
+```
+
+The nesting lost one level down, and a part used from outside its folder:
+
+```
+ProductSearch/
+  _logic/
+    presenter           imports productSearch/productParams
+    productSearch/
+      productSearch
+      productParams     the presenter uses it too — not a part: it moves out to _logic/, the nearest folder that
+                        covers the presenter and productSearch
+      productRequest    its part lies next to it — it is an entry folder: productSearch/productRequest/
+      toSearchView      used only by productRequest — it belongs in productSearch/productRequest/
 ```
 
 **Stack notes.** [react/view-presenter.md](../stack/react/view-presenter.md) — the View and Presenter files of a

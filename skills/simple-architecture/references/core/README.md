@@ -9,7 +9,8 @@ plugin's repository.
 - [View and Presenter](view-presenter.md) — markup in the View, all logic in the Presenter.
 - [Levels and placement](levels.md) — every level has the same shape — the entry, its non-UI code in the logic
   folder, its stores in the stores folder, shared units in the components folder and child units; code lives at
-  the lowest level that covers all its users.
+  the lowest level that covers all its users; an entry of the logic folder with parts only it uses is a folder that
+  holds them, nested at any depth.
 - [Stateful logic and plain functions](stateful-logic-and-functions.md) — three kinds of non-UI code: stateful logic
   uses state, lifecycle or a store subscription, a task carries out a business action or a step of one, a plain
   function has no business logic, does no I/O and calls no task or stateful logic, and lives by its users; one

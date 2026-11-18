@@ -9,7 +9,7 @@ or a task: it does no I/O and calls no task and no stateful logic; a store is da
 and is shared by the code that reads it. Stateful logic goes to the logic folder (default `_logic/`), tasks to the
 tasks folder inside it (default `_logic/_tasks/`), a plain function by its users — to the tasks folder when only
 tasks use it, to the logic folder otherwise — and stores to the stores folder (default `_stores/`), on the level
-set by [Levels and placement](levels.md); an entry with parts only it uses may be a folder that holds them. A plain
+set by [Levels and placement](levels.md); an entry with parts only it uses is a folder that holds them. A plain
 function is called from a Presenter, stateful logic, a task, another plain function, the entry of a unit with no
 UI, or a store, if the plain function reaches no store, and one that a task calls has nothing from the UI; a task
 from a Presenter, stateful logic, another task or the entry of a unit with no UI; stateful logic only from a
@@ -72,8 +72,10 @@ without touching the logic around it, and the few kinds of code that reach it sh
   the app, and it lives only in the pure zone. Only a task, and other generic I/O, calls it. A Presenter, stateful
   logic, a plain function, a View, a store or the entry of a unit with no UI that calls it is a violation, as
   reaching the server outside a task is. In the app, a function that does I/O is a task, whatever it calls to do it.
-- Stateful logic, a task or a plain function with parts only it uses may be an entry folder: a folder named as it,
-  with the entry and its parts ([Levels and placement](levels.md)). A part keeps its own kind, and every check here
+- Stateful logic, a task or a plain function with parts only it uses is an entry folder: a folder named as it,
+  with the entry and its parts, and those parts lying next to it outside the folder are a violation. A part with
+  parts only it uses is an entry folder of its own inside it, at any depth
+  ([Levels and placement](levels.md)). A part keeps its own kind, and every check here
   applies to it as to any file of the logic folder: a part of stateful logic is stateful logic or a plain function,
   a part of a task a smaller task or a plain function, a part of a plain function a plain function. A part of
   stateful logic or of a plain function that does I/O or is a step of a business action is a task, and a task is
@@ -110,7 +112,9 @@ OrdersPage/
     formatPrice         a plain function: number -> text — used by the presenter and by cancelOrder
     _tasks/
       cancelOrder       server call, then _stores/ordersStore: remove the order — once, no subscription
-      toCancelRequest   a plain function: order -> request body — used only by tasks, so in _tasks/
+      cancelOrders      cancels the selected orders in one call
+      toCancelRequest   a plain function: order -> request body — used by cancelOrder and cancelOrders, only
+                        tasks, so in _tasks/
   _stores/
     ordersStore         a store: the orders and its API — read, set, remove
     userStore           a store: the current user and its API
@@ -160,7 +164,7 @@ OrdersPage/
                         logic
     cancelOrder         server call, then a store change — a task outside _tasks/
     toOrderLines        a plain function that loads the products with lib/http/fetchJson — I/O in the app is a task
-    toCancelRequest     used only by cancelOrder — a plain function of tasks: it belongs in _tasks/
+    toCancelRequest     used only by tasks — a plain function of tasks: it belongs in _tasks/
     ordersStore         a store in _logic/ — it belongs in _stores/
     _tasks/
       currentUser       subscribes to the store — stateful logic, not a task

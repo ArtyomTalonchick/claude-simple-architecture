@@ -349,3 +349,18 @@ root. Each app is checked on its own: its levels start at its root and only its 
 from another app; every app may import the shared package; the package imports no app and holds types only —
 runtime code there, constants included, would tie the apps' builds and runtimes together. Written into "Imports",
 "Levels and placement", `SKILL.md`, the session-start hook and the architecture-reviewer agent.
+
+## Q23. May an entry folder hold the entry folders of its parts?
+
+**Question.** An entry folder held no folder but its tests. When one of its parts has parts only it uses, do those
+lie flat in the outer folder, or does the part become an entry folder of its own inside it?
+
+**Context.** #48. Entry folders became required for an entry with parts only it uses; with no nesting, a part's own
+parts would lie flat one level down, and the grouping would be lost again there.
+
+**Status.** answered
+
+**Answer.** A part with parts only it uses is an entry folder of its own, inside its entry's folder, at any depth.
+The same rules hold at each depth: others import only an entry folder's entry, and a part used from outside its
+folder moves out to the nearest folder that covers all its users. Written into "Levels and placement", "Imports",
+"Tasks", "Stateful logic and plain functions" and the architecture-reviewer agent.

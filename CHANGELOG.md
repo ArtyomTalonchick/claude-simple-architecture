@@ -19,6 +19,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   text. Such a component is app code and is placed by its users: a child unit of its one user, or a unit in the
   components folder of the lowest level that covers them all. The reviewer now reports these. To update: move each such component out
   of the ui-kit to its place in the app.
+- **Breaking:** an entry of the logic folder or the tasks folder — stateful logic, a plain function or a task, not
+  the Presenter — with parts only it uses is an entry folder; before, it only might be one. Its parts lying flat
+  next to it are a violation the reviewer reports. Entry folders nest: a part with parts only it uses is an entry
+  folder of its own inside its entry's folder, at any depth, by the same rules — "an entry folder holds no folder
+  but its tests" is gone. A part used from outside its own folder moves out to the nearest folder that covers all
+  its users. To update: for each entry whose parts lie flat next to it, make the entry folder and move the parts
+  into it; do the same inside it for each part with parts of its own; fix the imports to go through each folder's
+  entry.
 
 ## [0.2.3] — 2026-11-17
 

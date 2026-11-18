@@ -52,9 +52,11 @@ would carry the UI into the business actions.
   folder (default `_logic/`) of the lowest level that covers all its users, next to the plain functions only tasks
   use. A task is one file, or, when it has parts only it uses — a smaller task or a plain function only it calls —
   an entry folder named as the task: the file of the same name is its entry, the parts sit next to it, and others
-  import only the entry. The parts decide, not the line count: a small task with private parts may be a folder, and
-  a smaller task only it calls is always one of its parts, never a task of its own in the tasks folder. A task
-  folder is not a unit ([Levels and placement](levels.md)).
+  import only the entry. The parts decide, not the line count: a small task with private parts is a folder, and
+  a smaller task only it calls is always one of its parts, never a task of its own in the tasks folder. A part with
+  parts only it uses — a smaller task with its own steps — is an entry folder of its own inside the task's folder,
+  at any depth. A task whose parts lie flat next to it in the tasks folder is a violation. A task folder is not a
+  unit ([Levels and placement](levels.md)).
 - Recommended, not checked: a task talks to the server through a small project module of tasks, one per
   request (`api.logout()`), which call the pure zone's generic I/O — not through generic I/O directly.
 
