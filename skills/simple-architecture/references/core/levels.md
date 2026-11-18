@@ -80,9 +80,13 @@ reader sees which files belong together — a flat list of files does not say wh
 - A store in the logic folder or in its tasks folder is a violation, even when one unit uses it: it goes to the
   stores folder of the same level.
 - The root level is not named after its entry. Its root holds two files of its own unit: the entry — the file that
-  builds the app (e.g. `App`, `createApp`) — and the file the app starts from (e.g. `main`, `index`), which only
-  runs the entry. Neither is a violation; the rest of the root level's non-UI code goes to its logic folder and its
-  stores folder.
+  builds the app (e.g. `App`, `createApp`) — and the file the app starts from (e.g. `main`, `index`), which runs
+  the entry and may wrap it in what the app mounts around it (the theme, a data cache, a stricter checking mode
+  for development). Neither is a violation; the rest of the root level's non-UI code goes to its logic folder and
+  its stores folder.
+- A unit that only the start file uses, to wrap the entry in what the app mounts around it, is a child unit of the
+  root level, next to the entry. Its user is the start file, not the entry, and that is not a violation: the start
+  file belongs to the root level's own unit.
 - The users of a file in a level's logic folder or stores folder are counted by where they sit. The level's own
   unit — its entry and the files of its logic folder and its stores folder — counts as one user; each child unit,
   with everything inside it, counts as one more. Code used by the own unit and by one child unit has two users: it
@@ -105,6 +109,11 @@ reader sees which files belong together — a flat list of files does not say wh
   folder that holds them all — not exported from one of its users, which would make one user look like its
   owner. A type or a constant in a types file or a constants file with only one user file is a violation: it
   belongs in that file.
+- A type that is part of a props type — the type of one prop, such as an icon name or a variant — goes the way the
+  props type goes: declared with it, passed on by the View, imported from the View
+  ([View and Presenter](view-presenter.md)), however many files use it. That is not a shared type exported from
+  one of its users, and it does not move to a types file. The pure zone has no types file: a type a pure-zone
+  module exports is part of its API and is imported from that module ([Pure zone](pure-zone.md)).
 - A type is used by a file that names it. A file that derives a type from another file's value or type — the type
   of a function, of its parameters or of its result — without naming the type it reaches does not use that type:
   it does not count among the type's users, and the type stays where it is declared.
@@ -171,6 +180,16 @@ ProductSearch/
       tests/            tests of productSearch and productParams
     _tasks/
       searchProducts    the server call for a query — a task is never a part of stateful logic
+```
+
+The root level of an app with a UI, with the file the app starts from:
+
+```
+src/
+  main                  starts the app: runs App, wrapped in AppShell and a stricter checking mode
+  App                   the root unit's entry: builds the app
+  AppShell/             what the app mounts around App — the theme, a data cache; its only user is main, so it is
+    AppShell            a child unit of the root level
 ```
 
 An app with no UI has the same levels, with an entry in place of a View:

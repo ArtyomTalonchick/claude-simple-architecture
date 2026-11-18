@@ -43,8 +43,16 @@ of the screen.
   nothing. The moved-out logic goes to the unit's logic folder while the Presenter is its only user
   ([Levels and placement](levels.md)). Which jobs are simple enough to stay is a judgement, so it is not a
   violation.
+- A short handler that acts on the screen — prevent the default action, move the focus — may stay inline in the
+  Presenter. It moves to a plain function in the logic folder when it grows or another file needs it too
+  ([Stateful logic and plain functions](stateful-logic-and-functions.md)). Where that line lies is a judgement, not
+  a check: an inline handler of this kind is not a violation.
 - The props type lives in the Presenter, and the View passes it on to its users, so they import it from the
-  View; a View without a Presenter declares its own props type.
+  View; a View without a Presenter declares its own props type. A type that is part of the props type — the type
+  of one prop, such as an icon name or a variant — goes the same way: declared with it, passed on by the View,
+  imported from the View ([Levels and placement](levels.md)).
+- A View without a Presenter that passes all its props on to one child may declare its props type as an alias of
+  the child's props type: that is declaring its own. A unit with no props has no props type — not an empty one.
 
 **Good.**
 
@@ -59,6 +67,19 @@ OrderList/
                            rows = orders with status == props.status, each with total = round(sum * 1.2, 2)
                            open(id) = go to the order page
                            cancel(id) = await the task cancelOrder(id); keep its loading and error
+                           clearSearch() = empty the search field; move the focus back to it — short, acts on the
+                           screen, so it may stay inline
+```
+
+A View without a Presenter that passes all its props on to one child, and a unit with no props:
+
+```
+SaveButton/
+  SaveButton  (View)       SaveButtonProps = ButtonProps — an alias of its child's props type
+                           Button(props as they are, variant = primary)
+EmptyCart/
+  EmptyCart   (View)       no props, so no props type
+                           Text("The cart is empty")
 ```
 
 A pattern, not a check: a View with several screens or states may only choose which one to show, with each

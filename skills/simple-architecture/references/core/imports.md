@@ -20,7 +20,8 @@ stores folder or a components folder belongs to the level that holds the folder.
 
 - Allowed targets:
   - an own child unit, through its entry ([Levels and placement](levels.md)) — in an app with a UI the child's
-    View, which also passes on its props type ([View and Presenter](view-presenter.md));
+    View, which also passes on its props type and the types that are part of it
+    ([View and Presenter](view-presenter.md));
   - anything in the logic folder of the own level and of any level above it — stateful logic, tasks, plain
     functions, types, constants — except that level's Presenter, which only its own entry imports. An entry folder
     there ([Levels and placement](levels.md)) is imported only through its entry;
@@ -30,7 +31,8 @@ stores folder or a components folder belongs to the level that holds the folder.
     task or a plain function;
   - the units in the components folder of the own level and of any level above it, through their entry;
   - the pure zone of the own app — at the root level, or where the app's `lib` key puts it — from anywhere in the
-    app, by the kinds below;
+    app, by the kinds below. A type of the pure zone is imported from the module that exports it: the pure zone
+    has no types file ([Pure zone](pure-zone.md));
   - the shared types package (`shared` in the config), from any app and any kind of code;
   - packages from outside the project, from any kind of code.
 - A violation:
@@ -50,26 +52,33 @@ stores folder or a components folder belongs to the level that holds the folder.
   - a pure zone file importing from the app ([Pure zone](pure-zone.md)).
 - By kind, among the allowed targets, a violation is any import outside this list. Code of the pure zone counts
   under its own kind: a pure function as a plain function, pure stateful logic as stateful logic, a ui-kit
-  component as a component, generic I/O as generic I/O ([Pure zone](pure-zone.md)):
+  component as a component, generic I/O as generic I/O ([Pure zone](pure-zone.md)). An error class of the pure
+  zone — the error that generic I/O throws, for one — is named on its own below: code imports it to throw it, or to
+  tell the error apart by its class and answer with it:
   - View → its own Presenter, child units, components from components folders and from the ui-kit, types,
     constants;
-  - the entry of a unit with no UI → child units, tasks, plain functions, types, constants — never stateful logic,
-    which is tied to the life of a UI unit ([Stateful logic and plain functions](stateful-logic-and-functions.md));
-  - Presenter → stateful logic, tasks, stores, plain functions, types, constants — never a View or a component;
-  - stateful logic → stateful logic, tasks, stores, plain functions, types, constants;
-  - task → tasks, stores, plain functions, generic I/O, types, constants — never a View, a Presenter, stateful
-    logic, the UI framework, or a plain function that acts on the screen or imports from the UI framework
-    ([Tasks](tasks.md));
-  - plain function → plain functions, stores, types, constants, and pure functions, types and constants of the pure
-    zone — never a task, stateful logic or generic I/O. One that only the UI side uses may also import the UI
-    framework's API that is not stateful logic ([Stateful logic and plain functions](stateful-logic-and-functions.md));
+  - the entry of a unit with no UI → child units, tasks, plain functions, error classes of the pure zone, types,
+    constants — never stateful logic, which is tied to the life of a UI unit
+    ([Stateful logic and plain functions](stateful-logic-and-functions.md));
+  - Presenter → stateful logic, tasks, stores, plain functions, error classes of the pure zone, types, constants —
+    never a View or a component;
+  - stateful logic → stateful logic, tasks, stores, plain functions, error classes of the pure zone, types,
+    constants;
+  - task → tasks, stores, plain functions, generic I/O, error classes of the pure zone, types, constants — never a
+    View, a Presenter, stateful logic, the UI framework, or a plain function that acts on the screen or imports from
+    the UI framework ([Tasks](tasks.md));
+  - plain function → plain functions, stores, types, constants, and pure functions, error classes, types and
+    constants of the pure zone — never a task, stateful logic or generic I/O. One that only the UI side uses may
+    also import the UI framework's API that is not stateful logic
+    ([Stateful logic and plain functions](stateful-logic-and-functions.md));
   - store → plain functions that reach no store, directly or through other plain functions, types, constants, and
     pure functions, types and constants of the pure zone — never another store, a task or stateful logic
     ([Stateful logic and plain functions](stateful-logic-and-functions.md));
-  - generic I/O ([Pure zone](pure-zone.md)) → generic I/O, pure functions, types, constants of the pure zone. No
-    kind but a task and generic I/O imports it.
+  - generic I/O ([Pure zone](pure-zone.md)) → generic I/O, pure functions, error classes, types, constants of the
+    pure zone. No kind but a task and generic I/O imports it.
 - A type-only import is allowed for every kind from any allowed target, including a child's View: a Presenter may
-  import the props type its child passes on. It brings in no markup and no logic.
+  import the props type its child passes on, or a type that is part of it, such as a variant. It brings in no
+  markup and no logic.
 - When two units need the same logic, it goes to the logic folder of the lowest level above them. When they need
   the same data, it goes to a store in the stores folder of that level: shared stateful logic gives each user its
   own copy of the state, not one state.
@@ -133,7 +142,8 @@ client/src/             app "client"
       presenter         imports shared/src/order (the Order type)
 server/src/             app "server"
   orders/
-    orders              the entry: imports _logic/_tasks/createOrder
+    orders              the entry: imports _logic/_tasks/createOrder, and lib/errors/NotFoundError to tell that
+                        error apart when the task throws it and answer "not found"
     _logic/
       _tasks/
         createOrder     imports shared/src/order

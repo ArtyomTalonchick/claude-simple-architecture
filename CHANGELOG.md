@@ -19,6 +19,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- Five small cases the rules left open are settled as allowed, and the reviewer no longer reports them. The file
+  the app starts from runs the entry and may wrap it in what the app mounts around it — in React `StrictMode` and
+  providers; a unit only it uses for that is a child unit of the root level. A type that is part of a props type —
+  an icon name, a variant — is declared with it and passed on by the View, like the props type, not moved to a
+  types file; the pure zone has no types file, and a type a pure-zone module exports is imported from that module.
+  A View without a Presenter that passes all its props on to one child may declare its props type as an alias of
+  the child's; a unit with no props has no props type, not an empty one. A short handler that acts on the screen —
+  prevent the default action, move the focus — may stay inline in the Presenter; it moves to a plain function when
+  it grows or is reused, a judgement, not a check. An error class of the pure zone may be imported to tell an error
+  apart and answer with it — by the entry of a unit with no UI, a Presenter, stateful logic, a task, a plain
+  function and generic I/O. To update: nothing to change.
 - Two cases left to judgement are settled. A function that subscribes to a screen event and unsubscribes within
   the same call, keeping nothing between calls — such as an async function that waits once for a resize or a
   transition end, or a timeout, and removes its listener before it resolves — is a plain function of the UI side,

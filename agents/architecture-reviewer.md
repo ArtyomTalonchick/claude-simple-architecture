@@ -113,6 +113,16 @@ surrounding file when a rule depends on where the file lives or what it imports.
   (`references/core/stateful-logic-and-functions.md`); one whose listener outlives the call is stateful logic.
 - When counting the users of a type, count the files that name it. A file that only derives a type from another
   file's value or type does not use it, and the type stays where it is declared (`references/core/levels.md`).
+- These are allowed; do not report them: the file the app starts from wrapping the entry in what the app mounts
+  around it, and a unit that only it uses for that, a child unit of the root level (`references/core/levels.md`);
+  a type that is part of a props type — an icon name, a variant — declared with it and imported from the View, and
+  a pure-zone module's exported type imported from that module (`references/core/levels.md`,
+  `references/core/pure-zone.md`); a View without a Presenter whose props type is an alias of the props type of the
+  one child it passes all its props to, and a unit with no props and no props type
+  (`references/core/view-presenter.md`); a short handler that acts on the screen inline in the Presenter — when it
+  should move to a plain function is a judgement, not a check (`references/core/view-presenter.md`); an error class
+  of the pure zone imported to tell an error apart and answer with it, by the kinds `references/core/imports.md`
+  lists.
 - A ui-kit component is checked by meaning, not only by its imports (`references/core/pure-zone.md`): read each
   added or changed component in the ui-kit and judge whether it is named after or shaped by a domain entity, holds
   the app's own text, or is a placeholder or a part of such a component. Plain props do not make it pure. When the

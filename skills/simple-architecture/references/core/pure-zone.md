@@ -83,6 +83,13 @@ name tells neither what lies inside nor where a new piece belongs.
 - A pure zone folder below the root level (a module with its own lib folder) is a violation: the pure zone exists
   only at the root level, or in the one folder the app's `lib` key names.
 - A pure zone file with one user is not a violation of [Levels and placement](levels.md).
+- The pure zone has no types file. A type a pure-zone module exports — the type of its argument or its result, a
+  ui-kit component's props type and the types that are part of it, such as a variant — is part of the module's API:
+  it stays in the module, and its users import it from there, however many they are.
+- An error class of the pure zone (such as the error generic I/O throws) knows nothing of the app. Besides tasks
+  and generic I/O, which throw it, the app's code may import it to tell the error apart by its class and answer
+  with it — the entry of a unit with no UI, a Presenter, stateful logic, a plain function — but not a View or a
+  store ([Imports](imports.md)).
 - [View and Presenter](view-presenter.md) and
   [Stateful logic and plain functions](stateful-logic-and-functions.md) hold inside the pure zone too.
 
@@ -92,7 +99,8 @@ name tells neither what lies inside nor where a new piece belongs.
 src/
   lib/
     components/
-      Button/             no app imports
+      Button/             no app imports; its View passes on ButtonProps and ButtonVariant, a part of it — no
+                          types file in lib/
       Card/               a generic card: title, image, children and onClick come from its user
       Skeleton/           a generic placeholder block of a given width and height
       Modal/              uses lib/disclosure/disclosure; its close button's aria label defaults to "Close",
@@ -101,7 +109,7 @@ src/
     disclosure/
       disclosure          stateful logic: open / closed state, no app imports
     dates/
-      formatDate          a pure function, no app imports
+      formatDate          a pure function, no app imports; exports DateStyle, the type of its argument
     http/
       fetchJson           generic I/O: a request to the URL it is given, the body parsed; throws HttpError
     errors/

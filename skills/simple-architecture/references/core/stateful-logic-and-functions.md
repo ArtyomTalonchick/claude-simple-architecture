@@ -51,8 +51,8 @@ without touching the logic around it, and the few kinds of code that reach it sh
 - A plain function that does I/O — calls the server or generic I/O — is a violation: a request in the app is a step
   of a business action, so it is a task. A plain function that calls a task or stateful logic is a violation: the
   order of the steps stays with its caller, and one that calls stateful logic is stateful logic. A plain function
-  may call other plain functions, use types and constants, and use pure functions, types and constants of the pure
-  zone.
+  may call other plain functions, use types and constants, and use pure functions, error classes, types and
+  constants of the pure zone.
 - A plain function that subscribes to a store, or uses state or lifecycle, is a violation: it is stateful logic.
 - The UI boundary follows from the users. A plain function that a task calls, directly or through other plain
   functions, has nothing from the UI: it does not act on the screen — read or change the focus, the selection, the

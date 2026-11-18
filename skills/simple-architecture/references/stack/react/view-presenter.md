@@ -34,7 +34,16 @@ are the View's concern.
 - `usePresenter.ts` with no hook call and no computation — it only returns its props — is a violation.
 - The props type is declared in `usePresenter.ts` and re-exported from the component file (`export type {
   OrderListProps } from './_logic/usePresenter'`), so users import it from the View; a component without a Presenter
-  declares its props type in its own file.
+  declares its props type in its own file. A type that is part of the props type — an icon name, a variant — is
+  declared and re-exported with it (`export type { ButtonProps, ButtonVariant } from './_logic/usePresenter'`).
+- A component without a Presenter that spreads all its props onto one child may declare its props type as an alias
+  of the child's (`export type SaveButtonProps = ButtonProps`). A component with no props has no props type and takes
+  no parameter: it needs no empty `{}` type.
+- A short handler that acts on the DOM — `event.preventDefault()`, `inputRef.current?.focus()` — may stay inline in
+  `usePresenter.ts`; it moves to a plain function in the logic folder when it grows or is reused. A judgement, not
+  reported.
+- The start file (`main.tsx`) renders `App` and may wrap it in `StrictMode` and the providers the app mounts around
+  it. A component only `main.tsx` uses for that, such as `AppShell`, is a child unit of the root level next to `App`.
 
 **Good.**
 
@@ -105,6 +114,57 @@ export const OrderList = (props: OrderListProps) => {
     </>
   );
 };
+```
+
+A short handler that acts on the DOM stays inline in the Presenter:
+
+```tsx
+// SearchForm/_logic/usePresenter.ts
+export const usePresenter = ({ onSearch }: SearchFormProps) => {
+  const [query, setQuery] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    onSearch(query);
+  };
+  const clear = () => {
+    setQuery('');
+    inputRef.current?.focus();
+  };
+  return { query, setQuery, inputRef, submit, clear };
+};
+```
+
+A component without a Presenter that spreads all its props onto one child, and one with no props:
+
+```tsx
+// SaveButton/SaveButton.tsx
+import { Button, type ButtonProps } from '@/lib/components/Button/Button';
+
+export type SaveButtonProps = ButtonProps;
+
+export const SaveButton = (props: SaveButtonProps) => <Button icon="save" {...props} />;
+
+// EmptyCart/EmptyCart.tsx — no props, no props type
+export const EmptyCart = () => <Text>The cart is empty</Text>;
+```
+
+The start file wraps the entry in what the app mounts around it:
+
+```tsx
+// src/main.tsx
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <AppShell>
+      <App />
+    </AppShell>
+  </StrictMode>,
+);
+
+// src/AppShell/AppShell.tsx — a child unit of the root level; its only user is main.tsx
+export type AppShellProps = { children: ReactNode };
+
+export const AppShell = ({ children }: AppShellProps) => <ThemeProvider theme={theme}>{children}</ThemeProvider>;
 ```
 
 Less preferred, but not a violation, so not reported: the View rebuilds the child's props from separate ready
