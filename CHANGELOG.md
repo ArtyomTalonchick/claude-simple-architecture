@@ -12,6 +12,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   code may import" (0.2.3) is gone. An integration test of a level going through the level's entry is now advice,
   not a violation: such a test does not break on a change inside a child unit. Where a test lives is checked as
   before. To update: nothing to change; a test the reviewer reported for an import is now fine.
+- A ui-kit component is checked by meaning, not only by its imports. Plain props — strings, numbers, callbacks —
+  do not make a component pure: one named after or shaped by a domain entity (an order card, not a card), one that
+  holds the app's own text (a "Cart" label), and a placeholder or a part of such a component know the app and are a
+  violation in the ui-kit. Generic defaults its user can replace, such as a "Close" aria label, are not the app's
+  text. Such a component is app code and is placed by its users: a child unit of its one user, or a unit in the
+  components folder of the lowest level that covers them all. The reviewer now reports these. To update: move each such component out
+  of the ui-kit to its place in the app.
 
 ## [0.2.3] — 2026-11-17
 

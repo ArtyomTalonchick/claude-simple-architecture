@@ -19,8 +19,9 @@ plugin's repository.
   the UI framework; the Presenter or stateful logic awaits it and keeps loading and error; the Presenter navigates.
 - [Pure zone](pure-zone.md) — code that knows nothing of the app lives in `lib/` and the ui-kit at the root,
   with the design-system theme, in folders named by what they hold, and depends on nothing from the app, by import
-  or by key. Generic I/O — I/O that knows nothing of the app — is its own kind there, called only by tasks; `lib/`
-  holds no tasks.
+  or by key, nor knows it by meaning: a ui-kit component named after or shaped by the domain, holding the app's own
+  text, or a placeholder or part of such a component is app code, even with plain props. Generic I/O — I/O that
+  knows nothing of the app — is its own kind there, called only by tasks; `lib/` holds no tasks.
 - [One thing per file](one-thing-per-file.md) — one View, Presenter, stateful logic, task or plain function per file;
   a file over the line limit is a violation.
 - [Imports](imports.md) — import along the structure only, never into another app; between kinds of code, View →

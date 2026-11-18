@@ -4,18 +4,23 @@
 `lib/`) with folders named by what they hold (such as `lib/http/` and `lib/theme/`), and the ui-kit (default
 `lib/components/`) as its components folder. The design-system theme — tokens and the styles of ui-kit
 components — is pure too and lives in the lib folder. Pure code depends on nothing from the app — no domain types,
-store, data access, app components or app styles, by import or by key. Code that does I/O — a request, a storage
-access — and knows nothing of the app is generic I/O, a kind of its own that lives only here and that only tasks
-call. Code that knows the app goes to the logic folder, the stores folder or the components folder of the root
-level. Pure code stays in the pure zone whatever the number of its users.
+store, data access, app components or app styles, by import or by key — and knows nothing of it by meaning: a
+component named after or shaped by the app's domain, one that holds the app's own text, and a placeholder or a part
+of such a component know the app even when their props are plain values and callbacks. Code that does I/O — a
+request, a storage access — and knows nothing of the app is generic I/O, a kind of its own that lives only here and
+that only tasks call. Code that knows the app goes to the app — its logic, stores or components — placed by
+its users ([Levels and placement](levels.md)). Pure code stays in the pure zone whatever the number of its users.
 
 **Why.** Pure code is the base the rest of the app stands on. As long as it knows nothing of the app, it changes
 only for its own reasons, can be reused anywhere in the app, and can move to another project as it is. Once it
 picks up one app dependency, a change in the app can break the base, and the base can no longer be moved. It is
-a base, not shared code, so it does not move down to its one user the way shared code does. Generic I/O is
-neither a task nor a plain function: it holds no business logic, so it is no task, and it reaches outside the
-program, so it is no plain function. Called only from tasks, it keeps the app's I/O where it already is — in the
-tasks.
+a base, not shared code, so it does not move down to its one user the way shared code does. A component can know
+the app without importing from it: the knowledge sits in its name, its props and its text. An order card that takes
+an order's number and total as plain strings still changes when orders change and means nothing in another
+project: it is app code that only looks pure. Kept in the ui-kit, it makes the base change for the app's reasons,
+and it hides who uses it, so the levels no longer show where it belongs. Generic I/O is neither a task nor a plain
+function: it holds no business logic, so it is no task, and it reaches outside the program, so it is no plain
+function. Called only from tasks, it keeps the app's I/O where it already is — in the tasks.
 
 **How to check.**
 
@@ -47,6 +52,22 @@ tasks.
   under the root level, outside the lib folder — is a violation. The app mounting or extending what the pure zone
   defines (the root mounting the theme from `lib/`) is allowed: the app may depend on the pure zone. So is pure
   stateful logic that takes a task as an argument and runs it: the app passes it in.
+- A ui-kit component is checked by meaning, not only by its imports: plain props — strings, numbers, flags,
+  callbacks, children — do not make it pure. A ui-kit component with any of these signs knows the app and is a
+  violation:
+  - it is named after or shaped by a domain entity, not a generic element: an order card, a user row, a cart button
+    — not a card, a list row, a button. Shaped means its props or layout follow one entity's fields (`number`,
+    `total`, `status` laid out as an order), even under a generic name;
+  - it holds the app's own text: a label, a title or a message that names the app's domain or screens ("Cart",
+    "My orders", "No orders yet"). Text its user passes in is not its own. A generic default that any app shows for
+    such an element and its user can replace — "Close" on a dialog's close button, an aria label "Loading" on a
+    spinner — is not the app's text either;
+  - it is a placeholder or a part of a component with a sign above: an order card's skeleton, an order row's
+    actions. A generic placeholder, such as a skeleton block of a given size, is fine.
+
+  Such a component is app code and is placed by [Levels and placement](levels.md), not in the ui-kit: with one
+  user, in that user's folder as its child unit; with more, in the components folder of the lowest level that
+  covers them all. When the call is a judgement, say so.
 - A pure zone folder below the root level (a module with its own lib folder) is a violation: the pure zone exists
   only at the root.
 - A pure zone file with one user is not a violation of [Levels and placement](levels.md).
@@ -60,7 +81,10 @@ src/
   lib/
     components/
       Button/             no app imports
-      Modal/              uses lib/disclosure/disclosure
+      Card/               a generic card: title, image, children and onClick come from its user
+      Skeleton/           a generic placeholder block of a given width and height
+      Modal/              uses lib/disclosure/disclosure; its close button's aria label defaults to "Close",
+                          replaceable by its user
       SearchField/        looks up the style "searchField", registered in lib/theme/
     disclosure/
       disclosure          stateful logic: open / closed state, no app imports
@@ -83,6 +107,11 @@ src/
     userStore             the current user — app data, so outside lib/
   _components/
     UserAvatar/           its presenter reads the current user from the store — app code, so outside lib/
+    OrderCard/            plain props (number, total, status, onOpen), but a card of an order — app code, so
+                          outside lib/; used by two branches, so at their lowest common level
+    OrderCardSkeleton/    the placeholder of OrderCard — app code with it
+  CartPage/
+    CheckoutButton/       holds the app's label "Go to checkout" — app code; used only by CartPage, so its child
 ```
 
 **Bad.**
@@ -93,6 +122,10 @@ src/
     components/
       Button/             no app imports
       UserAvatar/         its presenter reads the current user from the store — app code inside the pure zone
+      OrderCard/          plain props (number, total, status, onOpen), no app imports — but a card of an order:
+                          app code inside the pure zone
+      OrderCardSkeleton/  the placeholder of OrderCard — app code inside the pure zone
+      CheckoutButton/     plain props, but holds the app's label "Go to checkout" — app code inside the pure zone
       SearchField/        looks up the style "searchField", registered in theme/ — an app dependency by key
     dates/
       formatDate          imports the Order type from the app
