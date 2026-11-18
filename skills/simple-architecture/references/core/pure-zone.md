@@ -1,8 +1,9 @@
 ## Pure zone
 
 **Rule.** Keep code that knows nothing of the app in the pure zone at the root level, or where the app's `lib` key
-puts it: the lib folder (default `lib/`) with folders named by what they hold (such as `lib/http/` and
-`lib/theme/`), and the ui-kit (default `lib/components/`) as its components folder. The design-system theme —
+puts it: the lib folder (default `lib/`) with folders named by what their code is about (such as `lib/http/`
+and `lib/theme/`), never by the kind of code (`hooks/`, `helpers/`, `utils/`), and the ui-kit (default
+`lib/components/`) as its components folder. The design-system theme —
 tokens and the styles of ui-kit components — is pure too and lives in the lib folder. Pure code depends on nothing from the app — no domain types,
 store, data access, app components or app styles, by import or by key — and knows nothing of it by meaning: a
 component named after or shaped by the app's domain, one that holds the app's own text, and a placeholder or a part
@@ -20,7 +21,10 @@ an order's number and total as plain strings still changes when orders change an
 project: it is app code that only looks pure. Kept in the ui-kit, it makes the base change for the app's reasons,
 and it hides who uses it, so the levels no longer show where it belongs. Generic I/O is neither a task nor a plain
 function: it holds no business logic, so it is no task, and it reaches outside the program, so it is no plain
-function. Called only from tasks, it keeps the app's I/O where it already is — in the tasks.
+function. Called only from tasks, it keeps the app's I/O where it already is — in the tasks. A folder in the lib
+folder is named by what its code is about, because a kind of code — hooks, helpers, utils — says how the code is
+written, not what it does: anything fits under it, so such a folder grows into a drawer of unrelated code, and its
+name tells neither what lies inside nor where a new piece belongs.
 
 **How to check.**
 
@@ -31,15 +35,20 @@ function. Called only from tasks, it keeps the app's I/O where it already is —
   the lib folder, the lib folder has no components folder of its own. The ui-kit's name is set on its own (`folders.uiKit`, default `lib/components/`) and does not
   follow the name of a level's components folder (`folders.components`): the ui-kit is part of the pure zone, not a
   level's shared components folder.
-- The lib folder holds folders named by what they hold — generic I/O (e.g. `lib/http/`), errors, the theme
-  (e.g. `lib/theme/`), icons, styles, stateful logic, pure functions (e.g. `lib/dates/`) — and the ui-kit when it
-  is set inside it. They all follow this rule. A name by kind, such as `hooks/`, is a name by content too; what a
+- The lib folder holds folders named by what their code is about — generic I/O (e.g. `lib/http/`), errors, the
+  theme (e.g. `lib/theme/`), icons, styles, stateful logic (e.g. `lib/pagination/`, `lib/debounce/`), pure
+  functions (e.g. `lib/dates/`) — and the ui-kit when it is set inside it. They all follow this rule. What a
   function does decides its kind ([Stateful logic and plain functions](stateful-logic-and-functions.md)), not the
   folder it lies in. A pure function is a plain function of the pure zone: it knows nothing of the app, so it
   reaches no store.
+- A folder in the lib folder named by the kind of code — `hooks/`, `helpers/`, `utils/`, `functions/`,
+  `services/` and the like — is a violation: its name says how its code is written, not what it is about. Each
+  piece in it goes to a folder named by what it is about (a debounce to `lib/debounce/`, a date formatter to
+  `lib/dates/`). The ui-kit is not such a folder: it is the pure zone's components folder, set by the config
+  (default `lib/components/`). Errors, the theme, icons and styles are subjects, not kinds, and are fine.
 - A tasks folder in the lib folder (`tasks/`, or named as the configured tasks folder, default `_tasks/`) is a
   violation: a task is the app's business logic, and the pure zone has none. Code in it that knows nothing of the
-  app is generic I/O or a pure function and goes to a folder named by what it holds; code that knows the app is a
+  app is generic I/O or a pure function and goes to a folder named by what it is about; code that knows the app is a
   task and goes to the app.
 - Generic I/O is a function in the pure zone that does I/O — a request, a storage access — and knows nothing of
   the app: no endpoint, key or data shape of the app, only what its caller passes in. Only a task and other
@@ -152,6 +161,13 @@ src/
       formatDate          imports the Order type from the app
     _tasks/
       fetchJson           a tasks folder in the pure zone — generic I/O goes to lib/http/
+    hooks/                a folder named by the kind of code — each piece goes to a folder named by its subject
+      debounce            stateful logic: belongs in lib/debounce/
+      pagination          stateful logic, unrelated to debounce, kept with it only by its kind: belongs in
+                          lib/pagination/
+    helpers/              a folder named by the kind of code
+      formatDuration      belongs in lib/dates/
+      clamp               belongs in a folder named by what it is about, such as lib/numbers/
   theme/
     searchField           the style of a ui-kit component outside the pure zone — it belongs in lib/theme/
   UserProfile/

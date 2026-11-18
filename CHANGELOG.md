@@ -39,6 +39,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   its users. To update: for each entry whose parts lie flat next to it, make the entry folder and move the parts
   into it; do the same inside it for each part with parts of its own; fix the imports to go through each folder's
   entry.
+- **Breaking:** a folder in the lib folder named by the kind of code — `hooks/`, `helpers/`, `utils/`,
+  `functions/`, `services/` and the like — is a violation the reviewer reports, as a tasks folder there already is.
+  The lib folder's folders are named by what their code is about (`lib/http/`, `lib/dates/`, `lib/pagination/`):
+  a kind says how the code is written, not what it does, and a folder named by kind grows into a drawer of
+  unrelated code. "A name by kind is a name by content too" is gone. The ui-kit (default `lib/components/`) and
+  errors, the theme, icons and styles stay as they are. To update: move each piece of a `lib/hooks/`,
+  `lib/helpers/` or `lib/utils/` folder to a folder named by what it is about (a debounce to `lib/debounce/`, a
+  date formatter to `lib/dates/`), and fix the imports.
 
 ## [0.2.3] — 2026-11-17
 

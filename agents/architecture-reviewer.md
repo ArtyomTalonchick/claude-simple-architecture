@@ -112,6 +112,9 @@ surrounding file when a rule depends on where the file lives or what it imports.
   added or changed component in the ui-kit and judge whether it is named after or shaped by a domain entity, holds
   the app's own text, or is a placeholder or a part of such a component. Plain props do not make it pure. When the
   call is a judgement, say so in the finding.
+- A folder in the lib folder is judged by its name (`references/core/pure-zone.md`): one named by the kind of
+  code — `hooks/`, `helpers/`, `utils/`, `functions/`, `services/` and the like — is a violation; one named by what
+  its code is about (`lib/http/`, `lib/dates/`), the ui-kit, and errors, the theme, icons and styles are fine.
 - Core rules always apply. A stack rule carries out a core rule with one technology and never overrides it.
 - Line numbers are in the new version of the file (the `+` side of the diff). For a deleted file or a moved
   file, name the path and say so.

@@ -19,8 +19,9 @@ plugin's repository.
 - [Tasks](tasks.md) — a business action, one that stays the same in any UI, is a task: a function with nothing from
   the UI framework; the Presenter or stateful logic awaits it and keeps loading and error; the Presenter navigates.
 - [Pure zone](pure-zone.md) — code that knows nothing of the app lives in `lib/` and the ui-kit at the root
-  level, or where the app's `lib` key puts it, with the design-system theme, in folders named by what they hold, and
-  depends on nothing from the app, by import or by key, nor knows it by meaning: a ui-kit component named after or
+  level, or where the app's `lib` key puts it, with the design-system theme, in folders named by what their code is
+  about — never by the kind of code, such as `hooks/` — and depends on nothing from the app, by import or by key,
+  nor knows it by meaning: a ui-kit component named after or
   shaped by the domain, holding the app's own text, or a placeholder or part of such a component is app code, even
   with plain props. Generic I/O — I/O that knows nothing of the app — is its own kind there, called only by tasks;
   `lib/` holds no tasks.
