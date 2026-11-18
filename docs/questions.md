@@ -71,7 +71,7 @@ question, why it was dropped.
 
 **Status.** answered
 
-**Answer.** Tests live next to the code they test, are not part of the shape and do not count as users; a test may import the code it tests and what that code may import. Written into "Levels and placement" and "Imports".
+**Answer.** Tests live next to the code they test, are not part of the shape and do not count as users; a test may import the code it tests and what that code may import. Written into "Levels and placement" and "Imports". Later relaxed (#47): a test may import whatever it needs to set up, reset and check state, and its imports are not checked.
 
 ## Q6. Relative paths or a path alias?
 

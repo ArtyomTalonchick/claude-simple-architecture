@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- A test's imports are no longer checked: a test may import whatever it needs to set up, reset and check state —
+  any store, task or function of the app — and the reviewer does not report them. "Nothing more than the tested
+  code may import" (0.2.3) is gone. An integration test of a level going through the level's entry is now advice,
+  not a violation: such a test does not break on a change inside a child unit. Where a test lives is checked as
+  before. To update: nothing to change; a test the reviewer reported for an import is now fine.
+
 ## [0.2.3] — 2026-11-17
 
 ### Changed

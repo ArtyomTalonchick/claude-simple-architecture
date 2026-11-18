@@ -105,7 +105,7 @@ parts of one function, kept in its folder, are not mistaken for code the level s
 - Tests are not part of the shape. A test lives next to the code it tests — a test file beside it, or a tests
   folder in the folder that holds it, by the project's convention — and is not a unit, a folder of the shape or a
   level. A test is not a user: it does not count when deciding where code goes, and a file used by one unit and by
-  tests still has one user.
+  tests still has one user. Only where a test lives is checked; what it imports is not ([Imports](imports.md)).
 
 **Good.**
 
