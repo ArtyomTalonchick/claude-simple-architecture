@@ -67,9 +67,10 @@ without touching the logic around it, and the few kinds of code that reach it sh
   and removes its listener before it finishes. It acts on the screen, so only the UI side calls it. One whose
   listener outlives the call is stateful logic.
 - Placement by users, on the level set by [Levels and placement](levels.md): a plain function used only by tasks
-  lives in the tasks folder — a file next to the tasks, or a part in the entry folder of its one task; one used by a
-  Presenter, stateful logic or the entry of a unit with no UI, whether or not tasks use it too, lives in the logic
-  folder outside the tasks folder, or as a part in the entry folder of its one user. A plain function used only by
+  lives in the tasks folder — a file next to the tasks when two or more use it, a part in the entry folder of its
+  one task otherwise; one used by a Presenter, stateful logic or the entry of a unit with no UI, whether or not tasks
+  use it too, lives in the logic folder outside the tasks folder — a part in the entry folder of its one user when
+  that user is an entry of the logic folder, a file there otherwise (a Presenter is never an entry folder). A plain function used only by
   tasks that lies in the logic folder outside the tasks folder, or one used by a Presenter, stateful logic or the
   entry of a unit with no UI that lies in the tasks folder, is a violation. Code that knows nothing of the app goes
   to the pure zone ([Pure zone](pure-zone.md)).

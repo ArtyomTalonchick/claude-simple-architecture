@@ -48,13 +48,13 @@ export const useCurrentUser = () => useUserStore((s) => s.user);
 // _logic/formatPrice.ts
 export const formatPrice = (sum: number) => sum.toFixed(2);
 
-// _logic/redrawCaret.ts — acts on the page, keeps nothing between calls
+// _logic/openResults/redrawCaret.ts — a part of openResults: acts on the page, keeps nothing between calls
 export const redrawCaret = () => {
   const field = document.activeElement;
   if (field instanceof HTMLInputElement) field.setSelectionRange(field.selectionStart, field.selectionEnd);
 };
 
-// _logic/openResults.ts — a plain function of the UI side: UI state in two stores inside a screen transition,
+// _logic/openResults/openResults.ts — an entry folder with its one part; a plain function of the UI side: UI state in two stores inside a screen transition,
 // flushSync from react-dom, then the caret; no hook. Called by the Presenter.
 export const openResults = (query: string) => {
   document.startViewTransition(() => {

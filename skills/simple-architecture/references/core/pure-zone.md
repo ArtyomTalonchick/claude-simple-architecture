@@ -22,7 +22,7 @@ project: it is app code that only looks pure. Kept in the ui-kit, it makes the b
 and it hides who uses it, so the levels no longer show where it belongs. Generic I/O is neither a task nor a plain
 function: it holds no business logic, so it is no task, and it reaches outside the program, so it is no plain
 function. Called only from tasks, it keeps the app's I/O where it already is — in the tasks. A folder in the lib
-folder is named by what its code is about, because a kind of code — hooks, helpers, utils — says how the code is
+folder is named by what its code is about, because a kind of code — stateful logic, functions, utils — says how the code is
 written, not what it does: anything fits under it, so such a folder grows into a drawer of unrelated code, and its
 name tells neither what lies inside nor where a new piece belongs.
 
@@ -72,8 +72,8 @@ name tells neither what lies inside nor where a new piece belongs.
     `total`, `status` laid out as an order), even under a generic name;
   - it holds the app's own text: a label, a title or a message that names the app's domain or screens ("Cart",
     "My orders", "No orders yet"). Text its user passes in is not its own. A generic default that any app shows for
-    such an element and its user can replace — "Close" on a dialog's close button, an aria label "Loading" on a
-    spinner — is not the app's text either;
+    such an element and its user can replace — "Close" on a dialog's close button, an accessible label "Loading"
+    on a spinner — is not the app's text either;
   - it is a placeholder or a part of a component with a sign above: an order card's skeleton, an order row's
     actions. A generic placeholder, such as a skeleton block of a given size, is fine.
 
@@ -103,7 +103,7 @@ src/
                           types file in lib/
       Card/               a generic card: title, image, children and onClick come from its user
       Skeleton/           a generic placeholder block of a given width and height
-      Modal/              uses lib/disclosure/disclosure; its close button's aria label defaults to "Close",
+      Modal/              uses lib/disclosure/disclosure; its close button's accessible label defaults to "Close",
                           replaceable by its user
       SearchField/        looks up the style "searchField", registered in lib/theme/
     disclosure/

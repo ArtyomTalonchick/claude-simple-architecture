@@ -78,7 +78,7 @@ this is the full file with the defaults:
   "folders": {
     // The pure zone, relative to "root". It knows nothing of the app. "lib" above takes its place when set.
     "lib": "lib",
-    // The ui-kit, relative to "root". Set "ui-kit" to keep it at the root level. It is part of the pure zone,
+    // The ui-kit, relative to "root". Set "ui-kit" to keep it at the root level (without "lib"). It is part of the pure zone,
     // so its name does not follow "components". With "lib" set, it lies inside "lib": "<lib>/components".
     "uiKit": "lib/components",
     // The same names on every level.

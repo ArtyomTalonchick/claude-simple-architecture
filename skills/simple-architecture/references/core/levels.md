@@ -281,5 +281,5 @@ ProductSearch/
 **Stack notes.**
 
 - [react/view-presenter.md](../stack/react/view-presenter.md) — the View and Presenter files of a level.
-- [react/levels.md](../stack/react/levels.md) — a type reached through `typeof`, `Parameters` or `ReturnType` is
-  not used by the file that derives it.
+- [react/levels.md](../stack/react/levels.md) — a type derived from a value or another type is not used by the file
+  that derives it.

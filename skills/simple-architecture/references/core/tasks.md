@@ -58,7 +58,9 @@ would carry the UI into the business actions.
   at any depth. A task whose parts lie flat next to it in the tasks folder is a violation. A task folder is not a
   unit ([Levels and placement](levels.md)).
 - Recommended, not checked: a task talks to the server through a small project module of tasks, one per
-  request (`api.logout()`), which call the pure zone's generic I/O — not through generic I/O directly.
+  request (`api.logout()`), which call the pure zone's generic I/O — not through generic I/O directly. The module
+  is one file: its users are all the tasks that call any of its requests, so it stays in the tasks folder and is
+  not a part of any one of them.
 
 **Good.**
 

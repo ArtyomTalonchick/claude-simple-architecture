@@ -55,6 +55,8 @@ stores folder or a components folder belongs to the level that holds the folder.
   component as a component, generic I/O as generic I/O ([Pure zone](pure-zone.md)). An error class of the pure
   zone — the error that generic I/O throws, for one — is named on its own below: code imports it to throw it, or to
   tell the error apart by its class and answer with it:
+  - the file the app starts from ([Levels and placement](levels.md)) → the root entry, the child units of the root
+    level it wraps the entry in, the pure zone, types, constants;
   - View → its own Presenter, child units, components from components folders and from the ui-kit, types,
     constants;
   - the entry of a unit with no UI → child units, tasks, plain functions, error classes of the pure zone, types,
@@ -87,8 +89,8 @@ stores folder or a components folder belongs to the level that holds the folder.
   any store, task or function of the app. A test's imports are never a violation.
 - Advice, not a violation: an integration test of a level goes through its entry for what it checks — it renders
   the View, or calls the entry of a unit with no UI, and the child units come in through their entries. Such a test
-  does not break on a change inside a child unit. Importing a store only to set up, reset or check state does not
-  go against it.
+  does not break on a change inside a child unit. Importing a store, a task or a function only to set up, reset or
+  check state does not go against it.
 - The rule is about targets, not path syntax: a relative path and a path alias are judged the same, and the path
   style is never a finding. Recommended:
   import own child units and the code a test tests by a relative path, everything else through the project's
