@@ -5,6 +5,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- The config key `lib` sets the pure zone apart from the root level: a folder relative to the project root, as
+  `root` is — per app in `apps`, or at the top level for one app — for example
+  `{"root": "src/App", "lib": "src/lib"}`. The pure zone then lies outside every level, with the ui-kit inside it
+  (`folders.uiKit`, default `lib/components`, becomes `<lib>/components`), and the root level holds only the app's
+  code: a lib folder there is an ordinary folder at a level root. Pure code still imports nothing of the app, now
+  also not the app's code outside the root level, such as the file the app starts from. A value inside the root
+  level other than the default place, one that holds the root level, and an absolute path or one with `..` are
+  ignored, and you are told. The SessionStart hook prints the resolved pure zone, and the reviewer checks the
+  files of a pure zone set apart by the rules of its app. Without the key nothing changes.
+
 ### Changed
 
 - A test's imports are no longer checked: a test may import whatever it needs to set up, reset and check state —

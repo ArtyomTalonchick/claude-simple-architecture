@@ -17,7 +17,15 @@ const DEFAULT_FOLDERS = {
   logic: '_logic',
   stores: '_stores',
 };
-const DEFAULTS = { stack: [], root: 'src', folders: DEFAULT_FOLDERS, maxFileLines: 120, apps: null, shared: null };
+const DEFAULTS = {
+  stack: [],
+  root: 'src',
+  lib: null,
+  folders: DEFAULT_FOLDERS,
+  maxFileLines: 120,
+  apps: null,
+  shared: null,
+};
 
 function readStdinJson() {
   try {
@@ -68,6 +76,9 @@ function knownStacks() {
   }
 }
 
+// Said of a pure zone set apart by the `lib` key.
+const APART = ' (set by "lib": outside every level; the root level holds no pure zone)';
+
 const isText = (value) => typeof value === 'string' && value.trim() !== '';
 
 // Returns { status: 'missing' } | { status: 'invalid', error } | { status: 'ok', raw }.
@@ -91,9 +102,60 @@ function readConfig(root) {
 
 const stackList = (value) => [...new Set(value.map((name) => name.trim().toLowerCase()))];
 
-// Several apps of one repository: { name: { root, stack } }. Returns a list of { name, root, stack }, or null when
-// there is no usable app, so the config falls back to one app.
-function resolveApps(raw, problems) {
+// A path with one kind of slash and no empty or "." parts: "./client\src/" -> "client/src".
+const normalPath = (path) =>
+  path
+    .replace(/\\/g, '/')
+    .split('/')
+    .filter((part) => part !== '' && part !== '.')
+    .join('/');
+const isInside = (path, folder) => path === folder || path.startsWith(`${folder}/`);
+
+// The `lib` key: the pure zone set apart from the root level, relative to the project root. Returns the folder, or
+// null when the pure zone stays at its default place under the root (no key, a bad value, or the default place).
+function resolveLib(value, label, root, folders, problems) {
+  if (!isText(value)) {
+    problems.push(`"${label}" is not a folder name`);
+    return null;
+  }
+  if (/^([\\/]|[A-Za-z]:)/.test(value.trim()) || value.split(/[\\/]/).includes('..')) {
+    problems.push(`"${label}" is not a folder path relative to the project root`);
+    return null;
+  }
+  const lib = normalPath(value.trim());
+  const rootPath = normalPath(root);
+  if (!lib) {
+    problems.push(`"${label}" is not a folder name`);
+    return null;
+  }
+  if (isInside(rootPath, lib)) {
+    problems.push(`"${label}" holds the root level, so it is ignored`);
+    return null;
+  }
+  if (isInside(lib, rootPath)) {
+    if (lib === normalPath(`${rootPath}/${folders.lib}`)) return null;
+    problems.push(`"${label}" lies inside the root level, where the pure zone is set only by "folders.lib", so it is ignored`);
+    return null;
+  }
+  return lib;
+}
+
+// The pure zone and the ui-kit of one app. With `lib` set, the ui-kit lies inside it as it lies inside the lib
+// folder by default: "lib/components" becomes "<lib>/components"; a ui-kit set outside "folders.lib" is taken as
+// relative to `lib`.
+function pureZone(root, lib, folders) {
+  if (!lib) return { lib: `${root}/${folders.lib}`, uiKit: `${root}/${folders.uiKit}`, apart: false };
+  const libName = normalPath(folders.lib);
+  const uiKit = normalPath(folders.uiKit);
+  let inside = uiKit;
+  if (uiKit === libName) inside = '';
+  else if (uiKit.startsWith(`${libName}/`)) inside = uiKit.slice(libName.length + 1);
+  return { lib, uiKit: inside ? `${lib}/${inside}` : lib, apart: true };
+}
+
+// Several apps of one repository: { name: { root, stack, lib } }. Returns a list of { name, root, stack, lib }, or
+// null when there is no usable app, so the config falls back to one app.
+function resolveApps(raw, folders, problems) {
   if (!raw.apps || typeof raw.apps !== 'object' || Array.isArray(raw.apps)) {
     problems.push('"apps" is not an object');
     return null;
@@ -109,16 +171,18 @@ function resolveApps(raw, problems) {
       if (Array.isArray(app.stack) && app.stack.every(isText)) stack = stackList(app.stack);
       else problems.push(`"apps.${name}.stack" is not a list of names`);
     }
+    const root = app.root.trim();
+    const lib = 'lib' in app ? resolveLib(app.lib, `apps.${name}.lib`, root, folders, problems) : null;
     for (const key of Object.keys(app)) {
-      if (key !== 'root' && key !== 'stack') problems.push(`"apps.${name}.${key}" is not a known key`);
+      if (!['root', 'stack', 'lib'].includes(key)) problems.push(`"apps.${name}.${key}" is not a known key`);
     }
-    apps.push({ name, root: app.root.trim(), stack });
+    apps.push({ name, root, stack, lib });
   }
   if (!apps.length) {
     problems.push('"apps" has no usable app, so it is ignored and the project is one app');
     return null;
   }
-  for (const key of ['root', 'stack']) {
+  for (const key of ['root', 'stack', 'lib']) {
     if (key in raw) problems.push(`"${key}" is ignored because "apps" is set`);
   }
   return apps;
@@ -155,7 +219,8 @@ function resolveConfig(raw) {
     if (Number.isInteger(raw.maxFileLines) && raw.maxFileLines > 0) config.maxFileLines = raw.maxFileLines;
     else problems.push('"maxFileLines" is not a positive whole number');
   }
-  if ('apps' in raw) config.apps = resolveApps(raw, problems);
+  if ('apps' in raw) config.apps = resolveApps(raw, config.folders, problems);
+  if ('lib' in raw && !config.apps) config.lib = resolveLib(raw.lib, 'lib', config.root, config.folders, problems);
   if ('shared' in raw) {
     if (isText(raw.shared)) config.shared = raw.shared.trim();
     else problems.push('"shared" is not a folder name');
@@ -204,14 +269,16 @@ function main() {
   if (config.apps) {
     lines.push('Apps - each is checked on its own, by the core and its own stacks; an app never imports from another app:');
     for (const app of config.apps) {
+      const zone = pureZone(app.root, app.lib, f);
       lines.push(
-        `- ${app.name}: root level ${app.root}/; stack ${stackText(app.stack)}; pure zone ${app.root}/${f.lib}/; UI kit ${app.root}/${f.uiKit}/.`
+        `- ${app.name}: root level ${app.root}/; stack ${stackText(app.stack)}; pure zone ${zone.lib}/${zone.apart ? APART : ''}; UI kit ${zone.uiKit}/.`
       );
     }
   } else {
+    const zone = pureZone(config.root, config.lib, f);
     lines.push(
       `Stack: ${stackText(config.stack)}.`,
-      `Root level: ${config.root}/. Pure zone: ${config.root}/${f.lib}/. UI kit: ${config.root}/${f.uiKit}/.`
+      `Root level: ${config.root}/. Pure zone: ${zone.lib}/${zone.apart ? APART : ''}. UI kit: ${zone.uiKit}/.`
     );
   }
   if (config.shared) {
@@ -231,7 +298,7 @@ function main() {
   }
   lines.push(
     'Before writing, changing, moving or reviewing code structure, read the simple-architecture skill: the core first, then only the declared stacks' +
-      (config.apps ? ' of the app whose root holds the code.' : '.') +
+      (config.apps ? ' of the app whose root, or pure zone, holds the code.' : '.') +
       ' Use the folder names above wherever the rules name a default.'
   );
   console.log(lines.join('\n'));

@@ -29,7 +29,8 @@ stores folder or a components folder belongs to the level that holds the folder.
   - the stores in the stores folder of the own level and of any level above it, from a Presenter, stateful logic, a
     task or a plain function;
   - the units in the components folder of the own level and of any level above it, through their entry;
-  - the pure zone of the own app, from anywhere in it, by the kinds below;
+  - the pure zone of the own app — at the root level, or where the app's `lib` key puts it — from anywhere in the
+    app, by the kinds below;
   - the shared types package (`shared` in the config), from any app and any kind of code;
   - packages from outside the project, from any kind of code.
 - A violation:

@@ -55,8 +55,9 @@ session still uses the session's version. Skip this check when the rules folder 
 
 Then read, in this order:
 
-1. `SKILL.md`. Then resolve the config values — the stack, the root level, the folder names, the file size
-   limit, and with `apps` each app's root and stack, and the shared types package — by its section
+1. `SKILL.md`. Then resolve the config values — the stack, the root level, the pure zone (`lib`, or
+   `folders.lib` under the root) and the ui-kit, the folder names, the file size limit, and with `apps` each app's
+   root, stack and pure zone, and the shared types package — by its section
    `## The config`. An unknown stack name (no such stack folder) is skipped; a value of
    the wrong type and an unknown key are ignored, and the default is used. Say each of these in the report.
 2. The core: `references/core/README.md` and every other `.md` file in `references/core/`.
@@ -120,9 +121,13 @@ surrounding file when a rule depends on where the file lives or what it imports.
 - A rule may name a check as a **warning** — a signal to look at, not a violation. Report it under Warnings,
   never as a finding.
 - Where a rule names a folder by its default, use the name from the project's config.
-- With `apps` in the config, check each changed file by the rules of its app — the app whose root holds it: the
-  core and that app's stacks only, with levels starting at that root. A file in the shared types package gets the
-  core rules only. A file outside every app's root and the shared package is not checked; name it in the report.
+- A pure zone set apart by `lib` lies outside the root level, and outside every level, yet belongs to its app:
+  check its files by the rules of that app (`references/core/pure-zone.md`). The root level then holds no pure
+  zone: a lib folder there is judged as any other folder at a level root.
+- With `apps` in the config, check each changed file by the rules of its app — the app whose root, or whose pure
+  zone set by `lib`, holds it: the core and that app's stacks only, with levels starting at that root. A file in
+  the shared types package gets the core rules only. A file outside every app's root, every app's pure zone and the
+  shared package is not checked; name it in the report.
 
 ## 5. Report
 

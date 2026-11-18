@@ -107,7 +107,8 @@ reader sees which files belong together — a flat list of files does not say wh
   belongs in that file.
 - An empty logic, tasks, stores or components folder is a violation: a folder exists only when it has content.
 - A child unit does not need the parent's name as a prefix.
-- The exception is the pure zone ([Pure zone](pure-zone.md)): it sits at the root level next to its shape, and pure
+- The exception is the pure zone ([Pure zone](pure-zone.md)): it sits at the root level next to its shape — or,
+  when the app's `lib` key sets it apart, outside every level, and the root level holds no pure zone — and pure
   code stays there whatever the number of its users. The ui-kit is part of the pure zone, not a components folder
   of the root level: its name is set on its own and does not follow the components folder's name.
 - Tests are not part of the shape. A test lives next to the code it tests — a test file beside it, or a tests

@@ -1,9 +1,9 @@
 ## Pure zone
 
-**Rule.** Keep code that knows nothing of the app in the pure zone at the root level: the lib folder (default
-`lib/`) with folders named by what they hold (such as `lib/http/` and `lib/theme/`), and the ui-kit (default
-`lib/components/`) as its components folder. The design-system theme — tokens and the styles of ui-kit
-components — is pure too and lives in the lib folder. Pure code depends on nothing from the app — no domain types,
+**Rule.** Keep code that knows nothing of the app in the pure zone at the root level, or where the app's `lib` key
+puts it: the lib folder (default `lib/`) with folders named by what they hold (such as `lib/http/` and
+`lib/theme/`), and the ui-kit (default `lib/components/`) as its components folder. The design-system theme —
+tokens and the styles of ui-kit components — is pure too and lives in the lib folder. Pure code depends on nothing from the app — no domain types,
 store, data access, app components or app styles, by import or by key — and knows nothing of it by meaning: a
 component named after or shaped by the app's domain, one that holds the app's own text, and a placeholder or a part
 of such a component know the app even when their props are plain values and callbacks. Code that does I/O — a
@@ -24,9 +24,11 @@ function. Called only from tasks, it keeps the app's I/O where it already is —
 
 **How to check.**
 
-- Find the pure zone from the config: the lib folder and the ui-kit folder under the root level. The ui-kit is
-  the pure zone's components folder: when it is set outside the lib folder, the lib folder has no components
-  folder of its own. The ui-kit's name is set on its own (`folders.uiKit`, default `lib/components/`) and does not
+- Find the pure zone from the config: the lib folder and the ui-kit folder under the root level — or, when the app
+  sets `lib`, the folder it names, apart from the root level and outside every level, with the ui-kit inside it.
+  The root level then holds no pure zone: a lib folder there is an ordinary folder at a level root
+  ([Levels and placement](levels.md)). The ui-kit is the pure zone's components folder: when it is set outside
+  the lib folder, the lib folder has no components folder of its own. The ui-kit's name is set on its own (`folders.uiKit`, default `lib/components/`) and does not
   follow the name of a level's components folder (`folders.components`): the ui-kit is part of the pure zone, not a
   level's shared components folder.
 - The lib folder holds folders named by what they hold — generic I/O (e.g. `lib/http/`), errors, the theme
@@ -44,9 +46,10 @@ function. Called only from tasks, it keeps the app's I/O where it already is —
   generic I/O call it. A Presenter, stateful logic, a plain function, a View, a store or the entry of a unit with
   no UI that calls it is a violation, as reaching the server outside a task is ([Tasks](tasks.md)). In the app,
   code that does I/O is a task, even when it calls generic I/O.
-- A file in the pure zone that imports from the app — any path under the root level outside the pure zone — is a
-  violation. Imports from outside the project (packages), from elsewhere in the pure zone, and of files outside
-  the root level that are not app code (design assets such as an icon sprite) are allowed.
+- A file in the pure zone that imports from the app — any path under the root level outside the pure zone, and the
+  app's own code that lies outside the root level, such as the file the app starts from — is a violation. Imports
+  from outside the project (packages), from elsewhere in the pure zone, and of files outside the root level that
+  are not app code (design assets such as an icon sprite) are allowed.
 - A dependency by key counts as an import: a style, a text or a service that pure code looks up by name must be
   defined in the pure zone. Pure code that looks up a key defined only outside the pure zone — a style in a theme
   under the root level, outside the lib folder — is a violation. The app mounting or extending what the pure zone
@@ -69,7 +72,7 @@ function. Called only from tasks, it keeps the app's I/O where it already is —
   user, in that user's folder as its child unit; with more, in the components folder of the lowest level that
   covers them all. When the call is a judgement, say so.
 - A pure zone folder below the root level (a module with its own lib folder) is a violation: the pure zone exists
-  only at the root.
+  only at the root level, or in the one folder the app's `lib` key names.
 - A pure zone file with one user is not a violation of [Levels and placement](levels.md).
 - [View and Presenter](view-presenter.md) and
   [Stateful logic and plain functions](stateful-logic-and-functions.md) hold inside the pure zone too.
@@ -114,6 +117,24 @@ src/
     CheckoutButton/       holds the app's label "Go to checkout" — app code; used only by CartPage, so its child
 ```
 
+The pure zone set apart from the root level — `root` is `src/App`, `lib` is `src/lib`:
+
+```
+src/
+  main                    starts the app: runs App
+  lib/                    the pure zone, outside every level
+    components/           the ui-kit, inside it
+      Button/
+    http/
+      fetchJson
+  App/                    the root level: only the app's code, no lib/
+    App                   mounts the theme from src/lib/
+    _logic/
+      _tasks/
+        loadUser          calls src/lib/http/fetchJson
+    CartPage/
+```
+
 **Bad.**
 
 ```
@@ -138,6 +159,17 @@ src/
       presenter           calls lib/http/fetchJson for the user — generic I/O outside a task
   OrdersPage/
     lib/                  a pure zone below the root level
+```
+
+With `lib` set to `src/lib` and `root` to `src/App`:
+
+```
+src/
+  lib/
+    http/
+      fetchJson           imports the base URL from src/main — app code outside the root level
+  App/
+    lib/                  a second pure zone at the root level — with `lib` set, the root level holds none
 ```
 
 **Stack notes.** None.

@@ -72,11 +72,14 @@ this is the full file with the defaults:
   "stack": [],
   // The app's root level, relative to the project root.
   "root": "src",
+  // Optional, no default: the pure zone set apart from the root level, relative to the project root, e.g.
+  // "src/lib" with "root": "src/App". It then lies outside every level, with the ui-kit inside it.
+  // Without it, the pure zone is "folders.lib" under "root".
   "folders": {
-    // The pure zone, relative to "root". It knows nothing of the app.
+    // The pure zone, relative to "root". It knows nothing of the app. "lib" above takes its place when set.
     "lib": "lib",
     // The ui-kit, relative to "root". Set "ui-kit" to keep it at the root level. It is part of the pure zone,
-    // so its name does not follow "components".
+    // so its name does not follow "components". With "lib" set, it lies inside "lib": "<lib>/components".
     "uiKit": "lib/components",
     // The same names on every level.
     // Child units that two or more units of a level share.
@@ -93,13 +96,14 @@ this is the full file with the defaults:
 }
 ```
 
-A repository with several apps declares them instead of `root` and `stack`; each app is checked on its own, by
-the core and its own stacks, and an app never imports from another app:
+A repository with several apps declares them instead of `root`, `stack` and `lib`; each app is checked on its
+own, by the core and its own stacks, and an app never imports from another app:
 
 ```jsonc
 {
   "apps": {
-    "client": { "root": "client/src", "stack": ["react", "zustand"] },
+    // The pure zone apart from the root level, as the top-level "lib".
+    "client": { "root": "client/src/App", "lib": "client/src/lib", "stack": ["react", "zustand"] },
     // No stack yet — core rules only.
     "server": { "root": "server/src", "stack": [] }
   },

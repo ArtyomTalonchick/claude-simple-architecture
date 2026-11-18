@@ -34,8 +34,8 @@ config file `.claude/simple-architecture/config.json` (see below).
    that rule is carried out with one technology and never overrides it.
 
 Do not read stacks the project does not declare. In a project with several apps (`apps` in the config), read the
-core and then only the stacks of the app whose root holds the code; code in the shared types package gets the core
-only.
+core and then only the stacks of the app whose root, or whose pure zone set by `lib`, holds the code; code in the
+shared types package gets the core only.
 
 ## The config
 
@@ -62,10 +62,17 @@ a missing key takes its default. The full file with the defaults:
   `references/stack/react/`. Names are compared in lower case. An unknown name is skipped, and the user is told
   it has no stack folder. An empty list means core rules only.
 - **`root`** — the folder of the app's root level, relative to the project root.
-- **`folders.lib`** — the pure zone, relative to `root`.
+- **`lib`** — optional, no default: the folder of the pure zone set apart from the root level, relative to the
+  project root, as `root` is — for example `"root": "src/App", "lib": "src/lib"`. The pure zone then lies outside
+  every level, and the root level holds no pure zone. Without it, the pure zone is `folders.lib` under `root`. A
+  value inside the root level other than that default place, a value that holds the root level, and an absolute
+  path or one with `..` are ignored, and the user is told.
+- **`folders.lib`** — the pure zone, relative to `root`. When `lib` is set, `lib` takes its place.
 - **`folders.uiKit`** — the ui-kit, relative to `root`. Wherever it lives, it belongs to the pure zone. Its name
   is set here on its own and does not follow `folders.components`: the ui-kit is part of the pure zone, not a
-  level's shared components folder.
+  level's shared components folder. When `lib` is set, the ui-kit lies inside it as it lies inside `folders.lib`:
+  the default `lib/components` becomes `<lib>/components`, and a ui-kit set outside `folders.lib` is taken as
+  relative to `lib`.
 - **`folders.logic`** — the name of the folder next to a level's entry that holds the level's non-UI code but its
   stores: its own unit's and what its units share — the Presenter, stateful logic, plain functions, tasks, types
   and constants, as files or entry folders.
@@ -78,22 +85,23 @@ a missing key takes its default. The full file with the defaults:
   written by a tool are not checked.
 
 A repository with several apps — a client, a server and a package of types they share — declares them instead of
-`root` and `stack`:
+`root`, `stack` and `lib`:
 
 ```json
 {
   "apps": {
-    "client": { "root": "client/src", "stack": ["react", "zustand"] },
+    "client": { "root": "client/src/App", "lib": "client/src/lib", "stack": ["react", "zustand"] },
     "server": { "root": "server/src", "stack": [] }
   },
   "shared": "shared/src"
 }
 ```
 
-- **`apps`** — the apps, by name. Each has a **`root`** (required), relative to the project root, and a **`stack`**
-  (default `[]`), read as the top-level `stack` is. Each app is checked on its own: its levels start at its root,
-  its pure zone and ui-kit are relative to its root, and only its own stacks apply. An app without `root` is
-  skipped, and the user is told. With at least one usable app, the top-level `root` and `stack` are ignored;
+- **`apps`** — the apps, by name. Each has a **`root`** (required), relative to the project root, a **`stack`**
+  (default `[]`), read as the top-level `stack` is, and a **`lib`** (optional), read as the top-level `lib` is.
+  Each app is checked on its own: its levels start at its root, its pure zone and ui-kit are relative to its root
+  or set by its `lib`, and only its own stacks apply. An app without `root` is skipped, and the user is told.
+  With at least one usable app, the top-level `root`, `stack` and `lib` are ignored;
   `folders` and `maxFileLines` apply to every app. With none — `apps` is empty, is not an object, or every app in
   it is skipped — `apps` is ignored, the user is told, and the project is one app, as without `apps`.
 - **`shared`** — the shared types package, relative to the project root: types only, imported by every app,

@@ -152,7 +152,7 @@ test('several apps and a shared types package: each app with its own root and st
   assert.match(out, /- client: root level client\/src\/; stack react; pure zone client\/src\/lib\//);
   assert.match(out, /- server: root level server\/src\/; stack none - core rules only;/);
   assert.match(out, /Shared types package: shared\/src\/ - types only; every app may import it, and it imports no app\./);
-  assert.match(out, /only the declared stacks of the app whose root holds the code\./);
+  assert.match(out, /only the declared stacks of the app whose root, or pure zone, holds the code\./);
   assert.doesNotMatch(out, /Root level: src|problems|Unknown/);
 });
 
@@ -215,4 +215,68 @@ test('a plugin root without a manifest: the version is unknown and the hook stil
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
+});
+
+test('lib: an app sets its pure zone apart from its root, with the ui-kit inside it', () => {
+  const out = runHook(
+    JSON.stringify({
+      apps: {
+        client: { root: 'client/src/App', lib: 'client/src/lib', stack: ['react'] },
+        server: { root: 'server/src' },
+      },
+    })
+  );
+  assert.ok(
+    out.includes(
+      '- client: root level client/src/App/; stack react; pure zone client/src/lib/ (set by "lib": outside every level; the root level holds no pure zone); UI kit client/src/lib/components/.'
+    )
+  );
+  assert.match(out, /- server: root level server\/src\/; stack none - core rules only; pure zone server\/src\/lib\/; UI kit server\/src\/lib\/components\/\./);
+  assert.doesNotMatch(out, /problems/);
+});
+
+test('lib: a single app sets it at the top level; the ui-kit follows it from folders.lib and folders.uiKit', () => {
+  const inLib = runHook(JSON.stringify({ root: 'src/App', lib: './src\\shared/', folders: { lib: 'base', uiKit: 'base/ui' } }));
+  assert.match(inLib, /Root level: src\/App\/\. Pure zone: src\/shared\/ \(set by "lib": outside every level; the root level holds no pure zone\)\. UI kit: src\/shared\/ui\/\./);
+  assert.doesNotMatch(inLib, /problems/);
+
+  const outside = runHook(JSON.stringify({ root: 'src/App', lib: 'src/lib', folders: { uiKit: 'ui-kit' } }));
+  assert.match(outside, /UI kit: src\/lib\/ui-kit\/\./);
+});
+
+test('lib absent, or set to the default place: nothing changes', () => {
+  for (const config of [{ root: 'app' }, { root: 'app', lib: 'app/lib' }]) {
+    const out = runHook(JSON.stringify(config));
+    assert.match(out, /Root level: app\/\. Pure zone: app\/lib\/\. UI kit: app\/lib\/components\/\./);
+    assert.doesNotMatch(out, /set by "lib"|problems/);
+  }
+});
+
+test('lib: an invalid value is ignored and named, and the pure zone stays under the root', () => {
+  const out = runHook(
+    JSON.stringify({
+      apps: {
+        a: { root: 'a/src', lib: 5 },
+        b: { root: 'b/src', lib: '/b/lib' },
+        c: { root: 'c/src', lib: '../lib' },
+        d: { root: 'd/src', lib: 'd/src/orders/lib' },
+        e: { root: 'e/src', lib: 'e' },
+      },
+      lib: 'lib',
+    })
+  );
+  for (const name of ['a', 'b', 'c', 'd', 'e']) {
+    assert.ok(out.includes(`- ${name}: root level ${name}/src/; stack none - core rules only; pure zone ${name}/src/lib/; UI kit`));
+  }
+  for (const problem of [
+    '"apps.a.lib" is not a folder name',
+    '"apps.b.lib" is not a folder path relative to the project root',
+    '"apps.c.lib" is not a folder path relative to the project root',
+    '"apps.d.lib" lies inside the root level, where the pure zone is set only by "folders.lib", so it is ignored',
+    '"apps.e.lib" holds the root level, so it is ignored',
+    '"lib" is ignored because "apps" is set',
+  ]) {
+    assert.ok(out.includes(problem), `names the problem: ${problem}`);
+  }
+  assert.doesNotMatch(out, /set by "lib"|is not a known key/);
 });
