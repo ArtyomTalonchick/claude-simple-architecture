@@ -105,14 +105,18 @@ surrounding file when a rule depends on where the file lives or what it imports.
   found by the path alone; do not count users to excuse it. Say where the code goes by its kind: a task or a plain
   function on the app's data used by two or more units to the app's tasks folder, a type or a constant to the types
   file or the constants file at a level root, behaviour of the UI to a component that holds it. A types file or a
-  constants file inside a logic folder is a violation: it lies at the level root.
+  constants file in a logic folder, outside an entry folder, is a violation: it lies at the level root. One inside
+  an entry folder, used only there, is a part and fine.
 - The app's tasks folder and stores folder (`references/core/levels.md`): a task there with one unit as its only
   user, a store there that no task of the app's tasks folder reaches, and a store in a level's stores folder that
   such a task reaches are violations. A file of the app's tasks folder imports only from that folder, the app's
   stores folder, the pure zone and the shared types package; a file of the app's stores folder only from the pure
   zone and the shared types package. A task in a unit's tasks folder that another unit calls is a violation. A task
-  is never a part of another task; in the app's tasks folder folders by topic are fine, but a folder named by the
-  kind of code is not.
+  is never a part of stateful logic or of a plain function; a task that only one other task calls may be a part of
+  that task's entry folder or a task of its own, both fine, and moves out when a second caller appears. A store that
+  no task of the app's tasks folder reaches, shared by units of one level — UI state or data their tasks reach, such
+  as a server cache — lies in that level's stores folder. In the app's tasks folder folders by topic are fine, but a
+  folder named by the kind of code is not.
 - Before judging the logic folder, the tasks folder or an entry folder, find who uses each file in it
   (`references/core/levels.md`). In a unit's logic folder outside its tasks folder, an entry — not the Presenter —
   with parts only it uses that lie flat next to it is a violation: it is an entry folder, and those parts move into
@@ -125,7 +129,10 @@ surrounding file when a rule depends on where the file lives or what it imports.
 - Whether a function is a task or a plain function is decided by meaning, not by whether it reaches a store
   (`references/core/tasks.md`, `references/core/stateful-logic-and-functions.md`): a business action, one that
   would stay the same in another UI, is a task; code that only changes UI state or acts on the screen is a plain
-  function. When the call is a judgement, say so in the finding. Before judging a plain function's folder or what
+  function. When the call is a judgement, say so in the finding. Reading or writing a storage directly is I/O: a
+  plain function that does it is a task. A plain function that runs a callback its caller passed in — a task's call
+  run inside a screen transition — does not call a task; one that imports a task, or redoes the task's store
+  changes to avoid calling it, is a violation. Before judging a plain function's folder or what
   it may touch — the screen, the UI framework — find its users: a plain function a task calls has nothing from the
   UI, and one used only by tasks lies in the tasks folder.
 - An event calls a task (`references/core/tasks.md`): a handler or another task, an effect only on start or mount.
@@ -135,8 +142,10 @@ surrounding file when a rule depends on where the file lives or what it imports.
   event was about — the clicked item's id, the typed text, the chosen value — is not, wherever the caller got it;
   do not report a caller that hands the task a value it could read from a store itself. A debounce or a throttle
   around the call, made once, is a plain function and fine. Do not report where the state of a call lives — in the
-  caller or written by the task to a store — and do not report a task that rolled back its change and wrote the
-  error to a store for not rethrowing.
+  caller or written by the task to a store — and do not report a task that wrote its own failure to a store where
+  the UI reads it for not rethrowing, whether or not it had a change to roll back. A store may keep the handle that
+  cancels an ongoing call next to its status; only tasks use it, and a Presenter, stateful logic or a View that
+  reads or calls it is a violation.
 - A function that subscribes to a screen event and unsubscribes within the same call, keeping nothing between
   calls — one that waits once for an event or a timeout — is a plain function of the UI side, not stateful logic
   (`references/core/stateful-logic-and-functions.md`); one whose listener outlives the call is stateful logic.

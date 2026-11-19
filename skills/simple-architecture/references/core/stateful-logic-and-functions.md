@@ -37,6 +37,9 @@ without touching the logic around it, and the few kinds of code that reach it sh
 - A store is data that lives longer than one call and is shared by the code that reads it, on a client or on a
   server: the state several UI units read, a cache or an in-memory table on a server. A store is a kind of its own,
   not stateful logic; the code that subscribes to it to show its data is stateful logic.
+- A store may keep, next to the status of a call, the handle that cancels that ongoing call, so that a task
+  cancels the earlier call when it starts a new one. Only tasks read and use the handle ([Tasks](tasks.md)); a
+  Presenter, stateful logic or a View that reads or calls it is a violation.
 - A store file holds the data and its own API — reading and changing that data — and nothing else. A server call,
   a step of a business action, a subscription to show the data, or a computation for one of its users in a store
   file is a violation: it goes to a task, to stateful logic or to a plain function.
@@ -60,9 +63,13 @@ without touching the logic around it, and the few kinds of code that reach it sh
 - A plain function is not a task because it reaches a store: the kind is decided by meaning. A business action, or
   a step of one, is a task ([Tasks](tasks.md)); code with no business logic — a computation, a change of UI state
   in a store (which screen is shown, a flag for an animation), an act on the screen — is a plain function.
-- A plain function that does I/O — calls the server or generic I/O — is a violation: a request in the app is a step
-  of a business action, so it is a task. A plain function that calls a task or stateful logic is a violation: the
-  order of the steps stays with its caller, and one that calls stateful logic is stateful logic. A plain function
+- A plain function that does I/O — calls the server, reads or writes a storage directly (the platform's key-value
+  storage, a file), or calls generic I/O — is a violation: I/O in the app is a step of a business action, so it is
+  a task. A plain function that calls a task or stateful logic is a violation: the order of the steps stays with its
+  caller, and one that calls stateful logic is stateful logic. Running a callback its caller passed in is not
+  calling a task, whatever the callback does: a plain function of the UI side that plays a screen transition may
+  take what to run inside it as a callback, and the Presenter or stateful logic passes the task's call
+  (`goHome(() => clearSearch())`). The plain function imports no task and does not know what it runs. A plain function
   may call other plain functions, use types and constants, and use pure functions, error classes, types and
   constants of the pure zone.
 - A plain function that subscribes to a store, or uses state or lifecycle, is a violation: it is stateful logic.
@@ -101,15 +108,16 @@ without touching the logic around it, and the few kinds of code that reach it sh
   required, at any depth: a task and the plain functions only it uses may lie flat there. Elsewhere a part with parts
   only it uses is an entry folder of its own inside it, at any depth ([Levels and placement](levels.md)). A part
   keeps its own kind, and every check here applies to it as to any file of the logic folder: a part of stateful
-  logic is stateful logic or a plain function, a part of a task a plain function, a part of a plain function a plain
-  function. A task is
-  never a part — of stateful logic, of a plain function or of another task: it lies in a tasks folder as a task of
-  its own. A part that does I/O or is a step of a business action is a task, so it goes to a tasks folder.
+  logic is stateful logic or a plain function, a part of a task a plain function or a task, a part of a plain
+  function a plain function. A task is never a part of stateful logic or of a plain function: it lies in a tasks
+  folder. A task only one other task calls may be a part of that task's entry folder, or a task of its own in the
+  tasks folder ([Tasks](tasks.md)). A part of stateful logic or of a plain function that does I/O or is a step of a
+  business action is a task, so it goes to a tasks folder.
 - A function marked as stateful logic by the stack's convention that uses no state, lifecycle or subscription and
   calls no stateful logic is a violation: it is a task or a plain function, by meaning.
-- A function in the logic folder, outside its tasks folder, that uses no state, lifecycle or subscription but
-  reaches the server, calls generic I/O or carries out a business action is a violation: it is a task and goes to
-  the tasks folder. A file in the tasks folder that uses state, lifecycle or a subscription, or calls stateful
+- A function in the logic folder, outside its tasks folder, that uses no state, lifecycle or subscription but reaches
+  the server or a storage, calls generic I/O or carries out a business action is a violation: it is a task and goes
+  to the tasks folder. A file in the tasks folder that uses state, lifecycle or a subscription, or calls stateful
   logic, is a violation: it is stateful logic and goes to the logic folder.
 - Stateful logic called from a plain function or a task is a violation; a store is not stateful logic, so a task or
   a plain function that reaches one through its API calls none. Stateful logic called from a View is a violation of
@@ -177,6 +185,9 @@ SearchPage/
                         a screen transition, then it redraws the caret. UI state, not a business action
     waitForResize       a plain function: waits once for the screen's next resize, or a timeout, and removes its
                         listener before it finishes — keeps nothing between calls; called by the presenter
+    goHome              a plain function: inside a screen transition, runs the callback it is given, then shows the
+                        start screen — the presenter calls goHome(() => clearSearch()), so the task runs inside the
+                        transition and goHome knows no task
 ```
 
 A server keeps its stores the same way:
@@ -235,6 +246,9 @@ SearchPage/
   _logic/
     watchResize         a plain function that adds a resize listener and returns, leaving it in place — it follows
                         the screen's changes: stateful logic
+    goHome              imports the task clearSearch and calls it inside a screen transition — a plain function
+                        calling a task: it takes the call as a callback from the presenter
+    getClientId         reads and writes the platform's storage — I/O: a task
 ```
 
 On a server:

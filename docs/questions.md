@@ -387,9 +387,11 @@ switched twice. Where is the earlier call dropped or cancelled: in the task, or 
 **Context.** #57. An event now calls the task directly, with a debounce at most around the call, so a request that
 follows its params no longer cancels the old request for free.
 
-**Status.** open
+**Status.** answered
 
-**Answer.**
+**Answer.** In the task. It may keep the handle that cancels its ongoing call in a store, next to the call's
+status, and cancel the earlier call through it when it starts a new one; only tasks use the handle (#59). Written
+into "Tasks", "Stateful logic and plain functions", the Zustand note and the architecture-reviewer agent.
 
 ## Q26. Which unit loads data that several independent units need?
 
@@ -471,3 +473,83 @@ The root level allowed one start file, and a start file is not logic.
 **Answer.** A root level holds one start file per runtime the app runs in, each running the same entry in its own
 way; a second start file for one runtime is a violation. Written into "Levels and placement", "Imports" and the
 architecture-reviewer agent.
+
+## Q32. May a task be a part of another task?
+
+**Question.** A large task is split into smaller tasks that only it uses. A task was never a part, so each smaller
+task had to lie in the tasks folder as a task of its own. Does it?
+
+**Context.** #59. A task that fetches from an outside service and one that reads the platform's storage were each
+used by one larger task only.
+
+**Status.** answered
+
+**Answer.** A task that only one other task calls may be a part of that task's entry folder, or a task of its own in
+the tasks folder; both are fine. It moves out when a second caller appears, as any part does. A task is still never
+a part of stateful logic or of a plain function. Reading or writing a storage directly is I/O, so a function that
+does it is a task. Written into "Levels and placement", "Tasks", "Stateful logic and plain functions" and the
+architecture-reviewer agent.
+
+## Q33. Where does a store live that two units' tasks share but that holds no UI state?
+
+**Question.** A level shared only stores with UI state. A server cache that the tasks of two units reach, and that no
+task of the app's tasks folder reaches, had no place.
+
+**Context.** #59.
+
+**Status.** answered
+
+**Answer.** A level shares any store that no task of the app's tasks folder reaches — UI state, or data the tasks of
+its units reach — in the stores folder of the lowest level that covers its users. Written into "Levels and
+placement", `SKILL.md` and the architecture-reviewer agent.
+
+## Q34. How does a task run inside a screen transition a plain function plays?
+
+**Question.** A plain function of the UI side swaps the screen inside a transition and has to clear data a task
+owns, at the same moment. A plain function may not call a task.
+
+**Context.** #59. Without an allowed way, the plain function redid the task's store change itself.
+
+**Status.** answered
+
+**Answer.** The plain function takes what to run inside the transition as a callback, and the Presenter passes the
+task's call: `goHome(() => clearSearch())`. Running a callback is not calling a task. Redoing the task's store
+changes in the plain function is a violation. Written into "Tasks", "Stateful logic and plain functions" and the
+architecture-reviewer agent.
+
+## Q35. Must a task that writes its failure to a store rethrow when it has nothing to roll back?
+
+**Question.** Not rethrowing was excused for a task that rolls back its change and writes the error to a store. A task
+that changed nothing before failing writes the failure the same way.
+
+**Context.** #59.
+
+**Status.** answered
+
+**Answer.** No. A task that writes its own failure to a store where the UI reads it need not rethrow; it rolls back
+first only if it changed something. Written into "Tasks", the Zustand note and the architecture-reviewer agent.
+
+## Q36. May a store hold a handle, not plain data?
+
+**Question.** A store keeps the controller of the ongoing request, and tasks cancel it through the store so that the
+latest call wins.
+
+**Context.** #59, and Q25.
+
+**Status.** answered
+
+**Answer.** Yes: a store may keep the handle that cancels an ongoing call, next to that call's status. Only tasks
+read and use it; a Presenter, stateful logic or a View that does is a violation. Written into "Tasks", "Stateful
+logic and plain functions", the Zustand note and the architecture-reviewer agent.
+
+## Q37. May an entry folder in a logic folder hold a constants file?
+
+**Question.** A types or constants file in the logic folder is a violation, while a constants file used only inside
+an entry folder is a part. Read together the file is allowed, but the texts clash.
+
+**Context.** #59.
+
+**Status.** answered
+
+**Answer.** The check covers only files outside an entry folder; one inside it, used only there, is a part. Written
+into "Levels and placement" and the architecture-reviewer agent.

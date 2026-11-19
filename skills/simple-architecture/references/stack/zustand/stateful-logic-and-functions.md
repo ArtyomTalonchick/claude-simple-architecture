@@ -33,7 +33,11 @@ subscription, and `getState()` / `setState()` give exactly that without React.
   task is a violation ([Tasks](../../core/tasks.md)): the handler that changed the value calls the task.
 - A task may write the status of its call to a store with `setState` — loading before the request, the result or
   the error after — when units that did not call it show it; the store keeps that status as plain data. Keeping
-  `isLoading` in the Presenter instead is allowed too.
+  `isLoading` in the Presenter instead is allowed too. A task that writes its failure to the store where the UI shows
+  it need not rethrow ([Tasks](../../core/tasks.md)).
+- The store may keep the `AbortController` of the ongoing call next to its status, so that a new call aborts the
+  earlier one. Only tasks read it and call `abort()`, through `getState()`; a Presenter, stateful logic or a View that
+  selects it or aborts it is a violation.
 
 **Good.**
 
@@ -66,6 +70,20 @@ export const loadShows = async () => {
   }
 };
 
+// tasks/search/loadShows.ts — the latest call wins through the controller in the store; the failure is
+// written where the results show it with Retry, so the task does not rethrow
+export const loadShows = async (query: string) => {
+  useSearchStore.getState().request?.abort();
+  const request = new AbortController();
+  useSearchStore.setState({ request, status: 'loading' });
+  try {
+    const shows = await api.searchShows(query, request.signal);
+    useSearchStore.setState({ shows, status: 'done', request: null });
+  } catch {
+    if (!request.signal.aborted) useSearchStore.setState({ status: 'failed', request: null });
+  }
+};
+
 // _logic/showResults.ts — a plain function: UI state in two stores, not a business action
 export const showResults = (query: string) => {
   useSearchStore.getState().setQuery(query);
@@ -86,6 +104,12 @@ export const useOrdersStore = create<OrdersState>()((set) => ({
 export const OrderList = () => {
   const orders = useOrdersStore((s) => s.orders);
   return orders.map((o) => <OrderRow key={o.id} row={o} />);
+};
+
+// SearchBar/_logic/usePresenter.ts — the Presenter selects the controller and aborts it: only tasks use the handle
+export const usePresenter = () => {
+  const request = useSearchStore((s) => s.request);
+  return { onCancel: () => request?.abort() };
 };
 
 // _logic/refreshOrders.ts — a plain function that calls the server: a task, _logic/_tasks/refreshOrders

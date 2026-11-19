@@ -88,8 +88,9 @@ a missing key takes its default. The full file with the defaults:
   root, not in it.
 - **`folders.tasks`** — the name of the tasks folder inside the logic folder: the tasks only its unit calls.
 - **`folders.stores`** — the name of the folder next to a level's entry that holds the level's stores: data that
-  lives longer than one call and is shared by the code that reads it — the own unit's, and UI state the level's
-  units share — as files, or as store entry folders for a store with parts only it uses.
+  lives longer than one call and is shared by the code that reads it — the own unit's, and the stores the level's
+  units share, UI state or data their tasks reach — as files, or as store entry folders for a store with parts only
+  it uses.
 - **`folders.components`** — the name of the folder for the child units that two or more units of a level share.
 - The same names are used on every level.
 - **`maxFileLines`** — a positive whole number: the size above which a file is a violation. Test files and files

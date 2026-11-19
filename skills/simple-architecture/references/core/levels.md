@@ -2,16 +2,17 @@
 
 **Rule.** The app root and every unit folder are levels, and every level has the same shape: the unit's entry at its
 root, the own unit's non-UI code in its logic folder (default `_logic/`) — apart from its stores, which go to its
-stores folder (default `_stores/`) — the types file and the constants file of the level, the shared components
-folder (default `_components/`) and the child units next to them. The logic folder holds only the own unit's code:
-only the unit's entry and the files of that folder import from it. A level shares with its units only components,
-stores with UI state, a types file and a constants file; put each at the lowest level that covers all its users,
-and move it up when a user appears outside that level. Tasks that two or more units call, and the stores those
-tasks reach, do not live in the levels: they go to the app's tasks folder and stores folder (default `tasks/` and
-`stores/`) next to the pure zone. An entry of the logic folder with parts only it uses is a folder that holds them,
-and only its entry is used from outside; a part with parts only it uses is such a folder inside it, at any depth. In
-a tasks folder that folder is allowed, not required, at any depth: a task and its parts may also lie flat. A store
-with parts only it uses — the type of its API, its implementations — is such a folder in its stores folder.
+stores folder (default `_stores/`) — the types file and the constants file of the level, the shared components folder
+(default `_components/`) and the child units next to them. The logic folder holds only the own unit's code: only the
+unit's entry and the files of that folder import from it. A level shares with its units only components, stores no
+task of the app's tasks folder reaches, a types file and a constants file; put each at the lowest level that covers
+all its users, and move it up when a user appears outside that level. Tasks that two or more units call, and the
+stores those tasks reach, do not live in the levels: they go to the app's tasks folder and stores folder (default
+`tasks/` and `stores/`) next to the pure zone. An entry of the logic folder with parts only it uses is a folder that
+holds them, and only its entry is used from outside; a part with parts only it uses is such a folder inside it, at
+any depth. In a tasks folder that folder is allowed, not required, at any depth: a task and its parts may also lie
+flat. A store with parts only it uses — the type of its API, its implementations — is such a folder in its stores
+folder.
 
 **Why.** Code that sits next to its only user can be changed without checking anyone else; code that sits higher
 than needed looks shared, so every change to it needs a search for users that do not exist. One shape on every
@@ -56,9 +57,9 @@ and a reader sees which files belong together — a flat list of files does not 
     constants that two or more files of the level use — files of the own unit, of its child units, or both;
   - the stores folder (default `_stores/`) with the stores of the level
     ([Stateful logic and plain functions](stateful-logic-and-functions.md)), as files or store entry folders
-    (below): the own unit's stores and the stores with UI state the level's units share. A store that a task of
-    the app's tasks folder reads or changes is not here: it is in the app's stores folder (below). A level with no
-    store has no stores folder;
+    (below): the own unit's stores and the stores the level's units share — UI state, or data the tasks of two of
+    its units reach, such as a server cache. A store that a task of the app's tasks folder reads or changes is not
+    here: it is in the app's stores folder (below). A level with no store has no stores folder;
   - the components folder (default `_components/`) with the child units used by two or more units of this level;
   - child units — unit folders used only by this level, with the same shape inside.
 - What a level shares with the units below it is only this: the units in its components folder, the stores in its
@@ -93,9 +94,11 @@ and a reader sees which files belong together — a flat list of files does not 
 - An entry folder: stateful logic, a plain function or a task — an entry of the logic folder or the tasks folder,
   not the Presenter — that has parts only it uses is a folder named as its entry file, holding the entry and
   those parts. A part is code that only this entry uses, directly or through its other parts: stateful logic or a
-  plain function of stateful logic, a plain function of a task, a plain function of a plain function, and a types or
-  a constants file used only inside the folder. A task is never a part — of stateful logic, of a plain function or
-  of another task: it lies in a tasks folder as a task of its own, and other tasks call it freely. The parts decide,
+  plain function of stateful logic, a plain function or a task of a task, a plain function of a plain function, and a
+  types or a constants file used only inside the folder. A task is never a part of stateful logic or of a plain
+  function: it lies in a tasks folder. A task that only one other task calls may be a part of that task's entry
+  folder — a large task split into smaller ones — or lie in the tasks folder as a task of its own: both are fine.
+  When a second caller appears, it moves out of the folder, as any part does. The parts decide,
   not the line count: an entry with parts only it uses is a folder at any size. In a tasks folder — a unit's or the
   app's — the folder is a convenience: a task and the plain functions only it uses may lie flat in the tasks folder,
   or in an entry folder named as the task, and both are fine. In the folder:
@@ -133,9 +136,10 @@ and a reader sees which files belong together — a flat list of files does not 
   of non-UI code, goes to the logic folder; a store goes to the stores folder; a unit goes next to the entry or to
   the components folder. Tests, the pure zone and the app's tasks folder and stores folder are not part of the shape
   (below).
-- A types file or a constants file in the logic folder is a violation: it lies at the level root. A store in the
-  logic folder or in its tasks folder is a violation, even when one unit uses it: it goes to the stores folder of the
-  same level.
+- A types file or a constants file in the logic folder, outside an entry folder, is a violation: it lies at the
+  level root. One inside an entry folder, used only inside that folder, is a part of its entry and is fine. A store
+  in the logic folder or in its tasks folder is a violation, even when one unit uses it: it goes to the stores
+  folder of the same level.
 - The root level is not named after its entry. Its root holds the files of its own unit: the entry — the file that
   builds the app (e.g. `App`, `createApp`) — and the file the app starts from (e.g. `main`, `index`), which runs
   the entry and may wrap it in what the app mounts around it (the theme, a data cache, a stricter checking mode
@@ -167,10 +171,10 @@ and a reader sees which files belong together — a flat list of files does not 
   with or without tasks ([Stateful logic and plain functions](stateful-logic-and-functions.md)). One that works on
   the app's data and is used by tasks of the app's tasks folder, or by two or more units, lies next to the tasks in
   the app's tasks folder; a Presenter may import it. One that knows nothing of the app goes to the pure zone.
-- A child unit or a file used by two or more siblings, or from outside its parent level, is a violation: it
-  belongs where its users are covered — a unit in the components folder of the lowest level that covers them, a
-  store with UI state in its stores folder, a type or a constant in its types file or constants file; a task, a
-  store a task of the app's tasks folder reaches and a plain function on the app's data in the app's folders.
+- A child unit or a file used by two or more siblings, or from outside its parent level, is a violation: it belongs
+  where its users are covered — a unit in the components folder of the lowest level that covers them, a store no task
+  of the app's tasks folder reaches in its stores folder, a type or a constant in its types file or constants file; a
+  task, a store a task of the app's tasks folder reaches and a plain function on the app's data in the app's folders.
 - A type or a constant used by one file lives in that file. One used by two or more files lives in the types file
   or the constants file at the root of the lowest level that covers those files, in the app's tasks folder when a
   file of that folder uses it, or in the innermost entry folder that holds them all — not exported from one of its
@@ -269,7 +273,8 @@ ProductSearch/
         tests/          tests of productRequest and toSearchView
       tests/            tests of productSearch and productParams
     _tasks/
-      searchProducts    the server call for a query — only ProductSearch calls it; a task is never a part
+      searchProducts    the server call for a query — only ProductSearch calls it; a task is never a part of
+                        stateful logic
 ```
 
 The root level of an app with a UI, with the file the app starts from:

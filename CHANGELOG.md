@@ -15,6 +15,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   the environment.
 - A root level may hold one start file per runtime the app runs in — a server started locally and as a cloud
   function.
+- A task that only one other task calls may be a part of that task's entry folder, or a task of its own in the
+  tasks folder. It moves out when a second caller appears. Reading or writing a storage directly is I/O: a task.
+- A level shares any store that no task of the app's tasks folder reaches, not only UI state — a server cache that
+  the tasks of two of its units reach lives in the level's stores folder.
+- A plain function of the UI side may run a callback inside a screen transition; the Presenter passes a task's call
+  (`goHome(() => clearSearch())`). Redoing the task's store changes in the plain function is a violation.
+- A task that writes its own failure to a store where the UI reads it need not rethrow, with or without a rollback.
+- A store may keep the handle that cancels an ongoing call next to its status; only tasks use it.
+- A types or constants file inside an entry folder of a logic folder, used only there, is a part, not a violation.
 
 ## [0.2.6] — 2026-11-19
 

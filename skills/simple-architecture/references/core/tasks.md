@@ -35,6 +35,11 @@ actions.
 - Borderline, decided by meaning: a screen swap that changes two UI-state stores inside a screen transition and then
   redraws the caret is a plain function in the logic folder, called by stateful logic or the Presenter — not a task;
   clearing the cart is a task, in the app's tasks folder, called by the Presenter of every unit that offers it.
+  When a task has to run inside such a screen transition, the plain function takes it as a callback and the
+  Presenter passes the call: `goHome(() => clearSearch())`. The plain function then calls no task of its own, and
+  the steps stay with the Presenter ([Stateful logic and plain functions](stateful-logic-and-functions.md)). A plain
+  function that redoes the task's store changes itself, to avoid calling it, is a violation: those changes are the
+  task.
 - A task is one action and one function from the outside; inside it may be split into smaller functions. Its name
   is a verb (`logout`, `addUser`, `publishPost`).
 - A task uses nothing from the UI framework: no import from it, no call of stateful logic (a store is reached
@@ -65,7 +70,12 @@ actions.
   — loading before the request, the result or the error after — when units that did not call it show it.
 - A task returns its result and fails by throwing. Catching an error only to return it as a value is a violation;
   catching an error the action itself handles is not: a failed step it may skip, or its own failure, when the task
-  rolls back its change and writes the error to a store where the UI reads it — such a task need not rethrow.
+  writes the error to a store where the UI reads it — after rolling back its change, if it made one. Such a task
+  need not rethrow: the store shows the failure, and a task with nothing to roll back is no exception.
+- A task that makes "the latest call wins" — a search typed letter by letter — may keep the handle that cancels its
+  ongoing call in a store, next to the call's status, and cancel the earlier call through it. Only tasks use that
+  handle; a Presenter, stateful logic or a View that reads or calls it is a violation
+  ([Stateful logic and plain functions](stateful-logic-and-functions.md)).
 - An optimistic update and its rollback are one task: it changes the store, makes the request, and on failure
   undoes its change. Where changes may run in parallel — two quick toggles of one item — the rollback undoes the
   task's own change, not a snapshot of the whole state taken before it, or it overwrites the other change. Advice,
@@ -89,9 +99,10 @@ actions.
 - A task is one file. In a tasks folder — a unit's or the app's — a task and the plain functions only it uses may
   lie flat in the folder, or in an entry folder named as the task: both are fine. An entry folder, when used, keeps
   its rules: the file of the same name is its entry, the parts sit next to it, others import only the entry, and a
-  folder that holds only its entry is a file. A task is never a part of another task: tasks call each
-  other freely, whoever calls them, and a task only one other task calls is a task of its own in the same tasks
-  folder. A task folder is not a unit ([Levels and placement](levels.md)).
+  folder that holds only its entry is a file. A large task may be split into smaller tasks: a task that only one
+  other task calls may be a part of that task's entry folder, or a task of its own in the same tasks folder — both
+  are fine. When a second task or a unit calls it, it moves out to the tasks folder, as any part does. A task folder
+  is not a unit ([Levels and placement](levels.md)).
 - Recommended, not checked: a task talks to the server through a small project module of tasks, one per
   request (`api.logout()`), which call the pure zone's generic I/O — not through generic I/O directly. The module
   is one file: its users are all the tasks that call any of its requests, so it lies in the app's tasks folder when
@@ -119,13 +130,17 @@ tasks/                the app's tasks folder
                       await goToPage(page + 1)
     toggleFavorite    store: flip the flag of id; try await api.toggleFavorite(id) catch: flip the flag of id
                       back — it undoes its own change, not a snapshot, so a second quick toggle is kept
+    searchShows       cancel store.request; store: request = a new cancel handle, status = loading;
+                      try store: shows = await api.search(text, request) catch: store: status = failed — the
+                      latest call wins through the handle in the store; the failure is in the store, where the
+                      results show it with Retry, so it need not rethrow, with nothing to roll back
   cart/
     clearCart         cart store: clear — one store change, yet a business action: the same in any UI;
                       called by CartPage and by placeOrder
     placeOrder        await reserveItems(cart); await api.placeOrder(toOrderRequest(cart)); clearCart()
                       — called by CartPage and by QuickBuy
-    reserveItems      a task of its own: reserves the cart's items on the server — called only by placeOrder,
-                      yet not a part of it
+    reserveItems      a task of its own: reserves the cart's items on the server — called only by placeOrder;
+                      a placeOrder/ entry folder holding it as a part would be as fine
     toOrderRequest    a plain function on the app's data: cart -> request body — lies next to the tasks
 stores/
   showsStore          shows, page, page count, genre, status, error
