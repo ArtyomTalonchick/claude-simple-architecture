@@ -428,3 +428,46 @@ and #57 forbids "request follows its params" hooks of the project's own.
 **Status.** open
 
 **Answer.**
+
+## Q29. May a store be a folder with parts?
+
+**Question.** A store has parts only it uses — the type of its API, two implementations. The stores folder was flat,
+and as files next to it the entry would be a store importing other stores. Where do the parts go?
+
+**Context.** #55. A server's in-memory store got a second implementation over a database.
+
+**Status.** answered
+
+**Answer.** A store with parts only it uses is a store entry folder in its stores folder, a level's or the app's,
+with the rules of any entry folder. Its implementations are parts, not stores, so the entry importing them is not
+one store importing another. Written into "Levels and placement", "Imports", "Stateful logic and plain functions",
+`SKILL.md` and the architecture-reviewer agent.
+
+## Q30. May a server store read and write its own database?
+
+**Question.** A store "can be replaced — data kept in memory by a database", but a function that does I/O is a task.
+Is a store whose API talks to its database a violation? And may one store have several implementations, picked by
+the environment?
+
+**Context.** #55. The rules said both, and the reviewer read it as allowed only by reading between the lines.
+
+**Status.** answered
+
+**Answer.** On a server, a store whose API reads and writes its own database through the database's client is
+fine: it is the store's own reading and changing of its data, not a step of a business action. Generic I/O, another
+service or another store's database is still a task. Several implementations behind one API, picked by the
+environment, are fine, laid out as a store entry folder. Written into "Stateful logic and plain functions",
+"Tasks", "Imports" and the architecture-reviewer agent.
+
+## Q31. May a root level have more than one start file?
+
+**Question.** A server runs locally and as a cloud function, each with its own start file around the same entry.
+The root level allowed one start file, and a start file is not logic.
+
+**Context.** #55, a comment on it.
+
+**Status.** answered
+
+**Answer.** A root level holds one start file per runtime the app runs in, each running the same entry in its own
+way; a second start file for one runtime is a violation. Written into "Levels and placement", "Imports" and the
+architecture-reviewer agent.

@@ -34,11 +34,12 @@ them. The app's tasks folder and stores folder belong to no level.
     folder of its own is imported only through its entry, from its outer folder too;
   - the types file and the constants file of the own level and of any level above it;
   - the stores in the stores folder of the own level and of any level above it, from a Presenter, stateful logic, a
-    task or a plain function;
+    task or a plain function. A store entry folder there is imported only through its entry;
   - the units in the components folder of the own level and of any level above it, through their entry;
   - the app's tasks folder — its tasks, its plain functions, its types and constants — from any level, by the kinds
     below; from inside the folder too. An entry folder there is imported only through its entry;
-  - the app's stores folder, from any level and from the app's tasks folder, by the kinds below;
+  - the app's stores folder, from any level and from the app's tasks folder, by the kinds below. A store entry
+    folder there is imported only through its entry;
   - the pure zone of the own app — at the root level, or where the app's `lib` key puts it — from anywhere in the
     app, by the kinds below. A type of the pure zone is imported from the module that exports it: the pure zone
     has no types file ([Pure zone](pure-zone.md));
@@ -73,8 +74,8 @@ them. The app's tasks folder and stores folder belong to no level.
   component as a component, generic I/O as generic I/O ([Pure zone](pure-zone.md)). An error class of the pure
   zone — the error that generic I/O throws, for one — is named on its own below: code imports it to throw it, or to
   tell the error apart by its class and answer with it:
-  - the file the app starts from ([Levels and placement](levels.md)) → the root entry, the child units of the root
-    level it wraps the entry in, the pure zone, types, constants;
+  - the file the app starts from — one per runtime ([Levels and placement](levels.md)) → the root entry, the child
+    units of the root level it wraps the entry in, the pure zone, types, constants;
   - View → its own Presenter, child units, components from components folders and from the ui-kit, types,
     constants;
   - the entry of a unit with no UI → child units, tasks, plain functions, error classes of the pure zone, types,
@@ -93,7 +94,9 @@ them. The app's tasks folder and stores folder belong to no level.
     ([Stateful logic and plain functions](stateful-logic-and-functions.md));
   - store → plain functions that reach no store, directly or through other plain functions, types, constants, and
     pure functions, types and constants of the pure zone — never another store, a task or stateful logic
-    ([Stateful logic and plain functions](stateful-logic-and-functions.md));
+    ([Stateful logic and plain functions](stateful-logic-and-functions.md)). The entry of a store entry folder
+    imports its parts — the type of its API, its implementations — and that is not one store importing another
+    ([Levels and placement](levels.md)); on a server, a store may import the client of its own database;
   - generic I/O ([Pure zone](pure-zone.md)) → generic I/O, pure functions, error classes, types, constants of the
     pure zone. No kind but a task and generic I/O imports it.
 - A type-only import is allowed for every kind from any allowed target, including a child's View: a Presenter may

@@ -29,7 +29,9 @@ actions.
   does not make a function a task: changing UI state in a store — which screen is shown, a flag for an animation —
   is not a business action, and such code is a plain function
   ([Stateful logic and plain functions](stateful-logic-and-functions.md)). In the app, a request to the server is
-  always a step of a business action: a function that does I/O is a task.
+  always a step of a business action: a function that does I/O is a task. The one exception is a server store that
+  reads and writes its own database through its API: that is the store's own data, not a business action
+  ([Stateful logic and plain functions](stateful-logic-and-functions.md)).
 - Borderline, decided by meaning: a screen swap that changes two UI-state stores inside a screen transition and then
   redraws the caret is a plain function in the logic folder, called by stateful logic or the Presenter — not a task;
   clearing the cart is a task, in the app's tasks folder, called by the Presenter of every unit that offers it.

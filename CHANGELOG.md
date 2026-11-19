@@ -5,6 +5,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- A store with parts only it uses — the type of its API, its implementations — is a store entry folder in its
+  stores folder, a level's or the app's, with the rules of any entry folder. Its implementations are parts, not
+  stores of their own.
+- On a server, a store whose API reads and writes its own database through the database's client is allowed: it is
+  the store's own data, not a business action. A store may have several implementations behind one API, picked by
+  the environment.
+- A root level may hold one start file per runtime the app runs in — a server started locally and as a cloud
+  function.
+
 ## [0.2.6] — 2026-11-19
 
 ### Changed

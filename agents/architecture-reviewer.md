@@ -94,10 +94,12 @@ surrounding file when a rule depends on where the file lives or what it imports.
   a violation even when the diff touches only a few of its lines.
 - Do not report a test file's imports (`references/core/imports.md`): a test may import whatever it needs to set
   up, reset and check state. Where the test lives is still checked (`references/core/levels.md`).
-- A folder inside a logic folder or a tasks folder that holds a file named as the folder is an entry folder, not a
-  unit or a level (`references/core/levels.md`): judge where it lies and who uses it by its entry, and its other
-  files as parts of that entry. Entry folders nest: a folder inside an entry folder that holds a file named as the
-  folder is the entry folder of a part, judged the same way at any depth.
+- A folder inside a logic folder, a tasks folder or a stores folder that holds a file named as the folder is an
+  entry folder, not a unit or a level (`references/core/levels.md`): judge where it lies and who uses it by its
+  entry, and its other files as parts of that entry. In a stores folder it is a store entry folder: its entry is
+  the store, and its implementations and the type of its API are parts, not stores of their own. Entry folders
+  nest: a folder inside an entry folder that holds a file named as the folder is the entry folder of a part,
+  judged the same way at any depth.
 - The logic folder holds only its own unit's code (`references/core/levels.md`, `references/core/imports.md`): an
   import from another unit's logic folder — a parent's, an ancestor's, a sibling's, a child's — is a violation,
   found by the path alone; do not count users to excuse it. Say where the code goes by its kind: a task or a plain
@@ -142,6 +144,10 @@ surrounding file when a rule depends on where the file lives or what it imports.
   file's value or type does not use it, and the type stays where it is declared (`references/core/levels.md`).
 - These are allowed; do not report them: the file the app starts from wrapping the entry in what the app mounts
   around it, and a unit that only it uses for that, a child unit of the root level (`references/core/levels.md`);
+  one start file per runtime the app runs in — a server started locally and as a cloud function
+  (`references/core/levels.md`); on a server, a store whose API reads and writes its own database through the
+  database's client, and a store with several implementations behind one API, picked by the environment, in a
+  store entry folder (`references/core/stateful-logic-and-functions.md`);
   a type that is part of a props type — an icon name, a variant — declared with it and imported from the View, and
   a pure-zone module's exported type imported from that module (`references/core/levels.md`,
   `references/core/pure-zone.md`); a View without a Presenter whose props type is an alias of the props type of the

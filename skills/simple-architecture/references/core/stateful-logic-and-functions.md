@@ -40,6 +40,14 @@ without touching the logic around it, and the few kinds of code that reach it sh
 - A store file holds the data and its own API — reading and changing that data — and nothing else. A server call,
   a step of a business action, a subscription to show the data, or a computation for one of its users in a store
   file is a violation: it goes to a task, to stateful logic or to a plain function.
+- On a server, a store may keep its data in its own database: its API reads and writes that database through the
+  database's client. That is the store's own reading and changing of its data, not a step of a business action, so
+  it is not a task, and the I/O is allowed there. A store that calls generic I/O, another service or another
+  store's database, or that does more than read and change its data, is still a violation.
+- A store may have several implementations behind one API — in memory and over a database — and pick one by the
+  environment. It is then a store entry folder ([Levels and placement](levels.md)): the entry gives the API and
+  picks the implementation; the type of the API and the implementations are its parts. Its users reach only the
+  entry.
 - A store that a task of the app's tasks folder reads or changes lives in the app's stores folder (default
   `stores/`); any other store lives in the stores folder (default `_stores/`) of the lowest level that covers all
   its users ([Levels and placement](levels.md)). A store in a logic folder or a tasks folder is a violation, even
@@ -85,7 +93,8 @@ without touching the logic around it, and the few kinds of code that reach it sh
 - Generic I/O ([Pure zone](pure-zone.md)) is neither a task nor a plain function: it does I/O and knows nothing of
   the app, and it lives only in the pure zone. Only a task, and other generic I/O, calls it. A Presenter, stateful
   logic, a plain function, a View, a store or the entry of a unit with no UI that calls it is a violation, as
-  reaching the server outside a task is. In the app, a function that does I/O is a task, whatever it calls to do it.
+  reaching the server outside a task is. In the app, a function that does I/O is a task, whatever it calls to do it —
+  but a server store reading and writing its own database (above).
 - Stateful logic, a task or a plain function with parts only it uses is an entry folder: a folder named as it,
   with the entry and its parts, and in a unit's logic folder outside its tasks folder those parts lying next to it
   outside the folder are a violation. In a tasks folder, a unit's or the app's, an entry folder is allowed, not
@@ -180,6 +189,18 @@ orders/
       loadOrder         reads _stores/ordersCache; on a miss, loads the order and puts it there
   _stores/
     ordersCache         a store: orders by id in memory, with get, put and clear
+favorites/
+  favorites             the entry: builds the routes of /favorites
+  _logic/
+    _tasks/
+      addFavorite       loads the show, then puts it into _stores/favoritesStore
+  _stores/
+    favoritesStore/     a store entry folder: two implementations behind one API
+      favoritesStore    the entry: picks the database where the app is deployed, memory otherwise
+      types             FavoritesStore — the API: list, has, put, remove, clear
+      memoryStore       a part: the API over a map
+      databaseStore     a part: the API over the app's own database, through its client — the store's own I/O
+      tests/
 ```
 
 **Bad.**
@@ -199,8 +220,7 @@ OrdersPage/
       orderTitle        used by the presenter — a plain function of the UI side: it belongs in _logic/
       focusFirstError   called by placeOrder, moves the focus — a task acting on the screen through it
   _stores/
-    cartStore           the cart and its API, and loadCart, which calls the server — a task inside a store
-  Checkout/
+    cartStore           the cart and its API, and loadCart, which calls the server — a task inside a store  Checkout/
     _logic/
       checkoutSteps/
         checkoutSteps   stateful logic: the current step, next, back
@@ -215,6 +235,15 @@ SearchPage/
   _logic/
     watchResize         a plain function that adds a resize listener and returns, leaving it in place — it follows
                         the screen's changes: stateful logic
+```
+
+On a server:
+
+```
+prices/
+  _stores/
+    pricesStore         its get calls a price service with lib/http/fetchJson — generic I/O and another service, not
+                        its own database: that part is a task
 ```
 
 **Stack notes.**
