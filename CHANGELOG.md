@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.2.6] — 2026-11-19
+
 ### Changed
 
 - A task's argument may come from a store's data. Only a condition on the app's data before the call — a Presenter
