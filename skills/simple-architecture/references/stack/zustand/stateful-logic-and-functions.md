@@ -29,7 +29,11 @@ subscription, and `getState()` / `setState()` give exactly that without React.
   state — which screen is shown, a flag for an animation — or reads a value for its caller is a plain function
   ([Stateful logic and plain functions](../../core/stateful-logic-and-functions.md)).
 - In a Presenter or other stateful logic, a store hook with a selector, and an action taken from it and called
-  once in a handler, are allowed.
+  once in a handler, are allowed. A store value read with a selector and then watched by a `useEffect` that calls a
+  task is a violation ([Tasks](../../core/tasks.md)): the handler that changed the value calls the task.
+- A task may write the status of its call to a store with `setState` — loading before the request, the result or
+  the error after — when units that did not call it show it; the store keeps that status as plain data. Keeping
+  `isLoading` in the Presenter instead is allowed too.
 
 **Good.**
 
@@ -47,6 +51,19 @@ export const useOrderCount = () => useOrdersStore((s) => s.orders.length);
 export const cancelOrder = async (id: string) => {
   await api.cancelOrder(id);
   useOrdersStore.setState((s) => ({ orders: s.orders.filter((o) => o.id !== id) }));
+};
+
+// tasks/shows/loadShows.ts — a task writes the status of its call where every unit that shows it reads it
+export const loadShows = async () => {
+  const { page, genre } = useShowsStore.getState();
+  useShowsStore.setState({ status: 'loading', error: null });
+  try {
+    const shows = await api.getShows({ page, genre });
+    useShowsStore.setState({ shows, status: 'done' });
+  } catch (error) {
+    useShowsStore.setState({ status: 'error', error: error as Error });
+    throw error;
+  }
 };
 
 // _logic/showResults.ts — a plain function: UI state in two stores, not a business action

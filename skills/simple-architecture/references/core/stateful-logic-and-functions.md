@@ -12,14 +12,14 @@ tasks folder (default `tasks/`), a plain function by its users — to the tasks 
 logic folder otherwise, to the app's tasks folder when it works on the app's data for several units — and stores to
 the stores folder (default `_stores/`), or to the app's stores folder (default `stores/`) when a task of the app's
 tasks folder reaches them, as set by [Levels and placement](levels.md); an entry with parts only it uses is a folder
-that holds them. A plain
-function is called from a Presenter, stateful logic, a task, another plain function, the entry of a unit with no
-UI, or a store, if the plain function reaches no store, and one that a task calls has nothing from the UI; a task
-from a Presenter, stateful logic, another task or the entry of a unit with no UI; stateful logic only from a
-Presenter or other stateful logic; a store is reached by a task and a plain function, through its own API, and on a
-client by a Presenter or stateful logic; generic I/O of the pure zone — I/O that knows nothing of the app
-([Pure zone](pure-zone.md)) — only by a task. One piece of stateful logic has one concern; the code that uses them
-joins them.
+that holds them. A plain function is called from a Presenter, stateful logic, a task, another plain function, the
+entry of a unit with no UI, or a store, if the plain function reaches no store, and one that a task calls has
+nothing from the UI; a task from an event handler of a Presenter, of stateful logic or of the entry of a unit with
+no UI, or from another task — never by stateful logic that follows a value ([Tasks](tasks.md)); stateful logic
+only from a Presenter or other stateful logic; a store is reached by a task and a plain function, through its own
+API, and on a client by a Presenter or stateful logic; generic I/O of the pure zone — I/O that knows nothing of the
+app ([Pure zone](pure-zone.md)) — only by a task. One piece of stateful logic has one concern; the code that uses
+them joins them.
 
 **Why.** A plain function keeps nothing between calls and needs nothing set up around it, so it can be moved,
 reused and tested anywhere its users are; it holds no order of business steps, so the action stays readable in
@@ -103,6 +103,15 @@ without touching the logic around it, and the few kinds of code that reach it sh
 - Stateful logic called from a plain function or a task is a violation; a store is not stateful logic, so a task or
   a plain function that reaches one through its API calls none. Stateful logic called from a View is a violation of
   [View and Presenter](view-presenter.md).
+- Stateful logic calls a task from a handler it returns or runs, or once on start or mount. Stateful logic that
+  watches a value — state, props, a store — and calls a task when it changes is a violation, and so is a
+  "request follows its params" piece that rebuilds a request whenever its input changes: the handler that changed
+  the data calls the task itself ([Tasks](tasks.md)).
+- A function that wraps another to delay or thin out its calls — a debounce, a throttle — and keeps its timer in the
+  closure of the function it returns is a plain function, not stateful logic: it uses no state or lifecycle of the
+  UI. The caller makes the wrapped function once and keeps it for as long as it needs it; the handler calls it. A
+  delay before a task's call is such a wrapper around the call, not stateful logic that follows a value until it
+  settles.
 - One piece of stateful logic that holds two concerns is a violation: its state and results fall into two groups,
   and one group needs from the other at most a plain value it could take as an argument — for example, the value
   of a field and the request made with that value. Split it into two, pass that value as an argument, and join
@@ -143,10 +152,11 @@ OrdersPage/
         tests/          tests of checkoutSteps, stepOrder and canLeaveStep
   OrderSearch/
     _logic/
-      presenter         query = searchQuery(); result = ordersRequest(query.value)
+      presenter         query = searchQuery(); orders = ordersRequest()
+                        onChange(text): query.change(text); orders.search(text) — the handler calls the request
       searchQuery       the field: value, change, clear
-      ordersRequest     the request for a query: calls the task searchOrders; waits for typing to stop, cancels,
-                        retries
+      ordersRequest     the request: search(text) calls the task searchOrders through a debounce made once; keeps
+                        loading, the result and the error; cancels, retries
       _tasks/
         searchOrders    the server call for a query
 SearchPage/
@@ -197,6 +207,8 @@ OrdersPage/
     _logic/
       presenter         search = orderSearch()
       orderSearch       the field and the request in one — two concerns
+      ordersRequest     watches the query it is given and calls searchOrders whenever it changes — stateful logic
+                        that follows a value: the change handler calls the request
 SearchPage/
   _logic/
     watchResize         a plain function that adds a resize listener and returns, leaving it in place — it follows

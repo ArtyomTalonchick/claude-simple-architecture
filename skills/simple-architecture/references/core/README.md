@@ -20,8 +20,9 @@ plugin's repository.
   folder or the app's stores folder and reached only by tasks, plain functions and, on a client, by a Presenter or
   stateful logic.
 - [Tasks](tasks.md) — a business action, one that stays the same in any UI, is a task: a function with nothing from
-  the UI framework, in the logic folder of the one unit that calls it or in the app's tasks folder; the Presenter
-  or stateful logic awaits it and keeps loading and error; the Presenter navigates.
+  the UI framework, in the logic folder of the one unit that calls it or in the app's tasks folder; an event calls
+  it — a handler or another task, an effect only on start or mount — and the task holds the conditions on the app's
+  data; the caller keeps loading and error, or the task writes them to a store; the Presenter navigates.
 - [Pure zone](pure-zone.md) — code that knows nothing of the app lives in `lib/` and the ui-kit at the root
   level, or where the app's `lib` key puts it, with the design-system theme, in folders named by what their code is
   about — never by the kind of code, such as `hooks/` — and depends on nothing from the app, by import or by key,

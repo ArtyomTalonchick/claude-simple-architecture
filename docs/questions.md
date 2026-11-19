@@ -378,3 +378,53 @@ import tasks and which tasks may not import.
 **Status.** open
 
 **Answer.**
+
+## Q25. Where does "the latest call wins" live?
+
+**Question.** A task is called again before its last call has ended — a search typed letter by letter, a page
+switched twice. Where is the earlier call dropped or cancelled: in the task, or in generic I/O?
+
+**Context.** #57. An event now calls the task directly, with a debounce at most around the call, so a request that
+follows its params no longer cancels the old request for free.
+
+**Status.** open
+
+**Answer.**
+
+## Q26. Which unit loads data that several independent units need?
+
+**Question.** Units that know nothing of each other show the same data. Does the unit that mounts them all call the
+load once, or does each call the task, and the task returns early when the store says the data is loading or
+loaded?
+
+**Context.** #57. Both work, and with the status of a call in a store the second needs nothing more; the rules do not
+yet say which to recommend.
+
+**Status.** open
+
+**Answer.**
+
+## Q27. Are events from outside the UI handlers?
+
+**Question.** A timer fires, a socket message arrives. Is the code that reacts to them an event handler that may call
+a task, by the rule that an event calls the task, or a case of its own?
+
+**Context.** #57. The rule names user actions, requests to a unit with no UI and start or mount; it says nothing of
+events that do not come from the UI.
+
+**Status.** open
+
+**Answer.**
+
+## Q28. Is a query hook keyed by state a request that follows its params?
+
+**Question.** A query hook from a data-fetching library takes a key built from state or props and refetches when the
+key changes. By the rule that an effect which watches data does not call a task, it is the same chain, done by a
+library. Is it a violation, allowed as a library's cache, or allowed only for reads?
+
+**Context.** Came up while writing #57: the React note names query hooks among the hooks stateful logic may call,
+and #57 forbids "request follows its params" hooks of the project's own.
+
+**Status.** open
+
+**Answer.**

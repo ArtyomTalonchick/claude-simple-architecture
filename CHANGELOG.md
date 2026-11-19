@@ -32,6 +32,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   from the logic folders to the level roots; replace every import from a parent's or an ancestor's logic folder —
   by a task or a plain function in the app's tasks folder, a type or a constant at a level root, or a component that
   holds the behaviour; take a task out of another task's entry folder and put it next to it.
+- **Breaking:** an event calls the task. A task is called from an event handler — of a Presenter, of stateful logic,
+  of the entry of a unit with no UI — or from another task; an effect calls it only on start or mount. An effect, a
+  hook or other stateful logic that watches state, props or a store and calls a task when they change is a
+  violation, a generic "request follows its params" hook included: the handler that changed the data calls the task.
+  The steps and the conditions around the app's data belong to the task — "go to the next page" reads the page and
+  the page count and returns when there is none — and a Presenter that checks them before the call is a violation.
+  A delay before the call is a plain function around it (a debounce made once), not stateful logic that follows a
+  value; `lib/debounce/` is a pure function in the examples. The state of a call may stay in the caller, or the task
+  may write it to a store when units that did not call it show it; no check chooses. A task that rolls back its
+  change and writes the error to a store need not rethrow. New examples: an optimistic update with its rollback in
+  one task, and the note that the rollback undoes the task's own change, not a snapshot. React: `useEffect` calls a
+  task only with an empty dependency list; Zustand: a task may write its status with `setState`. To update: move
+  each task call out of effects with dependencies into the handlers that change the data, move the conditions on
+  the app's data from Presenters into tasks, and wrap delayed calls in a debounce made once.
 
 ## [0.2.4] — 2026-11-18
 

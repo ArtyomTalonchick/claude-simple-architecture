@@ -29,10 +29,13 @@ of the screen.
   mapped from another list, text joined from parts) is a computation in the View. It goes to the Presenter: a
   unit that needs it has logic, so it has a Presenter. Reading styles from the design system is not stateful
   logic and is not a violation of [Stateful logic and plain functions](stateful-logic-and-functions.md).
-- A business action is a task the Presenter calls ([Tasks](tasks.md)): the Presenter awaits it, keeps the state
-  of the call — loading, error — and decides what follows, navigation included. The steps of the action itself do
-  not belong in the Presenter. A change of UI state — which screen is shown, a flag for an animation — is not a
-  business action: the Presenter may make it itself or hand it to a plain function
+- A business action is a task the Presenter calls ([Tasks](tasks.md)), from an event handler, or from an effect
+  only on start or mount: the Presenter awaits it, may keep the state of the call — loading, error — around it,
+  unless the task writes that state to a store, and decides what follows, navigation included. The steps of the
+  action itself, and the conditions on the app's data around the call, do not belong in the Presenter: it only
+  calls the task. An effect of the Presenter that watches state, props or a store and calls a task is a violation:
+  the handler that changed the data calls the task. A change of UI state — which screen is shown, a flag for an
+  animation — is not a business action: the Presenter may make it itself or hand it to a plain function
   ([Stateful logic and plain functions](stateful-logic-and-functions.md)).
 - A violation: a Presenter file with no logic in it (an empty or pass-through Presenter).
 - A **warning**, not a violation: a Presenter whose own state and lifecycle fall into two or more groups by the
@@ -128,9 +131,10 @@ field and the request would get a warning; with the screen state moved out it on
 SearchPage/
   SearchPage   (View)      p = presenter(props)
   _logic/
-    presenter  (Presenter) field = searchField(); results = searchRequest(field.value); screen = searchScreen()
+    presenter  (Presenter) field = searchField(); results = searchRequest(); screen = searchScreen()
+                           onChange(text): field.change(text); results.search(text)
     searchField            the field: value, change, clear
-    searchRequest          the request for a value: calls the task search
+    searchRequest          the request: search(text) calls the task search, keeps its loading and result
     searchScreen           which screen is shown, and the switch between them with a transition
 ```
 
@@ -141,6 +145,15 @@ OrderList/
   OrderList   (View)       orders = load orders
                            for order in orders where order.status == props.status:
                              OrderRow(order, total = round(order.sum * 1.2, 2))
+```
+
+```
+ShowList/
+  _logic/
+    presenter (Presenter)  onNext() = if store.page < store.pageCount: goToPage(store.page + 1) — a condition on
+                           the app's data: the task nextPage holds it, and the Presenter calls nextPage()
+                           an effect that watches props.genre and calls loadShows — the parent's handler that
+                           changed the genre calls the task
 ```
 
 **Stack notes.** [react/view-presenter.md](../stack/react/view-presenter.md) — View and Presenter in React.

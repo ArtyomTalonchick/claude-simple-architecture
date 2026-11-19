@@ -9,8 +9,8 @@ Each rule has its own file, named as the core rule it carries out.
   the logic folder.
 - [Stateful logic in React is a hook](stateful-logic-and-functions.md) — the `use` prefix only on functions that
   call hooks, and on `usePresenter`; a plain function may use the DOM and `flushSync`, but only the UI side
-  calls it.
-- [Tasks in React](tasks.md) — a task calls no hook; the Presenter awaits it, keeps loading and error, and
-  navigates.
+  calls it; a hook never calls a task from an effect that follows its dependencies.
+- [Tasks in React](tasks.md) — a task calls no hook; an event handler calls it, a `useEffect` only on mount; the
+  Presenter awaits it, keeps loading and error unless the task writes them to a store, and navigates.
 - [A derived type in TypeScript](levels.md) — a file that derives a type with `typeof`, `Parameters` or
   `ReturnType` is not a user of that type, so the type stays where it is declared.

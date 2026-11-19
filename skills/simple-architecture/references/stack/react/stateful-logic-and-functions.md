@@ -28,6 +28,13 @@ limits on code that does not need them, and a plain function that calls a hook b
   that waits once for the window's `resize` or an element's `transitionend` — it resolves on the first event or
   after a timeout, and removes its listener before it resolves — is a plain function of the UI side, not `use…`.
   One that adds a listener and returns with it still in place is a hook.
+- A hook calls a task from a handler it returns, or in `useEffect` with an empty dependency list, on mount. A hook
+  whose `useEffect` has dependencies and calls a task — a "request follows its params" hook such as
+  `useRequest(fn, params)` or `useShows(genre)` — is a violation ([Tasks in React](tasks.md)).
+- `debounce` and `throttle` that keep their timer in the closure of the function they return are plain functions:
+  they call no hook. The Presenter or a hook makes the wrapped function once — `useMemo(() => debounce(fn, 300),
+  [])` or a ref — and its handler calls it. `useDebouncedValue(text)` is a hook; feeding its result to an effect
+  that calls a task is the violation above.
 - The Presenter, `usePresenter`, is a hook: it may call hooks and plain functions. A `usePresenter` that calls no
   hook but computes something from its props is not a violation of this rule — the View always calls its Presenter
   the same way, so a hook added later changes nothing for the View. A Presenter with no computation at all is
@@ -106,6 +113,13 @@ export const useShowDetails = () => useScreenStore.getState().setScreen('details
 
 // _logic/watchResize.ts — the listener stays after the call and follows the window: a hook, useWindowSize
 export const watchResize = (onResize: () => void) => window.addEventListener('resize', onResize);
+
+// _logic/useOrdersSearch.ts — follows the query and calls the task when it changes: the change handler calls it
+export const useOrdersSearch = (query: string) => {
+  useEffect(() => {
+    searchOrders(query);
+  }, [query]);
+};
 ```
 
 **Stack notes.** Carries out the core rule

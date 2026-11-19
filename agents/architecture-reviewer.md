@@ -123,6 +123,13 @@ surrounding file when a rule depends on where the file lives or what it imports.
   function. When the call is a judgement, say so in the finding. Before judging a plain function's folder or what
   it may touch — the screen, the UI framework — find its users: a plain function a task calls has nothing from the
   UI, and one used only by tasks lies in the tasks folder.
+- An event calls a task (`references/core/tasks.md`): a handler or another task, an effect only on start or mount.
+  An effect, a hook or other stateful logic that watches state, props or a store and calls a task when they change
+  is a violation — also a generic "request follows its params" hook. A Presenter or stateful logic that reads the
+  app's data to decide whether to call a task, or builds its argument from a store, is a violation: the condition
+  belongs in the task. A debounce or a throttle around the call, made once, is a plain function and fine. Do not
+  report where the state of a call lives — in the caller or written by the task to a store — and do not report a
+  task that rolled back its change and wrote the error to a store for not rethrowing.
 - A function that subscribes to a screen event and unsubscribes within the same call, keeping nothing between
   calls — one that waits once for an event or a timeout — is a plain function of the UI side, not stateful logic
   (`references/core/stateful-logic-and-functions.md`); one whose listener outlives the call is stateful logic.

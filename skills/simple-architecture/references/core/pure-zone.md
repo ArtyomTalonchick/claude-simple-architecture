@@ -38,10 +38,10 @@ name tells neither what lies inside nor where a new piece belongs.
   follow the name of a level's components folder (`folders.components`): the ui-kit is part of the pure zone, not a
   level's shared components folder.
 - The lib folder holds folders named by what their code is about — generic I/O (e.g. `lib/http/`), errors, the
-  theme (e.g. `lib/theme/`), icons, styles, stateful logic (e.g. `lib/pagination/`, `lib/debounce/`), pure
-  functions (e.g. `lib/dates/`) — and the ui-kit when it is set inside it. They all follow this rule. What a
-  function does decides its kind ([Stateful logic and plain functions](stateful-logic-and-functions.md)), not the
-  folder it lies in. A pure function is a plain function of the pure zone: it knows nothing of the app, so it
+  theme (e.g. `lib/theme/`), icons, styles, stateful logic (e.g. `lib/pagination/`, `lib/disclosure/`), pure
+  functions (e.g. `lib/dates/`, `lib/debounce/`) — and the ui-kit when it is set inside it. They all follow this
+  rule. What a function does decides its kind ([Stateful logic and plain functions](stateful-logic-and-functions.md)),
+  not the folder it lies in. A pure function is a plain function of the pure zone: it knows nothing of the app, so it
   reaches no store.
 - A folder in the lib folder named by the kind of code — `hooks/`, `helpers/`, `utils/`, `functions/`,
   `services/` and the like — is a violation: its name says how its code is written, not what it is about. Each
@@ -175,8 +175,8 @@ src/
     _tasks/
       fetchJson           a tasks folder in the pure zone — generic I/O goes to lib/http/
     hooks/                a folder named by the kind of code — each piece goes to a folder named by its subject
-      debounce            stateful logic: belongs in lib/debounce/
-      pagination          stateful logic, unrelated to debounce, kept with it only by its kind: belongs in
+      disclosure          stateful logic: belongs in lib/disclosure/
+      pagination          stateful logic, unrelated to disclosure, kept with it only by its kind: belongs in
                           lib/pagination/
     helpers/              a folder named by the kind of code
       formatDuration      belongs in lib/dates/
