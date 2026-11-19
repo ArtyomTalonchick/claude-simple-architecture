@@ -34,8 +34,8 @@ config file `.claude/simple-architecture/config.json` (see below).
    that rule is carried out with one technology and never overrides it.
 
 Do not read stacks the project does not declare. In a project with several apps (`apps` in the config), read the
-core and then only the stacks of the app whose root, or whose pure zone set by `lib`, holds the code; code in the
-shared types package gets the core only.
+core and then only the stacks of the app whose root, pure zone set by `lib`, tasks folder or stores folder holds the
+code; code in the shared types package gets the core only.
 
 ## The config
 
@@ -67,25 +67,36 @@ a missing key takes its default. The full file with the defaults:
   every level, and the root level holds no pure zone. Without it, the pure zone is `folders.lib` under `root`. A
   value inside the root level other than that default place, a value that holds the root level, and an absolute
   path or one with `..` are ignored, and the user is told.
+- **`tasks`**, **`stores`** — optional: the app's tasks folder and stores folder, relative to the project root, as
+  `lib` is. They hold what the app's units share of its business code — the tasks that two or more units call, and
+  the stores those tasks reach — outside every level
+  ([Levels and placement](references/core/levels.md)). By default they lie next to the pure zone: `tasks` and
+  `stores` next to the folder `lib` names, or, without `lib`, at the root level (`<root>/tasks`, `<root>/stores`).
+  They are not `folders.tasks` and `folders.stores`, which name folders inside a level. A value that is absolute or
+  has `..`, one that holds the root level, one inside the pure zone, one inside the root level other than a folder
+  directly under it, and one that is the same folder as the other key or as the root level's stores folder are
+  ignored, the default is used, and the user is told.
 - **`folders.lib`** — the pure zone, relative to `root`. When `lib` is set, `lib` takes its place.
 - **`folders.uiKit`** — the ui-kit, relative to `root`. Wherever it lives, it belongs to the pure zone. Its name
   is set here on its own and does not follow `folders.components`: the ui-kit is part of the pure zone, not a
   level's shared components folder. When `lib` is set, the ui-kit lies inside it as it lies inside `folders.lib`:
   the default `lib/components` becomes `<lib>/components`, and a ui-kit set outside `folders.lib` is taken as
   relative to `lib`.
-- **`folders.logic`** — the name of the folder next to a level's entry that holds the level's non-UI code but its
-  stores: its own unit's and what its units share — the Presenter, stateful logic, plain functions, tasks, types
-  and constants, as files or entry folders.
-- **`folders.tasks`** — the name of the tasks folder inside the logic folder.
+- **`folders.logic`** — the name of the folder next to a level's entry that holds the own unit's non-UI code but
+  its stores — the Presenter, stateful logic, plain functions and its tasks, as files or entry folders. Only the
+  unit's entry and the files of the folder import from it. A level's types and constants files lie at the level
+  root, not in it.
+- **`folders.tasks`** — the name of the tasks folder inside the logic folder: the tasks only its unit calls.
 - **`folders.stores`** — the name of the folder next to a level's entry that holds the level's stores: data that
-  lives longer than one call and is shared by the code that reads it.
+  lives longer than one call and is shared by the code that reads it — the own unit's, and UI state the level's
+  units share.
 - **`folders.components`** — the name of the folder for the child units that two or more units of a level share.
 - The same names are used on every level.
 - **`maxFileLines`** — a positive whole number: the size above which a file is a violation. Test files and files
   written by a tool are not checked.
 
 A repository with several apps — a client, a server and a package of types they share — declares them instead of
-`root`, `stack` and `lib`:
+`root`, `stack`, `lib`, `tasks` and `stores`:
 
 ```json
 {
@@ -98,10 +109,11 @@ A repository with several apps — a client, a server and a package of types the
 ```
 
 - **`apps`** — the apps, by name. Each has a **`root`** (required), relative to the project root, a **`stack`**
-  (default `[]`), read as the top-level `stack` is, and a **`lib`** (optional), read as the top-level `lib` is.
-  Each app is checked on its own: its levels start at its root, its pure zone and ui-kit are relative to its root
-  or set by its `lib`, and only its own stacks apply. An app without `root` is skipped, and the user is told.
-  With at least one usable app, the top-level `root`, `stack` and `lib` are ignored;
+  (default `[]`), read as the top-level `stack` is, and a **`lib`**, a **`tasks`** and a **`stores`** (optional),
+  read as the top-level keys are. Each app is checked on its own: its levels start at its root, its pure zone and
+  ui-kit are relative to its root or set by its `lib`, its tasks folder and stores folder lie by its own keys, and
+  only its own stacks apply. An app without `root` is skipped, and the user is told.
+  With at least one usable app, the top-level `root`, `stack`, `lib`, `tasks` and `stores` are ignored;
   `folders` and `maxFileLines` apply to every app. With none — `apps` is empty, is not an object, or every app in
   it is skipped — `apps` is ignored, the user is told, and the project is one app, as without `apps`.
 - **`shared`** — the shared types package, relative to the project root: types only, imported by every app,

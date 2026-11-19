@@ -5,6 +5,6 @@ state lives, how it is split and who may use it. They never contradict the core.
 
 Each rule has its own file, named as the core rule it carries out.
 
-- [A Zustand store](stateful-logic-and-functions.md) — a store lives in the stores folder and holds its state and
-  actions only; its hook is used only from a Presenter or stateful logic; a task or a plain function reaches it
-  through `getState()` / `setState()`.
+- [A Zustand store](stateful-logic-and-functions.md) — a store lives in a stores folder, a level's or the app's, and holds
+  its state and actions only; its hook is used only from a Presenter or stateful logic; a task or a plain function
+  reaches it through `getState()` / `setState()`.

@@ -21,6 +21,8 @@ const DEFAULTS = {
   stack: [],
   root: 'src',
   lib: null,
+  tasks: null,
+  stores: null,
   folders: DEFAULT_FOLDERS,
   maxFileLines: 120,
   apps: null,
@@ -153,7 +155,48 @@ function pureZone(root, lib, folders) {
   return { lib, uiKit: inside ? `${lib}/${inside}` : lib, apart: true };
 }
 
-// Several apps of one repository: { name: { root, stack, lib } }. Returns a list of { name, root, stack, lib }, or
+// The parent folder of a path, '' for a path with one part.
+const parentOf = (path) => (path.includes('/') ? path.slice(0, path.lastIndexOf('/')) : '');
+
+// The app's tasks folder and stores folder (keys `tasks` and `stores`), relative to the project root. By default
+// they lie next to the pure zone: next to the folder `lib` names, or at the root level without it. A bad value is
+// named in `problems` and the default is used.
+function appFolders(raw, prefix, root, lib, folders, problems) {
+  const rootPath = normalPath(root);
+  const zone = normalPath(pureZone(rootPath, lib, folders).lib);
+  const base = lib ? parentOf(lib) : rootPath;
+  const levelStores = `${rootPath}/${normalPath(folders.stores)}`;
+  const result = {};
+  for (const key of ['tasks', 'stores']) {
+    const fallback = base ? `${base}/${key}` : key;
+    const label = `${prefix}${key}`;
+    result[key] = fallback;
+    if (!(key in raw)) continue;
+    const value = raw[key];
+    if (!isText(value)) {
+      problems.push(`"${label}" is not a folder name`);
+      continue;
+    }
+    if (/^([\\/]|[A-Za-z]:)/.test(value.trim()) || value.split(/[\\/]/).includes('..')) {
+      problems.push(`"${label}" is not a folder path relative to the project root`);
+      continue;
+    }
+    const path = normalPath(value.trim());
+    let why = null;
+    if (!path) why = 'is not a folder name';
+    else if (isInside(rootPath, path)) why = 'holds the root level';
+    else if (isInside(path, zone)) why = 'lies inside the pure zone';
+    else if (isInside(path, rootPath) && parentOf(path) !== rootPath) {
+      why = 'lies inside the root level other than directly under it';
+    } else if (path === levelStores) why = "is the root level's stores folder";
+    else if (key === 'stores' && path === result.tasks) why = 'is the same folder as the tasks folder';
+    if (why) problems.push(`"${label}" ${why}, so it is ignored`);
+    else result[key] = path;
+  }
+  return result;
+}
+
+// Several apps of one repository: { name: { root, stack, lib, tasks, stores } }. Returns a list of { name, root, stack, lib }, or
 // null when there is no usable app, so the config falls back to one app.
 function resolveApps(raw, folders, problems) {
   if (!raw.apps || typeof raw.apps !== 'object' || Array.isArray(raw.apps)) {
@@ -173,16 +216,19 @@ function resolveApps(raw, folders, problems) {
     }
     const root = app.root.trim();
     const lib = 'lib' in app ? resolveLib(app.lib, `apps.${name}.lib`, root, folders, problems) : null;
+    const { tasks, stores } = appFolders(app, `apps.${name}.`, root, lib, folders, problems);
     for (const key of Object.keys(app)) {
-      if (!['root', 'stack', 'lib'].includes(key)) problems.push(`"apps.${name}.${key}" is not a known key`);
+      if (!['root', 'stack', 'lib', 'tasks', 'stores'].includes(key)) {
+        problems.push(`"apps.${name}.${key}" is not a known key`);
+      }
     }
-    apps.push({ name, root, stack, lib });
+    apps.push({ name, root, stack, lib, tasks, stores });
   }
   if (!apps.length) {
     problems.push('"apps" has no usable app, so it is ignored and the project is one app');
     return null;
   }
-  for (const key of ['root', 'stack', 'lib']) {
+  for (const key of ['root', 'stack', 'lib', 'tasks', 'stores']) {
     if (key in raw) problems.push(`"${key}" is ignored because "apps" is set`);
   }
   return apps;
@@ -221,6 +267,7 @@ function resolveConfig(raw) {
   }
   if ('apps' in raw) config.apps = resolveApps(raw, config.folders, problems);
   if ('lib' in raw && !config.apps) config.lib = resolveLib(raw.lib, 'lib', config.root, config.folders, problems);
+  if (!config.apps) Object.assign(config, appFolders(raw, '', config.root, config.lib, config.folders, problems));
   if ('shared' in raw) {
     if (isText(raw.shared)) config.shared = raw.shared.trim();
     else problems.push('"shared" is not a folder name');
@@ -271,21 +318,23 @@ function main() {
     for (const app of config.apps) {
       const zone = pureZone(app.root, app.lib, f);
       lines.push(
-        `- ${app.name}: root level ${app.root}/; stack ${stackText(app.stack)}; pure zone ${zone.lib}/${zone.apart ? APART : ''}; UI kit ${zone.uiKit}/.`
+        `- ${app.name}: root level ${app.root}/; stack ${stackText(app.stack)}; pure zone ${zone.lib}/${zone.apart ? APART : ''}; UI kit ${zone.uiKit}/. Tasks folder ${app.tasks}/, stores folder ${app.stores}/.`
       );
     }
   } else {
     const zone = pureZone(config.root, config.lib, f);
     lines.push(
       `Stack: ${stackText(config.stack)}.`,
-      `Root level: ${config.root}/. Pure zone: ${zone.lib}/${zone.apart ? APART : ''}. UI kit: ${zone.uiKit}/.`
+      `Root level: ${config.root}/. Pure zone: ${zone.lib}/${zone.apart ? APART : ''}. UI kit: ${zone.uiKit}/.`,
+      `The app's tasks folder: ${config.tasks}/. Its stores folder: ${config.stores}/.`
     );
   }
   if (config.shared) {
     lines.push(`Shared types package: ${config.shared}/ - types only; every app may import it, and it imports no app.`);
   }
   lines.push(
-    `On every level: its non-UI code in ${f.logic}/ next to its entry, tasks in ${f.logic}/${f.tasks}/; its stores in ${f.stores}/, never in ${f.logic}/; shared child units in ${f.components}/.`,
+    `On every level: the own unit's non-UI code in ${f.logic}/ next to its entry - only the unit itself imports from it - and the tasks only it calls in ${f.logic}/${f.tasks}/; its stores in ${f.stores}/, never in ${f.logic}/; its types and constants files at the level root; shared child units in ${f.components}/.`,
+    "Tasks that two or more units call, and the stores those tasks reach, live in the app's tasks folder and stores folder, outside every level; they import no level.",
     `File size limit: ${config.maxFileLines} lines; a longer file is a violation (test files and generated files are not checked).`
   );
   if (unknown.length) {

@@ -31,11 +31,11 @@ type OpenOptions = Parameters<typeof openOrder>[1];
 **Bad.**
 
 ```ts
-// _logic/types.ts — moved here because usePresenter derives it: still one user, it belongs in openOrder.ts
+// types.ts at the level root — moved here because usePresenter derives it: still one user, it belongs in openOrder.ts
 export type OpenOrderOptions = { replace: boolean };
 
 // _logic/openOrder.ts
-import type { OpenOrderOptions } from './types';
+import type { OpenOrderOptions } from '../types';
 export const openOrder = (id: string, options: OpenOrderOptions) => { /* … */ };
 
 // _logic/usePresenter.ts

@@ -15,9 +15,9 @@ limits on code that does not need them, and a plain function that calls a hook b
 
 - A function named `use…` that calls no hook and is not created by a hook library is a violation: rename it, and
   decide its kind by meaning, not by what it touches. A business action, or a step of one, is a task and moves to
-  the tasks folder (default `_logic/_tasks/`, [Tasks in React](tasks.md)) — so does any function that reaches the
-  server. Anything else is a plain function, even when it reaches a store: it stays in the logic folder, or moves
-  to the tasks folder when only tasks use it.
+  the tasks folder (default `_logic/_tasks/`, or the app's tasks folder when two or more units call it,
+  [Tasks in React](tasks.md)) — so does any function that reaches the server. Anything else is a plain function,
+  even when it reaches a store: it stays in the logic folder, or moves to the tasks folder when only tasks use it.
 - A function whose name does not start with `use` and that calls a hook is a violation.
 - A function that uses the DOM outside React — `document.activeElement`, `focus()`, `setSelectionRange`,
   `document.startViewTransition` — or the part of React DOM that is not a hook, such as `flushSync`, and calls no

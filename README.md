@@ -75,6 +75,11 @@ this is the full file with the defaults:
   // Optional, no default: the pure zone set apart from the root level, relative to the project root, e.g.
   // "src/lib" with "root": "src/App". It then lies outside every level, with the ui-kit inside it.
   // Without it, the pure zone is "folders.lib" under "root".
+  // Optional: the app's tasks folder and stores folder — the tasks two or more units call and the stores they
+  // reach, outside every level — relative to the project root. By default "tasks" and "stores" next to the pure
+  // zone: next to "lib" when it is set, else under "root", e.g. "src/tasks". Not "folders.tasks"/"folders.stores".
+  // "tasks": "src/tasks",
+  // "stores": "src/stores",
   "folders": {
     // The pure zone, relative to "root". It knows nothing of the app. "lib" above takes its place when set.
     "lib": "lib",
@@ -84,11 +89,11 @@ this is the full file with the defaults:
     // The same names on every level.
     // Child units that two or more units of a level share.
     "components": "_components",
-    // The tasks folder inside the logic folder.
+    // The tasks folder inside the logic folder: the tasks only its unit calls.
     "tasks": "_tasks",
-    // A level's non-UI code but its stores — its own unit's and what its units share — next to its entry.
+    // The own unit's non-UI code but its stores, next to its entry. Only the unit itself imports from it.
     "logic": "_logic",
-    // A level's stores — data shared by the code that reads it — next to its entry.
+    // A level's stores — the own unit's and UI state its units share — next to its entry.
     "stores": "_stores"
   },
   // Files longer than this are a violation; tests and generated files are not checked.
@@ -96,13 +101,13 @@ this is the full file with the defaults:
 }
 ```
 
-A repository with several apps declares them instead of `root`, `stack` and `lib`; each app is checked on its
-own, by the core and its own stacks, and an app never imports from another app:
+A repository with several apps declares them instead of `root`, `stack`, `lib`, `tasks` and `stores`; each app
+is checked on its own, by the core and its own stacks, and an app never imports from another app:
 
 ```jsonc
 {
   "apps": {
-    // The pure zone apart from the root level, as the top-level "lib".
+    // The pure zone apart from the root level, as the top-level "lib"; "tasks" and "stores" work the same way.
     "client": { "root": "client/src/App", "lib": "client/src/lib", "stack": ["react", "zustand"] },
     // No stack yet — core rules only.
     "server": { "root": "server/src", "stack": [] }

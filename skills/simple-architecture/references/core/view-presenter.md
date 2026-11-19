@@ -40,9 +40,8 @@ of the screen.
   say which could move out as stateful logic, so the Presenter only joins it. Not counted: the stateful logic it
   calls, the values it computes from props or from that logic, and the loading and error of a task kept by the
   handler that calls it. A Presenter with one group of its own stays whole: splitting it would add a file for
-  nothing. The moved-out logic goes to the unit's logic folder while the Presenter is its only user
-  ([Levels and placement](levels.md)). Which jobs are simple enough to stay is a judgement, so it is not a
-  violation.
+  nothing. The moved-out logic goes to the unit's own logic folder ([Levels and placement](levels.md)). Which jobs
+  are simple enough to stay is a judgement, so it is not a violation.
 - A short handler that acts on the screen — prevent the default action, move the focus — may stay inline in the
   Presenter. It moves to a plain function in the logic folder when it grows or another file needs it too
   ([Stateful logic and plain functions](stateful-logic-and-functions.md)). Where that line lies is a judgement, not

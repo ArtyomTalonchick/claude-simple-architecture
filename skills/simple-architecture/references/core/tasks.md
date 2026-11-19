@@ -12,7 +12,8 @@ included.
 mobile app, in any UI framework. Written inside stateful logic, it is tied to the life of a component and can run
 only inside one; spread over a Presenter as a row of calls, it is tied to one screen and cannot be found as one
 action. A task keeps the action in one place that survives a change of the UI layer, can be called and tested on its
-own, and leaves the UI only the UI's part: showing the call and going somewhere after it. The test is meaning, not
+own, and leaves the UI only the UI's part: showing the call and going somewhere after it. A task used by several
+units lives in the app's tasks folder, outside the UI tree, so it does not move when its callers do. The test is meaning, not
 what the code touches: code that changes a store only to drive the screen is part of the UI, and calling it a task
 would carry the UI into the business actions.
 
@@ -26,7 +27,7 @@ would carry the UI into the business actions.
   always a step of a business action: a function that does I/O is a task.
 - Borderline, decided by meaning: a screen swap that changes two UI-state stores inside a screen transition and then
   redraws the caret is a plain function in the logic folder, called by stateful logic or the Presenter — not a task;
-  clearing the cart is a task, called by the Presenter of every unit that offers it.
+  clearing the cart is a task, in the app's tasks folder, called by the Presenter of every unit that offers it.
 - A task is one action and one function from the outside; inside it may be split into smaller functions. Its name
   is a verb (`logout`, `addUser`, `publishPost`).
 - A task uses nothing from the UI framework: no import from it, no call of stateful logic (a store is reached
@@ -48,43 +49,56 @@ would carry the UI into the business actions.
   actions — written in a Presenter, in stateful logic or in a plain function are a violation: they are a task. One
   call of a store's action is not, and neither is a change of UI state: a Presenter or stateful logic may make it
   itself or hand it to a plain function.
-- Placement follows [Levels and placement](levels.md): in the tasks folder (default `_tasks/`) inside the logic
-  folder (default `_logic/`) of the lowest level that covers all its users, next to the plain functions only tasks
-  use. A task is one file, or, when it has parts only it uses — a smaller task or a plain function only it calls —
-  an entry folder named as the task: the file of the same name is its entry, the parts sit next to it, and others
-  import only the entry. The parts decide, not the line count: a small task with private parts is a folder, and
-  a smaller task only it calls is always one of its parts, never a task of its own in the tasks folder. A part with
-  parts only it uses — a smaller task with its own steps — is an entry folder of its own inside the task's folder,
-  at any depth. A task whose parts lie flat next to it in the tasks folder is a violation. A task folder is not a
-  unit ([Levels and placement](levels.md)).
+- Placement follows [Levels and placement](levels.md), by the units that call the task. A task one unit calls
+  lives in the tasks folder (default `_tasks/`) inside that unit's logic folder (default `_logic/`). A task with
+  users in two or more units lives in the app's tasks folder (default `tasks/`, next to the pure zone), and so does
+  a task that tasks of that folder call; it moves there in one step when a second unit calls it, and a store it
+  reaches moves to the app's stores folder (default `stores/`). A task in a level's tasks folder that another unit
+  calls — a child unit, a sibling — is a violation.
+- A task is one file. In a unit's tasks folder, a task with plain functions only it uses is an entry folder named
+  as the task: the file of the same name is its entry, the parts sit next to it, and others import only the entry;
+  the parts decide, not the line count, and those parts lying flat next to it are a violation. In the app's tasks
+  folder such an entry folder is allowed, not required. A task is never a part of another task: tasks call each
+  other freely, whoever calls them, and a task only one other task calls is a task of its own in the same tasks
+  folder. A task folder is not a unit ([Levels and placement](levels.md)).
 - Recommended, not checked: a task talks to the server through a small project module of tasks, one per
   request (`api.logout()`), which call the pure zone's generic I/O — not through generic I/O directly. The module
-  is one file: its users are all the tasks that call any of its requests, so it stays in the tasks folder and is
-  not a part of any one of them.
+  is one file: its users are all the tasks that call any of its requests, so it lies in the app's tasks folder when
+  tasks of two or more units use it.
 
 **Good.**
 
 ```
-_logic/
-  _tasks/
+tasks/                the app's tasks folder
+  session/            a folder by topic — optional
     logout            await unsubscribePush(); await api.logout(); session store: clear
                       — called by LogoutButton and SessionExpired
     unsubscribePush   await api.unsubscribe(push token from the settings store) — called by logout and
-                      deleteAccount
+                      deleteAccount, tasks of this folder
     deleteAccount
+  cart/
     clearCart         cart store: clear — one store change, yet a business action: the same in any UI;
                       called by CartPage and by placeOrder
-    placeOrder/       an entry folder, 50 lines in all: a folder because it has parts only it uses
-      placeOrder      await reserveItems(cart); await api.placeOrder(toOrderRequest(cart)); clearCart()
-      reserveItems    a smaller task: reserves the cart's items on the server — called only by placeOrder
-      toOrderRequest  a plain function: cart -> request body — called only by placeOrder
-      tests/          tests of placeOrder and its parts
+    placeOrder        await reserveItems(cart); await api.placeOrder(toOrderRequest(cart)); clearCart()
+                      — called by CartPage and by QuickBuy
+    reserveItems      a task of its own: reserves the cart's items on the server — called only by placeOrder,
+                      yet not a part of it
+    toOrderRequest    a plain function on the app's data: cart -> request body — lies next to the tasks
+stores/
+  sessionStore        cleared by logout
+  cartStore           read by placeOrder, cleared by clearCart
 SessionExpired/
 LogoutButton/
   LogoutButton        View
   _logic/
     presenter         onClick: loading = true; try await logout(), go to the start page
                       catch error -> error; finally loading = false
+OrdersPage/
+  _logic/
+    _tasks/
+      exportOrders/   a task only OrdersPage calls, with a plain function only it uses: an entry folder
+        exportOrders
+        toCsvRow
 SearchPage/
   _logic/
     presenter         onSubmit: showResults(query)
@@ -106,13 +120,15 @@ SearchPage/
   _logic/
     _tasks/
       showResults     the screen swap with a screen transition — UI code as a task, acting on the screen
-_logic/
-  clearCart           cart store: clear — a business action outside _tasks/
-  _tasks/
-    logout            ...; navigate to the start page — navigation in a task
-    publishPost       try await api.publish(post) catch e: return { error: e } — the error as a value
-    placeOrder        await reserveItems(cart); ...; focusFirstError() — a plain function that acts on the screen
-    reserveItems      called only by placeOrder — a part of it: it belongs in _tasks/placeOrder/
+CartPage/
+  _logic/
+    clearCart         cart store: clear — a business action outside a tasks folder
+    _tasks/
+      placeOrder      called by CartPage and by QuickBuy — two units: it belongs in the app's tasks folder
+tasks/
+  logout              ...; navigate to the start page — navigation in a task
+  publishPost         try await api.publish(post) catch e: return { error: e } — the error as a value
+  checkout            await placeOrder(cart); ...; focusFirstError() — a plain function that acts on the screen
 ```
 
 **Stack notes.**

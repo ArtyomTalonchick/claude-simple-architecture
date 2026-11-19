@@ -5,6 +5,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- The config keys `tasks` and `stores` set the app's tasks folder and stores folder, relative to the project root,
+  as `lib` is — per app in `apps`, or at the top level for one app. By default they lie next to the pure zone: next
+  to the folder `lib` names (`src/tasks/`, `src/stores/` with `"lib": "src/lib"`), or, without `lib`, at the root
+  level (`<root>/tasks`, `<root>/stores`). They are not `folders.tasks` and `folders.stores`, which name folders
+  inside a level. A value that is absolute or has `..`, one that holds the root level, one inside the pure zone, one
+  inside the root level other than directly under it, and one that is the same folder as the other key or as the
+  root level's stores folder are ignored, and you are told. The SessionStart hook prints both folders.
+
+### Changed
+
+- **Breaking:** a level's logic folder holds only its own unit's code — the Presenter, its stateful logic, its plain
+  functions and the tasks only this unit calls — and only the unit's entry and the files of that folder import from
+  it. An import from another unit's logic folder, an ancestor's included, is a violation, checked by the path alone.
+  A level shares with its units only components, stores with UI state, and a types file and a constants file, which
+  now lie at the level root, not in the logic folder; there is no place at a level for shared logic, and behaviour
+  two units need is a component that holds it. Tasks with users in two or more units, and the plain functions on
+  the app's data that they or several units use, go to the app's tasks folder; the stores those tasks reach go to
+  the app's stores folder. Imports go one way: levels → the app's tasks folder → the app's stores folder → the pure
+  zone; the app's folders import nothing from a level. Folders by topic are allowed in them, and an entry folder for
+  a task is allowed there, not required. A task is never a part of another task any more: tasks call each other
+  freely. The root level has no exception for shared code left. To update: move each task two or more units call
+  to the app's tasks folder, with the stores it reaches to the app's stores folder; move types and constants files
+  from the logic folders to the level roots; replace every import from a parent's or an ancestor's logic folder —
+  by a task or a plain function in the app's tasks folder, a type or a constant at a level root, or a component that
+  holds the behaviour; take a task out of another task's entry folder and put it next to it.
+
 ## [0.2.4] — 2026-11-18
 
 ### Added

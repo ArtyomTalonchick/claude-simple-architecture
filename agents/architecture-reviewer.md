@@ -56,8 +56,9 @@ session still uses the session's version. Skip this check when the rules folder 
 Then read, in this order:
 
 1. `SKILL.md`. Then resolve the config values — the stack, the root level, the pure zone (`lib`, or
-   `folders.lib` under the root) and the ui-kit, the folder names, the file size limit, and with `apps` each app's
-   root, stack and pure zone, and the shared types package — by its section
+   `folders.lib` under the root) and the ui-kit, the app's tasks folder and stores folder (`tasks` and `stores`, by
+   default next to the pure zone), the folder names, the file size limit, and with `apps` each app's
+   root, stack, pure zone, tasks folder and stores folder, and the shared types package — by its section
    `## The config`. An unknown stack name (no such stack folder) is skipped; a value of
    the wrong type and an unknown key are ignored, and the default is used. Say each of these in the report.
 2. The core: `references/core/README.md` and every other `.md` file in `references/core/`.
@@ -97,11 +98,25 @@ surrounding file when a rule depends on where the file lives or what it imports.
   unit or a level (`references/core/levels.md`): judge where it lies and who uses it by its entry, and its other
   files as parts of that entry. Entry folders nest: a folder inside an entry folder that holds a file named as the
   folder is the entry folder of a part, judged the same way at any depth.
+- The logic folder holds only its own unit's code (`references/core/levels.md`, `references/core/imports.md`): an
+  import from another unit's logic folder — a parent's, an ancestor's, a sibling's, a child's — is a violation,
+  found by the path alone; do not count users to excuse it. Say where the code goes by its kind: a task or a plain
+  function on the app's data used by two or more units to the app's tasks folder, a type or a constant to the types
+  file or the constants file at a level root, behaviour of the UI to a component that holds it. A types file or a
+  constants file inside a logic folder is a violation: it lies at the level root.
+- The app's tasks folder and stores folder (`references/core/levels.md`): a task there with one unit as its only
+  user, a store there that no task of the app's tasks folder reaches, and a store in a level's stores folder that
+  such a task reaches are violations. A file of the app's tasks folder imports only from that folder, the app's
+  stores folder, the pure zone and the shared types package; a file of the app's stores folder only from the pure
+  zone and the shared types package. A task in a unit's tasks folder that another unit calls is a violation. A task
+  is never a part of another task; in the app's tasks folder an entry folder is allowed, not required, and folders
+  by topic are fine, but a folder named by the kind of code is not.
 - Before judging the logic folder, the tasks folder or an entry folder, find who uses each file in it
   (`references/core/levels.md`). An entry — not the Presenter — with parts only it uses that lie flat next to it is a
   violation: it is an entry folder, and those parts move into it; the same for a part whose own parts lie flat in
   its entry's folder. A part used from outside its entry's folder is a violation: it moves out to the nearest folder
-  that covers all its users.
+  that covers all its users. Parts lying flat are checked in a unit's logic folder and its tasks folder, not in the
+  app's tasks folder.
 - Whether a function is a task or a plain function is decided by meaning, not by whether it reaches a store
   (`references/core/tasks.md`, `references/core/stateful-logic-and-functions.md`): a business action, one that
   would stay the same in another UI, is a task; code that only changes UI state or acts on the screen is a plain
@@ -142,10 +157,10 @@ surrounding file when a rule depends on where the file lives or what it imports.
 - A pure zone set apart by `lib` lies outside the root level, and outside every level, yet belongs to its app:
   check its files by the rules of that app (`references/core/pure-zone.md`). The root level then holds no pure
   zone: a lib folder there is judged as any other folder at a level root.
-- With `apps` in the config, check each changed file by the rules of its app — the app whose root, or whose pure
-  zone set by `lib`, holds it: the core and that app's stacks only, with levels starting at that root. A file in
-  the shared types package gets the core rules only. A file outside every app's root, every app's pure zone and the
-  shared package is not checked; name it in the report.
+- With `apps` in the config, check each changed file by the rules of its app — the app whose root, pure zone set
+  by `lib`, tasks folder or stores folder holds it: the core and that app's stacks only, with levels starting at that
+  root. A file in the shared types package gets the core rules only. A file outside every app's root, pure zone,
+  tasks folder and stores folder and the shared package is not checked; name it in the report.
 
 ## 5. Report
 

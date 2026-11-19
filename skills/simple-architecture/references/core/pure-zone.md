@@ -30,6 +30,8 @@ name tells neither what lies inside nor where a new piece belongs.
 
 - Find the pure zone from the config: the lib folder and the ui-kit folder under the root level — or, when the app
   sets `lib`, the folder it names, apart from the root level and outside every level, with the ui-kit inside it.
+  The app's tasks folder and stores folder lie next to it by default ([Levels and placement](levels.md)); they are
+  the app's code, not part of the pure zone.
   The root level then holds no pure zone: a lib folder there is an ordinary folder at a level root
   ([Levels and placement](levels.md)). The ui-kit is the pure zone's components folder: when it is set outside
   the lib folder, the lib folder has no components folder of its own. The ui-kit's name is set on its own (`folders.uiKit`, default `lib/components/`) and does not
@@ -56,7 +58,8 @@ name tells neither what lies inside nor where a new piece belongs.
   no UI that calls it is a violation, as reaching the server outside a task is ([Tasks](tasks.md)). In the app,
   code that does I/O is a task, even when it calls generic I/O.
 - A file in the pure zone that imports from the app — any path under the root level outside the pure zone, and the
-  app's own code that lies outside the root level, such as the file the app starts from — is a violation. Imports
+  app's own code that lies outside the root level, such as the file the app starts from and the app's tasks folder
+  and stores folder ([Levels and placement](levels.md)) — is a violation. Imports
   from outside the project (packages), from elsewhere in the pure zone, and of files outside the root level that
   are not app code (design assets such as an icon sprite) are allowed.
 - A dependency by key counts as an import: a style, a text or a service that pure code looks up by name must be
@@ -117,16 +120,16 @@ src/
     theme/
       tokens              colors, spacing
       searchField         the style of SearchField
+  stores/                 the app's stores folder, next to lib/
+    userStore             the current user — app data, so outside lib/
+  tasks/                  the app's tasks folder, next to lib/
+    loadUser              calls lib/http/fetchJson with the app's /user URL — a task, the step that reaches the
+                          server; called by App and by ProfilePage
   App                     mounts the theme from lib/theme/
   _logic/
-    currentUser           subscribes to _stores/userStore — app code, so outside lib/
-    _tasks/
-      loadUser            calls lib/http/fetchJson with the app's /user URL — a task, the step that reaches the
-                          server
-  _stores/
-    userStore             the current user — app data, so outside lib/
+    currentUser           subscribes to stores/userStore — app code, so outside lib/
   _components/
-    UserAvatar/           its presenter reads the current user from the store — app code, so outside lib/
+    UserAvatar/           its presenter reads the current user from stores/userStore — app code, so outside lib/
     OrderCard/            plain props (number, total, status, onOpen), but a card of an order — app code, so
                           outside lib/; used by two branches, so at their lowest common level
     OrderCardSkeleton/    the placeholder of OrderCard — app code with it
@@ -134,21 +137,23 @@ src/
     CheckoutButton/       holds the app's label "Go to checkout" — app code; used only by CartPage, so its child
 ```
 
-The pure zone set apart from the root level — `root` is `src/App`, `lib` is `src/lib`:
+The pure zone set apart from the root level — `root` is `src/App`, `lib` is `src/lib` — with the app's tasks folder
+and stores folder next to it:
 
 ```
 src/
   main                    starts the app: runs App
-  lib/                    the pure zone, outside every level
+  lib/                    the pure zone, outside every level: knows nothing of the app
     components/           the ui-kit, inside it
       Button/
     http/
       fetchJson
-  App/                    the root level: only the app's code, no lib/
+  stores/                 the app's data
+    userStore
+  tasks/                  business actions
+    loadUser              calls src/lib/http/fetchJson
+  App/                    the UI tree: the root level holds only the app's levels, no lib/
     App                   mounts the theme from src/lib/
-    _logic/
-      _tasks/
-        loadUser          calls src/lib/http/fetchJson
     CartPage/
 ```
 

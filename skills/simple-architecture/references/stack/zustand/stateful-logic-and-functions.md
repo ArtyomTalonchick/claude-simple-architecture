@@ -1,9 +1,10 @@
 ## A Zustand store
 
-**Rule.** A Zustand store (`useOrdersStore`, made by `create`) is a store: its file lives in the stores folder
-(default `_stores/`) and holds `create(...)` with the state and its actions, nothing else. Call its hook only from a
-Presenter or other stateful logic — never from a View, a task or a plain function. A task or a plain function
-reaches the store outside hooks through `getState()` and `setState()`; a View never does.
+**Rule.** A Zustand store (`useOrdersStore`, made by `create`) is a store: its file lives in a stores folder
+(default `_stores/`, or the app's stores folder, default `stores/`) and holds `create(...)` with the state and its
+actions, nothing else. Call its hook only from a Presenter or other stateful logic — never from a View, a task or a
+plain function. A task or a plain function reaches the store outside hooks through `getState()` and `setState()`; a
+View never does.
 
 **Why.** A store is shared data with a life of its own. When every subscription goes through a Presenter or a hook,
 a reader can see from the Presenter what data a unit depends on, and a View stays free of hidden dependencies on
@@ -12,8 +13,9 @@ subscription, and `getState()` / `setState()` give exactly that without React.
 
 **How to check.**
 
-- A store file — `create(...)` and its actions — goes to the stores folder of the lowest level that covers all
-  its users ([Levels and placement](../../core/levels.md)). A store file in the logic folder or its tasks
+- A store file — `create(...)` and its actions — goes to the app's stores folder when a task of the app's tasks
+  folder reads or changes it, otherwise to the stores folder of the lowest level that covers all its users
+  ([Levels and placement](../../core/levels.md)). A store file in the logic folder or its tasks
   folder is a violation, even with one user. Its `use…` name is right even though its own code calls no hook.
 - An action of the store that calls the server, calls a task, or does more than read and change the store's state is
   a violation: that part is a task ([Tasks](../../core/tasks.md)), and the action only sets the result.

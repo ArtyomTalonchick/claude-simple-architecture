@@ -364,3 +364,17 @@ parts would lie flat one level down, and the grouping would be lost again there.
 The same rules hold at each depth: others import only an entry folder's entry, and a part used from outside its
 folder moves out to the nearest folder that covers all its users. Written into "Levels and placement", "Imports",
 "Tasks", "Stateful logic and plain functions" and the architecture-reviewer agent.
+
+## Q24. Where does shared UI behaviour live when it cannot be a component?
+
+**Question.** A level shares no logic: behaviour two units need is a component that holds it. What about a function
+that acts on the screen and is called from two units that have no visual element in common, so no component can
+hold it?
+
+**Context.** #56. In the project that led to the issue no such code was left once the rules were applied, so the
+case was not decided. A candidate answer, if a case appears: an app-wide `logic/` folder next to `tasks/`, which may
+import tasks and which tasks may not import.
+
+**Status.** open
+
+**Answer.**

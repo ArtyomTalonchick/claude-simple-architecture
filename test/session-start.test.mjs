@@ -49,8 +49,10 @@ test('empty config: every default', () => {
   assert.match(out, /Root level: src\/\. Pure zone: src\/lib\/\. UI kit: src\/lib\/components\/\./);
   assert.match(
     out,
-    /On every level: its non-UI code in _logic\/ next to its entry, tasks in _logic\/_tasks\/; its stores in _stores\/, never in _logic\/; shared child units in _components\/\./
+    /On every level: the own unit's non-UI code in _logic\/ next to its entry - only the unit itself imports from it - and the tasks only it calls in _logic\/_tasks\/; its stores in _stores\/, never in _logic\/; its types and constants files at the level root; shared child units in _components\/\./
   );
+  assert.match(out, /The app's tasks folder: src\/tasks\/\. Its stores folder: src\/stores\/\./);
+  assert.match(out, /Tasks that two or more units call, and the stores those tasks reach, live in the app's tasks folder and stores folder, outside every level/);
   assert.match(out, /File size limit: 120 lines; a longer file is a violation \(test files and generated files are not checked\)\./);
   assert.doesNotMatch(out, /problems|Unknown/);
 });
@@ -68,7 +70,7 @@ test('full config: its values are used', () => {
   assert.match(out, /Root level: app\/\. Pure zone: app\/shared\/\. UI kit: app\/ui-kit\/\./);
   assert.match(
     out,
-    /On every level: its non-UI code in own\/ next to its entry, tasks in own\/actions\/; its stores in state\/, never in own\/; shared child units in parts\/\./
+    /On every level: the own unit's non-UI code in own\/ next to its entry - only the unit itself imports from it - and the tasks only it calls in own\/actions\/; its stores in state\/, never in own\/; its types and constants files at the level root; shared child units in parts\/\./
   );
   assert.match(out, /File size limit: 200 lines; a longer file is a violation \(/);
   assert.doesNotMatch(out, /problems|Unknown/);
@@ -97,7 +99,7 @@ test('wrong types and unknown keys: defaults are used and each problem is named'
   );
   assert.match(out, /Stack: none - core rules only\./);
   assert.match(out, /Root level: src\//);
-  assert.match(out, /tasks in _logic\/_tasks\//);
+  assert.match(out, /the tasks only it calls in _logic\/_tasks\//);
   assert.match(out, /File size limit: 120 lines; a longer file is a violation \(/);
   for (const problem of [
     '"stack" is not a list of names',
@@ -116,14 +118,14 @@ test('the removed keys folders.hooks and folders.helpers get the unknown-key not
   const out = runHook(JSON.stringify({ folders: { hooks: 'use', helpers: 'utils', logic: 'own' } }));
   assert.ok(out.includes('"folders.hooks" is not a known key'), 'names folders.hooks');
   assert.ok(out.includes('"folders.helpers" is not a known key'), 'names folders.helpers');
-  assert.match(out, /its non-UI code in own\/ next to its entry/);
+  assert.match(out, /the own unit's non-UI code in own\/ next to its entry/);
   assert.doesNotMatch(out, /use\/|utils\//);
 });
 
 test('folders.stores: a custom name is used, and a value of the wrong type falls back to _stores', () => {
   const custom = runHook(JSON.stringify({ folders: { stores: 'data' } }));
   assert.match(custom, /its stores in data\/, never in _logic\//);
-  assert.doesNotMatch(custom, /problems|stores\//);
+  assert.doesNotMatch(custom, /problems|_stores\//);
 
   const wrong = runHook(JSON.stringify({ folders: { stores: 3 } }));
   assert.match(wrong, /its stores in _stores\/, never in _logic\//);
@@ -279,4 +281,66 @@ test('lib: an invalid value is ignored and named, and the pure zone stays under 
     assert.ok(out.includes(problem), `names the problem: ${problem}`);
   }
   assert.doesNotMatch(out, /set by "lib"|is not a known key/);
+});
+
+test('tasks and stores: by default next to the pure zone, at the root level or next to lib', () => {
+  const atRoot = runHook(JSON.stringify({ root: 'app' }));
+  assert.match(atRoot, /The app's tasks folder: app\/tasks\/\. Its stores folder: app\/stores\/\./);
+
+  const nextToLib = runHook(JSON.stringify({ root: 'src/App', lib: 'src/lib' }));
+  assert.match(nextToLib, /The app's tasks folder: src\/tasks\/\. Its stores folder: src\/stores\/\./);
+
+  const libAtTop = runHook(JSON.stringify({ root: 'src', lib: 'lib' }));
+  assert.match(libAtTop, /The app's tasks folder: tasks\/\. Its stores folder: stores\/\./);
+
+  const apps = runHook(
+    JSON.stringify({ apps: { client: { root: 'client/src/App', lib: 'client/src/lib' }, server: { root: 'server/src' } } })
+  );
+  assert.match(apps, /- client: .*UI kit client\/src\/lib\/components\/\. Tasks folder client\/src\/tasks\/, stores folder client\/src\/stores\/\./);
+  assert.match(apps, /- server: .*Tasks folder server\/src\/tasks\/, stores folder server\/src\/stores\/\./);
+  for (const out of [atRoot, nextToLib, libAtTop, apps]) assert.doesNotMatch(out, /problems/);
+});
+
+test('tasks and stores: set by keys, at the top level and per app', () => {
+  const one = runHook(JSON.stringify({ root: 'src/App', tasks: './src\\actions/', stores: 'src/data' }));
+  assert.match(one, /The app's tasks folder: src\/actions\/\. Its stores folder: src\/data\/\./);
+  assert.doesNotMatch(one, /problems/);
+
+  const apps = runHook(JSON.stringify({ apps: { web: { root: 'web/src', tasks: 'web/src/actions', stores: 'web/state' } } }));
+  assert.match(apps, /- web: .*Tasks folder web\/src\/actions\/, stores folder web\/state\/\./);
+  assert.doesNotMatch(apps, /problems/);
+});
+
+test('tasks and stores: an invalid value is ignored and named, and the default is used', () => {
+  const out = runHook(
+    JSON.stringify({
+      apps: {
+        a: { root: 'a/src', tasks: 5, stores: '/a/stores' },
+        b: { root: 'b/src', tasks: '../tasks', stores: 'b' },
+        c: { root: 'c/src', tasks: 'c/src/lib/tasks', stores: 'c/src/orders/stores' },
+        d: { root: 'd/src', tasks: 'd/src/_stores', stores: 'd/x' },
+        e: { root: 'e/src', tasks: 'e/x', stores: 'e/x' },
+      },
+      tasks: 'tasks',
+    })
+  );
+  for (const name of ['a', 'b', 'c']) {
+    assert.ok(out.includes(`Tasks folder ${name}/src/tasks/, stores folder ${name}/src/stores/.`), `defaults for ${name}`);
+  }
+  assert.ok(out.includes('Tasks folder d/src/tasks/, stores folder d/x/.'));
+  assert.ok(out.includes('Tasks folder e/x/, stores folder e/src/stores/.'));
+  for (const problem of [
+    '"apps.a.tasks" is not a folder name',
+    '"apps.a.stores" is not a folder path relative to the project root',
+    '"apps.b.tasks" is not a folder path relative to the project root',
+    '"apps.b.stores" holds the root level, so it is ignored',
+    '"apps.c.tasks" lies inside the pure zone, so it is ignored',
+    '"apps.c.stores" lies inside the root level other than directly under it, so it is ignored',
+    '"apps.d.tasks" is the root level\'s stores folder, so it is ignored',
+    '"apps.e.stores" is the same folder as the tasks folder, so it is ignored',
+    '"tasks" is ignored because "apps" is set',
+  ]) {
+    assert.ok(out.includes(problem), `names the problem: ${problem}`);
+  }
+  assert.doesNotMatch(out, /is not a known key/);
 });

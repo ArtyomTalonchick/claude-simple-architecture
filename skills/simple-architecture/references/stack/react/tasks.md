@@ -30,7 +30,7 @@ show the call its own way.
 **Good.**
 
 ```ts
-// _logic/_tasks/logout.ts
+// tasks/logout.ts — in the app's tasks folder: LogoutButton and SessionExpired call it
 export const logout = async () => {
   await unsubscribePush();
   await api.logout();
@@ -60,7 +60,7 @@ export const usePresenter = () => {
 **Bad.**
 
 ```ts
-// _logic/_tasks/logout.ts — a hook, navigation and the error as a value
+// tasks/logout.ts — a hook, navigation and the error as a value
 export const useLogout = () => {
   const navigate = useNavigate();
   return async () => {

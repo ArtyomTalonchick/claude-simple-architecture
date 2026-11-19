@@ -6,10 +6,13 @@ logic; a task carries out a business action, or a step of one, and reaches store
 ([Tasks](tasks.md)); a plain function is non-UI code with no business logic that is neither of them nor the
 Presenter — pure, or reaching a store through the store's own API — and takes load off a Presenter, stateful logic
 or a task: it does no I/O and calls no task and no stateful logic; a store is data that lives longer than one call
-and is shared by the code that reads it. Stateful logic goes to the logic folder (default `_logic/`), tasks to the
-tasks folder inside it (default `_logic/_tasks/`), a plain function by its users — to the tasks folder when only
-tasks use it, to the logic folder otherwise — and stores to the stores folder (default `_stores/`), on the level
-set by [Levels and placement](levels.md); an entry with parts only it uses is a folder that holds them. A plain
+and is shared by the code that reads it. Stateful logic goes to the logic folder (default `_logic/`) of its unit,
+tasks to the tasks folder inside it (default `_logic/_tasks/`) or, when two or more units call them, to the app's
+tasks folder (default `tasks/`), a plain function by its users — to the tasks folder when only tasks use it, to the
+logic folder otherwise, to the app's tasks folder when it works on the app's data for several units — and stores to
+the stores folder (default `_stores/`), or to the app's stores folder (default `stores/`) when a task of the app's
+tasks folder reaches them, as set by [Levels and placement](levels.md); an entry with parts only it uses is a folder
+that holds them. A plain
 function is called from a Presenter, stateful logic, a task, another plain function, the entry of a unit with no
 UI, or a store, if the plain function reaches no store, and one that a task calls has nothing from the UI; a task
 from a Presenter, stateful logic, another task or the entry of a unit with no UI; stateful logic only from a
@@ -37,9 +40,10 @@ without touching the logic around it, and the few kinds of code that reach it sh
 - A store file holds the data and its own API — reading and changing that data — and nothing else. A server call,
   a step of a business action, a subscription to show the data, or a computation for one of its users in a store
   file is a violation: it goes to a task, to stateful logic or to a plain function.
-- A store lives in the stores folder (default `_stores/`) of the lowest level that covers all its users
-  ([Levels and placement](levels.md)). A store in a logic folder or a tasks folder is a violation, even with one
-  user.
+- A store that a task of the app's tasks folder reads or changes lives in the app's stores folder (default
+  `stores/`); any other store lives in the stores folder (default `_stores/`) of the lowest level that covers all
+  its users ([Levels and placement](levels.md)). A store in a logic folder or a tasks folder is a violation, even
+  with one user.
 - Who reaches a store: a task and a plain function, through the store's own API, once, at the time they are called,
   on any app; on a client also a Presenter or stateful logic, which subscribe to it or call its API. Several store
   changes that together make one business action are a task, wherever they are written ([Tasks](tasks.md)). A
@@ -66,26 +70,30 @@ without touching the logic around it, and the few kinds of code that reach it sh
   example, one that waits once for the screen's next resize: it finishes on the first event or after a timeout,
   and removes its listener before it finishes. It acts on the screen, so only the UI side calls it. One whose
   listener outlives the call is stateful logic.
-- Placement by users, on the level set by [Levels and placement](levels.md): a plain function used only by tasks
-  lives in the tasks folder — a file next to the tasks when two or more use it, a part in the entry folder of its
-  one task otherwise; one used by a Presenter, stateful logic or the entry of a unit with no UI, whether or not tasks
-  use it too, lives in the logic folder outside the tasks folder — a part in the entry folder of its one user when
-  that user is an entry of the logic folder, a file there otherwise (a Presenter is never an entry folder). A plain function used only by
-  tasks that lies in the logic folder outside the tasks folder, or one used by a Presenter, stateful logic or the
-  entry of a unit with no UI that lies in the tasks folder, is a violation. Code that knows nothing of the app goes
-  to the pure zone ([Pure zone](pure-zone.md)).
+- Placement by users, as set by [Levels and placement](levels.md). Inside one unit: a plain function used only by
+  the unit's tasks lives in its tasks folder — a file next to the tasks when two or more use it, a part in the entry
+  folder of its one task otherwise; one used by a Presenter, stateful logic or the entry of a unit with no UI,
+  whether or not tasks use it too, lives in the logic folder outside the tasks folder — a part in the entry folder
+  of its one user when that user is an entry of the logic folder, a file there otherwise (a Presenter is never an
+  entry folder). A plain function used only by tasks that lies in the logic folder outside the tasks folder, or one
+  used by a Presenter, stateful logic or the entry of a unit with no UI that lies in the tasks folder, is a
+  violation. A plain function that works on the app's data — converts it, validates it, builds a request — and is
+  used by tasks of the app's tasks folder, or by two or more units, lies next to the tasks in the app's tasks
+  folder; a Presenter may import it. Code that knows nothing of the app goes to the pure zone
+  ([Pure zone](pure-zone.md)). A plain function of the UI side that two units need has no shared place: the
+  behaviour goes into a component that holds it.
 - Generic I/O ([Pure zone](pure-zone.md)) is neither a task nor a plain function: it does I/O and knows nothing of
   the app, and it lives only in the pure zone. Only a task, and other generic I/O, calls it. A Presenter, stateful
   logic, a plain function, a View, a store or the entry of a unit with no UI that calls it is a violation, as
   reaching the server outside a task is. In the app, a function that does I/O is a task, whatever it calls to do it.
 - Stateful logic, a task or a plain function with parts only it uses is an entry folder: a folder named as it,
-  with the entry and its parts, and those parts lying next to it outside the folder are a violation. A part with
-  parts only it uses is an entry folder of its own inside it, at any depth
-  ([Levels and placement](levels.md)). A part keeps its own kind, and every check here
-  applies to it as to any file of the logic folder: a part of stateful logic is stateful logic or a plain function,
-  a part of a task a smaller task or a plain function, a part of a plain function a plain function. A part of
-  stateful logic or of a plain function that does I/O or is a step of a business action is a task, and a task is
-  never such a part: it goes to the tasks folder.
+  with the entry and its parts, and in a unit's logic folder those parts lying next to it outside the folder are a
+  violation (in the app's tasks folder an entry folder is allowed, not required). A part with parts only it uses is
+  an entry folder of its own inside it, at any depth ([Levels and placement](levels.md)). A part keeps its own kind,
+  and every check here applies to it as to any file of the logic folder: a part of stateful logic is stateful logic
+  or a plain function, a part of a task a plain function, a part of a plain function a plain function. A task is
+  never a part — of stateful logic, of a plain function or of another task: it lies in a tasks folder as a task of
+  its own. A part that does I/O or is a step of a business action is a task, so it goes to a tasks folder.
 - A function marked as stateful logic by the stack's convention that uses no state, lifecycle or subscription and
   calls no stateful logic is a violation: it is a task or a plain function, by meaning.
 - A function in the logic folder, outside its tasks folder, that uses no state, lifecycle or subscription but
