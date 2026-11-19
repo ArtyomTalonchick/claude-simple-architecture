@@ -39,7 +39,9 @@ render to keep it right.
   `const search = useMemo(() => debounce(searchShows, 300), [])` — and called from the handler. A
   `useDebouncedValue(text)` followed by an effect that calls the task is a violation.
 - A condition on the app's data before a task's call — `if (page < pageCount) goToPage(page + 1)` in a Presenter —
-  is a violation: the task (`nextPage`) reads the store and decides.
+  is a violation: the task (`nextPage`) reads the store and decides. Passing what the event was about is not:
+  `onFavoriteClick(show.id)` for the clicked item of a list read with a store hook says which item, and the task
+  gets it as its argument.
 
 **Good.**
 
@@ -99,11 +101,20 @@ export const usePresenter = () => {
   }, []); // on mount only
   const search = useMemo(() => debounce(searchShows, 300), []);
   const [query, setQuery] = useState('');
+  const shows = useShowsStore((s) => s.shows);
   const onQueryChange = (text: string) => {
     setQuery(text);
     search(text);
   };
-  return { query, onQueryChange, onGenreClick: selectGenre, onNext: nextPage };
+  // the View calls onFavoriteClick(show.id) for the clicked item: what the event was about, not a condition
+  return {
+    query,
+    shows,
+    onQueryChange,
+    onGenreClick: selectGenre,
+    onNext: nextPage,
+    onFavoriteClick: toggleFavorite,
+  };
 };
 ```
 

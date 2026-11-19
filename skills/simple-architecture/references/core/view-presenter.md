@@ -33,8 +33,10 @@ of the screen.
   only on start or mount: the Presenter awaits it, may keep the state of the call — loading, error — around it,
   unless the task writes that state to a store, and decides what follows, navigation included. The steps of the
   action itself, and the conditions on the app's data around the call, do not belong in the Presenter: it only
-  calls the task. An effect of the Presenter that watches state, props or a store and calls a task is a violation:
-  the handler that changed the data calls the task. A change of UI state — which screen is shown, a flag for an
+  calls the task. What the event was about — the id of the clicked item, the typed text — is passed to the task as
+  its argument, and that is not such a condition. An effect of the Presenter that watches state, props or a store
+  and calls a task is a violation: the handler that changed the data calls the task. A change of UI state — which
+  screen is shown, a flag for an
   animation — is not a business action: the Presenter may make it itself or hand it to a plain function
   ([Stateful logic and plain functions](stateful-logic-and-functions.md)).
 - A violation: a Presenter file with no logic in it (an empty or pass-through Presenter).

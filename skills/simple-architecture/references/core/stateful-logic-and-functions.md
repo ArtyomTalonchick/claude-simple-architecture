@@ -71,8 +71,8 @@ without touching the logic around it, and the few kinds of code that reach it sh
   and removes its listener before it finishes. It acts on the screen, so only the UI side calls it. One whose
   listener outlives the call is stateful logic.
 - Placement by users, as set by [Levels and placement](levels.md). Inside one unit: a plain function used only by
-  the unit's tasks lives in its tasks folder — a file next to the tasks when two or more use it, a part in the entry
-  folder of its one task otherwise; one used by a Presenter, stateful logic or the entry of a unit with no UI,
+  the unit's tasks lives in its tasks folder — a file next to the tasks, or, when one task uses it and that task is
+  an entry folder, a part in that folder; one used by a Presenter, stateful logic or the entry of a unit with no UI,
   whether or not tasks use it too, lives in the logic folder outside the tasks folder — a part in the entry folder
   of its one user when that user is an entry of the logic folder, a file there otherwise (a Presenter is never an
   entry folder). A plain function used only by tasks that lies in the logic folder outside the tasks folder, or one
@@ -87,11 +87,13 @@ without touching the logic around it, and the few kinds of code that reach it sh
   logic, a plain function, a View, a store or the entry of a unit with no UI that calls it is a violation, as
   reaching the server outside a task is. In the app, a function that does I/O is a task, whatever it calls to do it.
 - Stateful logic, a task or a plain function with parts only it uses is an entry folder: a folder named as it,
-  with the entry and its parts, and in a unit's logic folder those parts lying next to it outside the folder are a
-  violation (in the app's tasks folder an entry folder is allowed, not required). A part with parts only it uses is
-  an entry folder of its own inside it, at any depth ([Levels and placement](levels.md)). A part keeps its own kind,
-  and every check here applies to it as to any file of the logic folder: a part of stateful logic is stateful logic
-  or a plain function, a part of a task a plain function, a part of a plain function a plain function. A task is
+  with the entry and its parts, and in a unit's logic folder outside its tasks folder those parts lying next to it
+  outside the folder are a violation. In a tasks folder, a unit's or the app's, an entry folder is allowed, not
+  required, at any depth: a task and the plain functions only it uses may lie flat there. Elsewhere a part with parts
+  only it uses is an entry folder of its own inside it, at any depth ([Levels and placement](levels.md)). A part
+  keeps its own kind, and every check here applies to it as to any file of the logic folder: a part of stateful
+  logic is stateful logic or a plain function, a part of a task a plain function, a part of a plain function a plain
+  function. A task is
   never a part — of stateful logic, of a plain function or of another task: it lies in a tasks folder as a task of
   its own. A part that does I/O or is a step of a business action is a task, so it goes to a tasks folder.
 - A function marked as stateful logic by the stack's convention that uses no state, lifecycle or subscription and

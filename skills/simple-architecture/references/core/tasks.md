@@ -49,10 +49,13 @@ actions.
   as plain functions, so the order of an action is read in one place, top to bottom.
 - The steps and the conditions around the app's data belong to the task, not to its caller: "go to the next page"
   reads the page and the page count from the store, returns when there is no next page, and calls "go to page". A
-  Presenter or stateful logic that reads the app's data to decide whether to call a task, or to build the task's
-  argument from a store's data, is a violation: that is the task's job. The Presenter only calls the task, and the
-  store only keeps data. A value the Presenter computes to show — a flag that disables a button — is not such a
-  condition.
+  Presenter or stateful logic that reads the app's data to decide whether to call a task is a violation: that
+  condition is the task's job. The Presenter only calls the task, and the store only keeps data. A value the
+  Presenter computes to show — a flag that disables a button — is not such a condition.
+- Passing what the event was about is not a condition: the id of the clicked item, the typed text, the chosen value
+  go to the task as its argument, wherever the caller got them — an id from a list read from a store included.
+  Advice, not checked: a value the task can read from a store itself and that the event does not choose — the
+  current page, the active filters — the task reads as a step of its own, rather than every caller handing it in.
 - A delay before the call (debounce) is a plain function around the task call, made once and called from the
   handler — not stateful logic that follows a value until it settles and then calls the task.
 - The state of a call may live in either place, and no check chooses between them: the caller keeps it around the
@@ -81,10 +84,10 @@ actions.
   a task that tasks of that folder call; it moves there in one step when a second unit calls it, and a store it
   reaches moves to the app's stores folder (default `stores/`). A task in a level's tasks folder that another unit
   calls — a child unit, a sibling — is a violation.
-- A task is one file. In a unit's tasks folder, a task with plain functions only it uses is an entry folder named
-  as the task: the file of the same name is its entry, the parts sit next to it, and others import only the entry;
-  the parts decide, not the line count, and those parts lying flat next to it are a violation. In the app's tasks
-  folder such an entry folder is allowed, not required. A task is never a part of another task: tasks call each
+- A task is one file. In a tasks folder — a unit's or the app's — a task and the plain functions only it uses may
+  lie flat in the folder, or in an entry folder named as the task: both are fine. An entry folder, when used, keeps
+  its rules: the file of the same name is its entry, the parts sit next to it, others import only the entry, and a
+  folder that holds only its entry is a file. A task is never a part of another task: tasks call each
   other freely, whoever calls them, and a task only one other task calls is a task of its own in the same tasks
   folder. A task folder is not a unit ([Levels and placement](levels.md)).
 - Recommended, not checked: a task talks to the server through a small project module of tasks, one per
@@ -138,15 +141,20 @@ ShowsPage/
                       onGenreClick(genre): selectGenre(genre) — the handler calls the task
                       onNext: nextPage() — the condition is the task's; hasNext, to disable the button, is
                       computed for the View
+                      onFavoriteClick(show): toggleFavorite(show.id) — the clicked item of the list read from
+                      the store: what the event was about, not a condition
 SearchBox/
   _logic/
     presenter         search = debounce(searchShows, 300), made once; onChange(text): keep text; search(text)
 OrdersPage/
   _logic/
     _tasks/
-      exportOrders/   a task only OrdersPage calls, with a plain function only it uses: an entry folder
+      exportOrders/   a task only OrdersPage calls, with a plain function only it uses, in an entry folder —
+                      allowed, not required
         exportOrders
         toCsvRow
+      importOrders    a task with a plain function only it uses, lying flat in _tasks/ — as fine as a folder
+      parseCsvRow
 SearchPage/
   _logic/
     presenter         onSubmit: showResults(query)

@@ -5,6 +5,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- A task's argument may come from a store's data. Only a condition on the app's data before the call — a Presenter
+  that reads it to decide whether to call the task — is a violation. Passing what the event was about — the id of
+  the clicked item, the typed text, the chosen value — is fine, wherever the caller got it: `toggleFavorite(show.id)`
+  for an item of a list read from a store is no longer reported. Advice, not checked: a value the task can read from
+  a store itself and that the event does not choose — the current page, the active filters — the task reads.
+- An entry folder for a task is optional in every tasks folder, a unit's `_logic/_tasks/` as the app's `tasks/`: a
+  task and the plain functions only it uses may lie flat there, or in an entry folder named as the task. An entry
+  folder that is used keeps its rules: only its entry is imported from outside, and one that holds only its entry is
+  a file. Stateful logic and plain functions of the logic folder outside the tasks folder still need an entry
+  folder for their parts.
+
 ## [0.2.5] — 2026-11-19
 
 ### Added

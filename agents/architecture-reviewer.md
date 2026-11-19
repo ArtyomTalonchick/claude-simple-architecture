@@ -109,14 +109,17 @@ surrounding file when a rule depends on where the file lives or what it imports.
   such a task reaches are violations. A file of the app's tasks folder imports only from that folder, the app's
   stores folder, the pure zone and the shared types package; a file of the app's stores folder only from the pure
   zone and the shared types package. A task in a unit's tasks folder that another unit calls is a violation. A task
-  is never a part of another task; in the app's tasks folder an entry folder is allowed, not required, and folders
-  by topic are fine, but a folder named by the kind of code is not.
+  is never a part of another task; in the app's tasks folder folders by topic are fine, but a folder named by the
+  kind of code is not.
 - Before judging the logic folder, the tasks folder or an entry folder, find who uses each file in it
-  (`references/core/levels.md`). An entry — not the Presenter — with parts only it uses that lie flat next to it is a
-  violation: it is an entry folder, and those parts move into it; the same for a part whose own parts lie flat in
-  its entry's folder. A part used from outside its entry's folder is a violation: it moves out to the nearest folder
-  that covers all its users. Parts lying flat are checked in a unit's logic folder and its tasks folder, not in the
-  app's tasks folder.
+  (`references/core/levels.md`). In a unit's logic folder outside its tasks folder, an entry — not the Presenter —
+  with parts only it uses that lie flat next to it is a violation: it is an entry folder, and those parts move into
+  it; the same for a part whose own parts lie flat in its entry's folder. A part used from outside its entry's
+  folder is a violation: it moves out to the nearest folder
+  that covers all its users. Parts lying flat are checked only in a unit's logic folder outside its tasks folder:
+  in a tasks folder, a unit's or the app's, a task and the plain functions only it uses may lie flat or in an entry
+  folder named as the task, and both are fine. An entry folder that is used still keeps its rules there: only its
+  entry is imported from outside, and one that holds only its entry is a file.
 - Whether a function is a task or a plain function is decided by meaning, not by whether it reaches a store
   (`references/core/tasks.md`, `references/core/stateful-logic-and-functions.md`): a business action, one that
   would stay the same in another UI, is a task; code that only changes UI state or acts on the screen is a plain
@@ -126,10 +129,12 @@ surrounding file when a rule depends on where the file lives or what it imports.
 - An event calls a task (`references/core/tasks.md`): a handler or another task, an effect only on start or mount.
   An effect, a hook or other stateful logic that watches state, props or a store and calls a task when they change
   is a violation — also a generic "request follows its params" hook. A Presenter or stateful logic that reads the
-  app's data to decide whether to call a task, or builds its argument from a store, is a violation: the condition
-  belongs in the task. A debounce or a throttle around the call, made once, is a plain function and fine. Do not
-  report where the state of a call lives — in the caller or written by the task to a store — and do not report a
-  task that rolled back its change and wrote the error to a store for not rethrowing.
+  app's data to decide whether to call a task is a violation: the condition belongs in the task. Passing what the
+  event was about — the clicked item's id, the typed text, the chosen value — is not, wherever the caller got it;
+  do not report a caller that hands the task a value it could read from a store itself. A debounce or a throttle
+  around the call, made once, is a plain function and fine. Do not report where the state of a call lives — in the
+  caller or written by the task to a store — and do not report a task that rolled back its change and wrote the
+  error to a store for not rethrowing.
 - A function that subscribes to a screen event and unsubscribes within the same call, keeping nothing between
   calls — one that waits once for an event or a timeout — is a plain function of the UI side, not stateful logic
   (`references/core/stateful-logic-and-functions.md`); one whose listener outlives the call is stateful logic.

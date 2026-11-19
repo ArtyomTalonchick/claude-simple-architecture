@@ -9,7 +9,8 @@ stores with UI state, a types file and a constants file; put each at the lowest 
 and move it up when a user appears outside that level. Tasks that two or more units call, and the stores those
 tasks reach, do not live in the levels: they go to the app's tasks folder and stores folder (default `tasks/` and
 `stores/`) next to the pure zone. An entry of the logic folder with parts only it uses is a folder that holds them,
-and only its entry is used from outside; a part with parts only it uses is such a folder inside it, at any depth.
+and only its entry is used from outside; a part with parts only it uses is such a folder inside it, at any depth. In
+a tasks folder that folder is allowed, not required, at any depth: a task and its parts may also lie flat.
 
 **Why.** Code that sits next to its only user can be changed without checking anyone else; code that sits higher
 than needed looks shared, so every change to it needs a search for users that do not exist. One shape on every
@@ -78,7 +79,7 @@ and a reader sees which files belong together — a flat list of files does not 
   - Folders inside either are optional: tasks and stores may be grouped by topic (`tasks/favorites/`,
     `tasks/search/`), as pure-zone modules are. A folder named by the kind of code (`helpers/`, `utils/`, `hooks/`,
     a nested `tasks/`) is a violation ([Pure zone](pure-zone.md)). An entry folder for a task and the plain
-    functions only it uses is allowed there, not required.
+    functions only it uses is allowed there, not required, as in a unit's tasks folder (below).
   - The app's tasks folder may hold a types file and a constants file, for the types and constants that two or more
     of its files use, or that its files and the units use. The type of a store's data is declared in the store file,
     as part of its API, and imported from there.
@@ -92,21 +93,25 @@ and a reader sees which files belong together — a flat list of files does not 
   plain function of stateful logic, a plain function of a task, a plain function of a plain function, and a types or
   a constants file used only inside the folder. A task is never a part — of stateful logic, of a plain function or
   of another task: it lies in a tasks folder as a task of its own, and other tasks call it freely. The parts decide,
-  not the line count: an entry with parts only it uses is a folder at any size. In the folder:
+  not the line count: an entry with parts only it uses is a folder at any size. In a tasks folder — a unit's or the
+  app's — the folder is a convenience: a task and the plain functions only it uses may lie flat in the tasks folder,
+  or in an entry folder named as the task, and both are fine. In the folder:
   - the entry is the file named as the folder; the parts are files next to it, one thing each, and keep their own
     kinds;
   - a part that has parts only it uses is an entry folder of its own, inside its entry's folder: named as the part,
-    holding it and those parts — at any depth, by the same rules. An entry folder holds no folder but its tests and
-    the entry folders of its parts;
+    holding it and those parts — at any depth, by the same rules; inside a task's entry folder that nested folder is
+    allowed, not required, as in the tasks folder. An entry folder holds no folder but its tests and the entry
+    folders of its parts;
   - its tests — of the entry and of the parts that lie in it as files — sit in it, in a tests folder or beside the
     files, by the project's convention (below);
   - from outside the folder only the entry is imported; the entry imports its parts — a part that is an entry
     folder through its entry — and the parts import each other ([Imports](imports.md));
   - its users are the users of its entry: the folder counts as one file of the folder that holds it — the logic
     folder, the tasks folder, or the folder of the entry it is a part of.
-- In a unit's logic folder, an entry with parts only it uses whose parts lie next to it — in the logic folder, in
-  the tasks folder, or in the folder of the entry it is a part of — is a violation: it is an entry folder, and those
-  parts move into it. In the app's tasks folder an entry folder is not required.
+- In a unit's logic folder outside its tasks folder, an entry with parts only it uses whose parts lie next to it —
+  in the logic folder, or in the folder of the entry it is a part of — is a violation: it is an entry folder, and
+  those parts move into it. In a tasks folder, a unit's or the app's, parts lying flat are not a violation, inside
+  a task's entry folder too: an entry folder is not required there.
 - A part used by anything outside its entry's folder, tests aside, is a violation: it is not a part of that entry.
   It moves out to the nearest folder that covers all its users: next to the folder — in the outer entry folder
   when all its users are there, else in the logic folder, or in the tasks folder if only tasks use it — or, when
@@ -193,10 +198,12 @@ OrdersPage/
     openOrder           declares OpenOrderOptions; the presenter derives the type of openOrder's parameters
                         without naming it — one user, so the type stays in openOrder
     _tasks/
-      exportOrders/     an entry folder — not a unit and not a level
+      exportOrders/     an entry folder — not a unit and not a level; in a tasks folder allowed, not required
         exportOrders    the entry: a task only OrdersPage calls
         toCsvRow        a part: a plain function only exportOrders uses
         tests/          tests of exportOrders and toCsvRow
+      printOrders       a task only OrdersPage calls, lying flat with toPrintRow, the plain function only it
+      toPrintRow        uses — as fine as an entry folder in a tasks folder
   _stores/
     filtersStore        the selected filters, UI state read by orderFilters and by OrderTable — shared by the level
   _components/
