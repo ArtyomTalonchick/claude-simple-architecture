@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.2.7] — 2026-11-19
+
 ### Changed
 
 - A store with parts only it uses — the type of its API, its implementations — is a store entry folder in its
