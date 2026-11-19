@@ -66,7 +66,8 @@ name tells neither what lies inside nor where a new piece belongs.
   defined in the pure zone. Pure code that looks up a key defined only outside the pure zone — a style in a theme
   under the root level, outside the lib folder — is a violation. The app mounting or extending what the pure zone
   defines (the root mounting the theme from `lib/`) is allowed: the app may depend on the pure zone. So is pure
-  stateful logic that takes a task as an argument and runs it: the app passes it in.
+  stateful logic that takes a task as an argument and runs it: the app passes it in. It runs the task from a handler
+  it returns or once on start, never because a value changed ([Tasks](tasks.md)).
 - A ui-kit component is checked by meaning, not only by its imports: plain props — strings, numbers, flags,
   callbacks, children — do not make it pure. A ui-kit component with any of these signs knows the app and is a
   violation:

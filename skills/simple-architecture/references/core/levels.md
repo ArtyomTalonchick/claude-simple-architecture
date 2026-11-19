@@ -6,10 +6,10 @@ stores folder (default `_stores/`) — the types file and the constants file of 
 folder (default `_components/`) and the child units next to them. The logic folder holds only the own unit's code:
 only the unit's entry and the files of that folder import from it. A level shares with its units only components,
 stores with UI state, a types file and a constants file; put each at the lowest level that covers all its users,
-and move it up when a user appears outside that level. Tasks and stores the app's units share do not live in the
-levels: they go to the app's tasks folder and stores folder (default `tasks/` and `stores/`) next to the pure zone. An
-entry of the logic folder with parts only it uses is a folder that holds them, and only its entry is used from
-outside; a part with parts only it uses is such a folder inside it, at any depth.
+and move it up when a user appears outside that level. Tasks that two or more units call, and the stores those
+tasks reach, do not live in the levels: they go to the app's tasks folder and stores folder (default `tasks/` and
+`stores/`) next to the pure zone. An entry of the logic folder with parts only it uses is a folder that holds them,
+and only its entry is used from outside; a part with parts only it uses is such a folder inside it, at any depth.
 
 **Why.** Code that sits next to its only user can be changed without checking anyone else; code that sits higher
 than needed looks shared, so every change to it needs a search for users that do not exist. One shape on every
@@ -301,7 +301,8 @@ OrdersPage/
     formatTotal         used only by OrderTable — it belongs in OrderTable/_logic/
     statusLabel         a plain function the presenter and OrderTable/_logic/presenter use — OrderTable imports from
                         its parent's logic folder: behaviour two units need is a component, a StatusLabel in
-                        OrdersPage/_components/
+                        OrdersPage/_components/, or, if it only converts the app's data, a plain function in the
+                        app's tasks folder
     ordersStore         a store in _logic/ — it belongs in a stores folder
     openOrder
     orderFilters/

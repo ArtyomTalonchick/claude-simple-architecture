@@ -10,9 +10,9 @@ plugin's repository.
 - [Levels and placement](levels.md) — every level has the same shape — the entry, the own unit's non-UI code in
   the logic folder, its stores in the stores folder, a types file and a constants file at its root, shared units in
   the components folder and child units; the logic folder holds only the own unit's code, and a level shares only
-  components, UI-state stores, types and constants, at the lowest level that covers their users; tasks and stores
-  several units share live in the app's tasks folder and stores folder next to the pure zone; an entry of the logic
-  folder with parts only it uses is a folder that holds them, nested at any depth.
+  components, UI-state stores, types and constants, at the lowest level that covers their users; tasks that two or
+  more units call, and the stores they reach, live in the app's tasks folder and stores folder next to the pure
+  zone; an entry of the logic folder with parts only it uses is a folder that holds them, nested at any depth.
 - [Stateful logic and plain functions](stateful-logic-and-functions.md) — three kinds of non-UI code: stateful logic
   uses state, lifecycle or a store subscription, a task carries out a business action or a step of one, a plain
   function has no business logic, does no I/O and calls no task or stateful logic, and lives by its users; one

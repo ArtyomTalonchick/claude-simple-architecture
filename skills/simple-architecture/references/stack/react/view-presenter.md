@@ -52,7 +52,7 @@ are the View's concern.
 export type OrderListProps = { status: OrderStatus };
 
 export const usePresenter = ({ status }: OrderListProps) => {
-  const { orders, isLoading } = useOrders();
+  const { orders, isLoading } = useOrders(); // stateful logic: reads the orders store, which a task fills
   const navigate = useNavigate();
   const rows = useMemo(
     () => orders.filter((o) => o.status === status).map((o) => ({ ...o, total: formatPrice(o.sum) })),
@@ -79,7 +79,7 @@ A value the View passes to a prop is ready too, even when it only turns `null` i
 ```tsx
 // UserCard/_logic/usePresenter.ts
 export const usePresenter = ({ userId }: UserCardProps) => {
-  const { user } = useUser(userId);
+  const { user } = useUser(userId); // stateful logic: reads the user by id from the users store
   return { name: user?.name ?? 'Guest', imageSrc: user?.image ?? undefined };
 };
 
@@ -99,6 +99,7 @@ A pattern, not a check: the Presenter returns a child's props as one value, type
 import type { PaginationProps } from '../Pagination/Pagination';
 
 export const usePresenter = ({ status }: OrderListProps) => {
+  // stateful logic: the page of the store's orders for a status; setPage changes only the shown page
   const { rows, page, total, pageCount, setPage } = useOrderPage(status);
   const pagination: PaginationProps | null = pageCount > 1 ? { page, total, onPageChange: setPage } : null;
   return { rows, pagination };

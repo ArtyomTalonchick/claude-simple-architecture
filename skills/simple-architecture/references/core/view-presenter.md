@@ -64,7 +64,7 @@ OrderList/
                            if p.isLoading: Spinner
                            for row in p.rows: OrderRow(row, onOpen = () => p.open(row.id))
   _logic/
-    presenter (Presenter)  orders = load orders
+    presenter (Presenter)  on mount: the task loadOrders; orders = read from the orders store
                            isLoading = orders are not loaded yet
                            rows = orders with status == props.status, each with total = round(sum * 1.2, 2)
                            open(id) = go to the order page
