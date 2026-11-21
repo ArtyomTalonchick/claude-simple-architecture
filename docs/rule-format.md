@@ -52,6 +52,20 @@ rule it carries out.
 - Good and Bad show the same case, so the difference is the rule itself.
 - "How to check" must be something the agent can actually do from code, not a matter of taste.
 
+## Keeping rules short
+
+Every fix adds text, so the rules are held short by a test and a review:
+
+- Each rule file, the skill, its `references/config.md`, the READMEs and the reviewer agent have a word budget in
+  [test/word-budgets.json](../test/word-budgets.json), the one place for the budgets. Words are counted as
+  `LC_ALL=C wc -w` counts them.
+- `node --test` fails when a file is over its budget, when a file has no budget, when a rule lacks a section of the
+  template, and when a **Rule.** is longer than two sentences.
+- A change that takes a file over its budget shortens the file in the same change. Raising a budget is a decision,
+  stated in the commit message with the reason.
+- Before each release, the rules added since the last one are read again, and what repeats or no longer applies is
+  removed.
+
 ## How a rule is added
 
 1. **Ideas.** The ideas are discussed until each one is either a rule (core or stack), a principle, or dropped.

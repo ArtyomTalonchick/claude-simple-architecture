@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Word budgets for the rule files, the skill and the reviewer agent in `test/word-budgets.json`: `node --test`
+  fails when a file is over its budget, a rule lacks a section of the template, or a **Rule.** is longer than two
+  sentences. `docs/rule-format.md` says how a budget is kept and raised.
+
 ### Changed
 
 - The default ui-kit folder (`folders.uiKit`) is `lib/ui-kit`, not `lib/components`: the name says "ui-kit", and an

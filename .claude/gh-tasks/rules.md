@@ -37,6 +37,9 @@ heading is skipped. Content may be in any language.
 
 ## Release
 <!-- release, before the gate: checks, version bump, changelog, steps after the commit -->
+- Before the version bump, read the rules added or changed since the last release (`git diff vA.B.C -- skills/`
+  for the last tag) and remove what repeats another rule or no longer applies — see "Keeping rules short" in
+  `docs/rule-format.md`.
 - Set `version` in `.claude-plugin/plugin.json` to X.Y.Z of the milestone; the file goes into the release commit.
 - In `CHANGELOG.md`, add `## [X.Y.Z] — YYYY-MM-DD` right under `## [Unreleased]` and move its entries there;
   `[Unreleased]` stays empty. The file goes into the release commit.
