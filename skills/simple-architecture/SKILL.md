@@ -48,7 +48,7 @@ a missing key takes its default. The full file with the defaults:
   "root": "src",
   "folders": {
     "lib": "lib",
-    "uiKit": "lib/components",
+    "uiKit": "lib/ui-kit",
     "components": "_components",
     "tasks": "_tasks",
     "logic": "_logic",
@@ -80,7 +80,7 @@ a missing key takes its default. The full file with the defaults:
 - **`folders.uiKit`** — the ui-kit, relative to `root`. Wherever it lives, it belongs to the pure zone. Its name
   is set here on its own and does not follow `folders.components`: the ui-kit is part of the pure zone, not a
   level's shared components folder. When `lib` is set, the ui-kit lies inside it as it lies inside `folders.lib`:
-  the default `lib/components` becomes `<lib>/components`, and a ui-kit set outside `folders.lib` is taken as
+  the default `lib/ui-kit` becomes `<lib>/ui-kit`, and a ui-kit set outside `folders.lib` is taken as
   relative to `lib`.
 - **`folders.logic`** — the name of the folder next to a level's entry that holds the own unit's non-UI code but
   its stores — the Presenter, stateful logic, plain functions and its tasks, as files or entry folders. Only the

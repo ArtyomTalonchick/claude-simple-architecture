@@ -140,7 +140,7 @@ A component without a Presenter that spreads all its props onto one child, and o
 
 ```tsx
 // SaveButton/SaveButton.tsx
-import { Button, type ButtonProps } from '@/lib/components/Button/Button';
+import { Button, type ButtonProps } from '@/lib/ui-kit/Button/Button';
 
 export type SaveButtonProps = ButtonProps;
 

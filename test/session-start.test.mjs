@@ -46,7 +46,7 @@ test('empty config: every default', () => {
   const out = runHook('{}');
   assert.match(out, /This project follows Simple Architecture/);
   assert.match(out, /Stack: none - core rules only\./);
-  assert.match(out, /Root level: src\/\. Pure zone: src\/lib\/\. UI kit: src\/lib\/components\/\./);
+  assert.match(out, /Root level: src\/\. Pure zone: src\/lib\/\. UI kit: src\/lib\/ui-kit\/\./);
   assert.match(
     out,
     /On every level: the own unit's non-UI code in _logic\/ next to its entry - only the unit itself imports from it - and the tasks only it calls in _logic\/_tasks\/; its stores in _stores\/, never in _logic\/; its types and constants files at the level root; shared child units in _components\/\./
@@ -132,9 +132,17 @@ test('folders.stores: a custom name is used, and a value of the wrong type falls
   assert.ok(wrong.includes('"folders.stores" is not a folder name'), 'names folders.stores');
 });
 
+test('folders.uiKit: the default is lib/ui-kit, and a project keeps lib/components by setting it', () => {
+  const byDefault = runHook(JSON.stringify({ folders: { lib: 'lib' } }));
+  assert.match(byDefault, /UI kit: src\/lib\/ui-kit\/\./);
+  const kept = runHook(JSON.stringify({ folders: { uiKit: 'lib/components' } }));
+  assert.match(kept, /UI kit: src\/lib\/components\/\./);
+  assert.doesNotMatch(kept, /problems/);
+});
+
 test('folders.components does not rename the ui-kit', () => {
   const out = runHook(JSON.stringify({ folders: { components: 'parts' } }));
-  assert.match(out, /UI kit: src\/lib\/components\/\./);
+  assert.match(out, /UI kit: src\/lib\/ui-kit\/\./);
   assert.match(out, /shared child units in parts\/\./);
 });
 
@@ -230,10 +238,10 @@ test('lib: an app sets its pure zone apart from its root, with the ui-kit inside
   );
   assert.ok(
     out.includes(
-      '- client: root level client/src/App/; stack react; pure zone client/src/lib/ (set by "lib": outside every level; the root level holds no pure zone); UI kit client/src/lib/components/.'
+      '- client: root level client/src/App/; stack react; pure zone client/src/lib/ (set by "lib": outside every level; the root level holds no pure zone); UI kit client/src/lib/ui-kit/.'
     )
   );
-  assert.match(out, /- server: root level server\/src\/; stack none - core rules only; pure zone server\/src\/lib\/; UI kit server\/src\/lib\/components\/\./);
+  assert.match(out, /- server: root level server\/src\/; stack none - core rules only; pure zone server\/src\/lib\/; UI kit server\/src\/lib\/ui-kit\/\./);
   assert.doesNotMatch(out, /problems/);
 });
 
@@ -249,7 +257,7 @@ test('lib: a single app sets it at the top level; the ui-kit follows it from fol
 test('lib absent, or set to the default place: nothing changes', () => {
   for (const config of [{ root: 'app' }, { root: 'app', lib: 'app/lib' }]) {
     const out = runHook(JSON.stringify(config));
-    assert.match(out, /Root level: app\/\. Pure zone: app\/lib\/\. UI kit: app\/lib\/components\/\./);
+    assert.match(out, /Root level: app\/\. Pure zone: app\/lib\/\. UI kit: app\/lib\/ui-kit\/\./);
     assert.doesNotMatch(out, /set by "lib"|problems/);
   }
 });
@@ -296,7 +304,7 @@ test('tasks and stores: by default next to the pure zone, at the root level or n
   const apps = runHook(
     JSON.stringify({ apps: { client: { root: 'client/src/App', lib: 'client/src/lib' }, server: { root: 'server/src' } } })
   );
-  assert.match(apps, /- client: .*UI kit client\/src\/lib\/components\/\. Tasks folder client\/src\/tasks\/, stores folder client\/src\/stores\/\./);
+  assert.match(apps, /- client: .*UI kit client\/src\/lib\/ui-kit\/\. Tasks folder client\/src\/tasks\/, stores folder client\/src\/stores\/\./);
   assert.match(apps, /- server: .*Tasks folder server\/src\/tasks\/, stores folder server\/src\/stores\/\./);
   for (const out of [atRoot, nextToLib, libAtTop, apps]) assert.doesNotMatch(out, /problems/);
 });

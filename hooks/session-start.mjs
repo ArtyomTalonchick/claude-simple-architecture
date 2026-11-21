@@ -11,7 +11,7 @@ const CONFIG_PATH = '.claude/simple-architecture/config.json';
 
 const DEFAULT_FOLDERS = {
   lib: 'lib',
-  uiKit: 'lib/components',
+  uiKit: 'lib/ui-kit',
   components: '_components',
   tasks: '_tasks',
   logic: '_logic',
@@ -143,7 +143,7 @@ function resolveLib(value, label, root, folders, problems) {
 }
 
 // The pure zone and the ui-kit of one app. With `lib` set, the ui-kit lies inside it as it lies inside the lib
-// folder by default: "lib/components" becomes "<lib>/components"; a ui-kit set outside "folders.lib" is taken as
+// folder by default: "lib/ui-kit" becomes "<lib>/ui-kit"; a ui-kit set outside "folders.lib" is taken as
 // relative to `lib`.
 function pureZone(root, lib, folders) {
   if (!lib) return { lib: `${root}/${folders.lib}`, uiKit: `${root}/${folders.uiKit}`, apart: false };

@@ -3,7 +3,7 @@
 **Rule.** Keep code that knows nothing of the app in the pure zone at the root level, or where the app's `lib` key
 puts it: the lib folder (default `lib/`) with folders named by what their code is about (such as `lib/http/`
 and `lib/theme/`), never by the kind of code (`hooks/`, `helpers/`, `utils/`), and the ui-kit (default
-`lib/components/`) as its components folder. The design-system theme —
+`lib/ui-kit/`) as its components folder. The design-system theme —
 tokens and the styles of ui-kit components — is pure too and lives in the lib folder. Pure code depends on nothing from the app — no domain types,
 store, data access, app components or app styles, by import or by key — and knows nothing of it by meaning: a
 component named after or shaped by the app's domain, one that holds the app's own text, and a placeholder or a part
@@ -34,7 +34,7 @@ name tells neither what lies inside nor where a new piece belongs.
   the app's code, not part of the pure zone.
   The root level then holds no pure zone: a lib folder there is an ordinary folder at a level root
   ([Levels and placement](levels.md)). The ui-kit is the pure zone's components folder: when it is set outside
-  the lib folder, the lib folder has no components folder of its own. The ui-kit's name is set on its own (`folders.uiKit`, default `lib/components/`) and does not
+  the lib folder, the lib folder has no components folder of its own. The ui-kit's name is set on its own (`folders.uiKit`, default `lib/ui-kit/`) and does not
   follow the name of a level's components folder (`folders.components`): the ui-kit is part of the pure zone, not a
   level's shared components folder.
 - The lib folder holds folders named by what their code is about — generic I/O (e.g. `lib/http/`), errors, the
@@ -47,7 +47,7 @@ name tells neither what lies inside nor where a new piece belongs.
   `services/` and the like — is a violation: its name says how its code is written, not what it is about. Each
   piece in it goes to a folder named by what it is about (a debounce to `lib/debounce/`, a date formatter to
   `lib/dates/`). The ui-kit is not such a folder: it is the pure zone's components folder, set by the config
-  (default `lib/components/`). Errors, the theme, icons and styles are subjects, not kinds, and are fine.
+  (default `lib/ui-kit/`). Errors, the theme, icons and styles are subjects, not kinds, and are fine.
 - A tasks folder in the lib folder (`tasks/`, or named as the configured tasks folder, default `_tasks/`) is a
   violation: a task is the app's business logic, and the pure zone has none. Code in it that knows nothing of the
   app is generic I/O or a pure function and goes to a folder named by what it is about; code that knows the app is a
