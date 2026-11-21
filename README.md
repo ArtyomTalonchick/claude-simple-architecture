@@ -51,6 +51,7 @@ The rules live in the `simple-architecture` skill:
 ```
 skills/simple-architecture/
   SKILL.md              when the rules apply and the order of reading
+  references/config.md  what happens to a wrong value in the config
   references/core/      core rules, one file per rule
   references/stack/     one folder per stack: react/, zustand/ — one file per rule, named as the core
                         rule it carries out
@@ -117,11 +118,9 @@ is checked on its own, by the core and its own stacks, and an app never imports 
 }
 ```
 
-The comments are only for this example: the file itself is plain JSON, without comments. An unknown stack name
-is skipped, and you are told it has no stack folder. A value of the wrong type and an unknown key are ignored, and
-you are told; so is an app without `root`, and `apps` with no usable app leaves the project one app, as without
-`apps`. A file that is not a JSON object cannot be read: the agent tells you and does not apply the rules.
-Without the file, the project does not follow Simple Architecture.
+The comments are only for this example: the file itself is plain JSON, without comments. Without the file, the
+project does not follow Simple Architecture. What happens to a value that cannot be used is described in
+[skills/simple-architecture/references/config.md](skills/simple-architecture/references/config.md).
 
 At the start of every session a hook reads the config and tells the agent the resolved values, any problems,
 and that the skill is read before writing code. Without the file, the agent is told only how to add one. The hook

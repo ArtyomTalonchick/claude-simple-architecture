@@ -59,8 +59,8 @@ Then read, in this order:
    `folders.lib` under the root) and the ui-kit, the app's tasks folder and stores folder (`tasks` and `stores`, by
    default next to the pure zone), the folder names, the file size limit, and with `apps` each app's
    root, stack, pure zone, tasks folder and stores folder, and the shared types package — by its section
-   `## The config`. An unknown stack name (no such stack folder) is skipped; a value of
-   the wrong type and an unknown key are ignored, and the default is used. Say each of these in the report.
+   `## The config`, and a value that cannot be used by `references/config.md`. Say each such value in the
+   report.
 2. The core: `references/core/README.md` and every other `.md` file in `references/core/`.
 3. For each declared stack, in the order the config lists them: its `README.md` and every rule file in its
    folder. Do not read stacks the project does not declare. With `apps`, read the stacks of every app that holds

@@ -11,6 +11,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   import from it no longer reads as the app's shared components or a level's `_components` folder. With `lib` set,
   the default ui-kit is `<lib>/ui-kit`. A project that relies on the default sets `"uiKit": "lib/components"` in
   `folders` to keep its folder, or renames the folder to `lib/ui-kit`.
+- The skill describes each config key in one or two sentences — what it names and its default. What happens to a
+  wrong value (an unknown stack name, an ignored path, a wrong type, a file that is not valid JSON, `apps` with no
+  usable app) moved to one reference file, `references/config.md`. The handling itself is unchanged.
 
 ## [0.2.7] — 2026-11-19
 
