@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.2.8] — 2026-11-21
+
 ### Added
 
 - Word budgets for the rule files, the skill and the reviewer agent in `test/word-budgets.json`: `node --test`
