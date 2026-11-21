@@ -14,6 +14,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - The skill describes each config key in one or two sentences — what it names and its default. What happens to a
   wrong value (an unknown stack name, an ignored path, a wrong type, a file that is not valid JSON, `apps` with no
   usable app) moved to one reference file, `references/config.md`. The handling itself is unchanged.
+- The rule files are shorter and follow the rule format: each **Rule.** is one or two sentences, "How to check"
+  holds only checks, and a statement lives in one file that the others link to; what the rules require is
+  unchanged. `core/levels.md` is split into rules of one idea each: `levels.md` (the shape of a level),
+  `placement.md` (placement by users), `app-folders.md` (the app's tasks and stores folders), `entry-folders.md`
+  (entry folders, store entry folders included) and `types-and-constants.md` (where a type or a constant lives).
+  The React rule on derived types moved from `stack/react/levels.md` to `stack/react/types-and-constants.md`. The
+  `architecture-reviewer` agent refers to the rule files instead of restating them, and `core/README.md` lists
+  every core rule with its Rule sentence.
 
 ## [0.2.7] — 2026-11-19
 

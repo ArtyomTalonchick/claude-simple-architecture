@@ -25,15 +25,10 @@ installed. Changes between versions are listed in [CHANGELOG.md](CHANGELOG.md).
 
 ## Develop locally
 
-Load the plugin from a working copy instead of the marketplace:
+Load the plugin from a working copy instead of the marketplace, and check the manifest and the plugin's files:
 
 ```
 claude --plugin-dir path/to/claude-simple-architecture
-```
-
-Check the manifest and the plugin's files:
-
-```
 claude plugin validate .
 ```
 
@@ -44,91 +39,45 @@ claude plugin validate .
 - **Stack rules** apply only when a project declares that stack (for example, a UI library or a state manager).
   They say how the core rules are carried out with that technology and never contradict the core.
 
-Examples in the rules are generic: they name no real project.
-
-The rules live in the `simple-architecture` skill:
+Examples in the rules are generic: they name no real project. The rules live in the `simple-architecture` skill:
 
 ```
 skills/simple-architecture/
-  SKILL.md              when the rules apply and the order of reading
+  SKILL.md              when the rules apply, the order of reading and the config keys
   references/config.md  what happens to a wrong value in the config
-  references/core/      core rules, one file per rule
+  references/core/      core rules, one file per rule, listed in its README.md
   references/stack/     one folder per stack: react/, zustand/ — one file per rule, named as the core
                         rule it carries out
 ```
 
 Each stack folder stands on its own, so a stack can later move to a plugin of its own by moving its folder.
 
-The core rules are listed in
-[skills/simple-architecture/references/core/README.md](skills/simple-architecture/references/core/README.md).
-
-## Configure your project
-
-A project opts in with one file at its root, `.claude/simple-architecture/config.json`. Every key is optional;
-this is the full file with the defaults:
-
-```jsonc
-{
-  // Stacks by stack folder name: "react", "zustand". Empty — core rules only.
-  "stack": [],
-  // The app's root level, relative to the project root.
-  "root": "src",
-  // Optional, no default: the pure zone set apart from the root level, relative to the project root, e.g.
-  // "src/lib" with "root": "src/App". It then lies outside every level, with the ui-kit inside it.
-  // Without it, the pure zone is "folders.lib" under "root".
-  // Optional: the app's tasks folder and stores folder — the tasks two or more units call and the stores they
-  // reach, outside every level — relative to the project root. By default "tasks" and "stores" next to the pure
-  // zone: next to "lib" when it is set, else under "root", e.g. "src/tasks". Not "folders.tasks"/"folders.stores".
-  // "tasks": "src/tasks",
-  // "stores": "src/stores",
-  "folders": {
-    // The pure zone, relative to "root". It knows nothing of the app. "lib" above takes its place when set.
-    "lib": "lib",
-    // The ui-kit, relative to "root". Set "ui-kit" to keep it at the root level (without "lib"). It is part of the pure zone,
-    // so its name does not follow "components". With "lib" set, it lies inside "lib": "<lib>/ui-kit".
-    "uiKit": "lib/ui-kit",
-    // The same names on every level.
-    // Child units that two or more units of a level share.
-    "components": "_components",
-    // The tasks folder inside the logic folder: the tasks only its unit calls.
-    "tasks": "_tasks",
-    // The own unit's non-UI code but its stores, next to its entry. Only the unit itself imports from it.
-    "logic": "_logic",
-    // A level's stores — the own unit's and UI state its units share — next to its entry.
-    "stores": "_stores"
-  },
-  // Files longer than this are a violation; tests and generated files are not checked.
-  "maxFileLines": 120
-}
-```
-
-A repository with several apps declares them instead of `root`, `stack`, `lib`, `tasks` and `stores`; each app
-is checked on its own, by the core and its own stacks, and an app never imports from another app:
-
-```jsonc
-{
-  "apps": {
-    // The pure zone apart from the root level, as the top-level "lib"; "tasks" and "stores" work the same way.
-    "client": { "root": "client/src/App", "lib": "client/src/lib", "stack": ["react", "zustand"] },
-    // No stack yet — core rules only.
-    "server": { "root": "server/src", "stack": [] }
-  },
-  // A package of types both apps import. Types only; it imports no app.
-  "shared": "shared/src"
-}
-```
-
-The comments are only for this example: the file itself is plain JSON, without comments. Without the file, the
-project does not follow Simple Architecture. What happens to a value that cannot be used is described in
-[skills/simple-architecture/references/config.md](skills/simple-architecture/references/config.md).
-
-At the start of every session a hook reads the config and tells the agent the resolved values, any problems,
-and that the skill is read before writing code. Without the file, the agent is told only how to add one. The hook
-needs Node.js on the PATH.
-
 Every rule follows one template, and a rule goes from an idea to a release in a fixed way — see
 [docs/rule-format.md](docs/rule-format.md). Questions found while writing rules are logged in
 [docs/questions.md](docs/questions.md).
+
+## Configure your project
+
+A project opts in with one file at its root, `.claude/simple-architecture/config.json`; without it, the project
+does not follow Simple Architecture. Every key is optional, so `{}` is a valid config. For example:
+
+```json
+{
+  "stack": ["react", "zustand"],
+  "root": "src/App",
+  "lib": "src/lib",
+  "maxFileLines": 150
+}
+```
+
+A repository with several apps declares them in `apps`, with a `shared` package of types they import; each app is
+checked on its own, by the core and its own stacks. Every key, its default and the form with `apps` are described in
+[SKILL.md](skills/simple-architecture/SKILL.md), section "The config"; what happens to a value that cannot be used,
+in [references/config.md](skills/simple-architecture/references/config.md).
+
+At the start of every session a hook reads the config and tells the agent the resolved values, any problems, and
+that the skill is read before writing code. Without the file, the agent is told only how to add one. The hook needs
+Node.js on the PATH.
 
 ## Review a change
 

@@ -1,49 +1,40 @@
 ## View and Presenter in React
 
-**Rule.** A component is a View: `MyComponent/MyComponent.tsx`, named as its folder. Its Presenter is the hook
-`usePresenter.ts` in the unit's logic folder (default `_logic/`), which declares the props type; the View
-re-exports that type for its users. The only hooks a View calls are its own `usePresenter` and styling hooks.
+**Rule.** A component is a View, `MyComponent/MyComponent.tsx`, named as its folder; its Presenter is the hook
+`usePresenter.ts` in the unit's logic folder (default `_logic/`), which declares the props type that the View
+re-exports. The only hooks a View calls are its own `usePresenter` and styling hooks.
 
-**Why.** One file name per role makes the pair easy to find, and a short list of allowed hooks is easy to check:
-any other hook in a component means logic has leaked into the View. Styling hooks only return styles, and styles
-are the View's concern.
+**Why.** One file name per role makes the pair easy to find, and a short list of allowed hooks is easy to check: any
+other hook in a component means logic has leaked into the View. Styling hooks only return styles, and styles are the
+View's concern.
 
 **How to check.**
 
-- In a component file (`.tsx` that returns JSX): any hook call other than `usePresenter(props)` and a styling
-  hook — `useState`, `useEffect`, `useMemo`, `useCallback`, a store or a query hook, a custom hook — is a
-  violation.
-- A styling hook is one from the project's UI or styling library that only returns style values: a style recipe
-  or slot recipe, a theme token, a style value picked by screen size. It reads the design system, not app state,
-  so it is not stateful logic. A hook whose result the View uses for anything but a style prop — in a condition,
-  as text, passed to a handler — is not a styling hook.
+- In a component file (`.tsx` that returns JSX), a hook call other than `usePresenter(props)` and a styling hook —
+  `useState`, `useEffect`, `useMemo`, `useCallback`, a store or a query hook, a custom hook — is a violation.
+- A styling hook is one from the project's UI or styling library that only returns style values: a style recipe or
+  slot recipe, a theme token, a style value picked by screen size. A hook whose result the View uses for anything
+  but a style prop — in a condition, as text, passed to a handler — is not a styling hook.
 - Allowed in JSX: `{flag && <A />}` and `{flag ? <A /> : <B />}` on a value from the Presenter;
   `{pagination && <Pagination {...pagination} />}` on a child's ready props or `null`;
   `{items.map((item) => <Row key={item.id} … />)}` on a ready array; `onClick={onSave}`;
   `onClick={() => onSelect(item.id)}`; style props, `className`, `style`.
-- A violation in JSX: `.filter`, `.sort`, `.reduce`, `.find` on data; formatting such as `.toFixed`,
-  `toLocaleString` or a template string built from data; a comparison on raw data (`a > b`, `status === 'paid'`);
-  an arrow with more than one call or with a condition.
-- A violation in JSX: a value chosen by a condition — `??`, `||` or `?:` that picks a value
-  (`src={image ?? undefined}`, `title={name || 'Untitled'}`, `label={isOpen ? 'Hide' : 'Show'}`) — and an optional
-  read `a?.b`. The Presenter returns the ready value (`imageSrc: image ?? undefined`). `&&` and `?:` stay allowed
-  when they choose markup by a ready flag, as above.
-- The same violations count anywhere in the component file, not only in JSX: a module-level constant built with
-  `.map`, `.flatMap`, `.filter` or a template string is a computation in the View and goes to `usePresenter.ts`.
-  A literal array or object is allowed.
-- `usePresenter.ts` with no hook call and no computation — it only returns its props — is a violation.
-- The props type is declared in `usePresenter.ts` and re-exported from the component file (`export type {
-  OrderListProps } from './_logic/usePresenter'`), so users import it from the View; a component without a Presenter
-  declares its props type in its own file. A type that is part of the props type — an icon name, a variant — is
-  declared and re-exported with it (`export type { ButtonProps, ButtonVariant } from './_logic/usePresenter'`).
-- A component without a Presenter that spreads all its props onto one child may declare its props type as an alias
-  of the child's (`export type SaveButtonProps = ButtonProps`). A component with no props has no props type and takes
-  no parameter: it needs no empty `{}` type.
+- A violation in JSX: `.filter`, `.sort`, `.reduce`, `.find` on data; `.toFixed`, `toLocaleString` or a template
+  string built from data; a comparison on raw data (`a > b`, `status === 'paid'`); an arrow with more than one call or
+  with a condition; `??`, `||` or `?:` that picks a value (`src={image ?? undefined}`, `title={name || 'Untitled'}`,
+  `label={isOpen ? 'Hide' : 'Show'}`); an optional read `a?.b`.
+- The same counts anywhere in the component file: a module-level constant built with `.map`, `.flatMap`, `.filter`
+  or a template string goes to `usePresenter.ts`. A literal array or object is allowed.
+- A `usePresenter.ts` with no hook call and no computation — it only returns its props — is a violation.
+- The props type is declared in `usePresenter.ts` and re-exported from the component file
+  (`export type { ButtonProps, ButtonVariant } from './_logic/usePresenter'`, with the types that are part of it); a
+  component without a Presenter declares it in its own file. One that spreads all its props onto one child may alias
+  the child's (`export type SaveButtonProps = ButtonProps`); one with no props has no props type and takes no
+  parameter.
 - A short handler that acts on the DOM — `event.preventDefault()`, `inputRef.current?.focus()` — may stay inline in
-  `usePresenter.ts`; it moves to a plain function in the logic folder when it grows or is reused. A judgement, not
-  reported.
+  `usePresenter.ts`.
 - The start file (`main.tsx`) renders `App` and may wrap it in `StrictMode` and the providers the app mounts around
-  it. A component only `main.tsx` uses for that, such as `AppShell`, is a child unit of the root level next to `App`.
+  it; a component only `main.tsx` uses for that, such as `AppShell`, is a child unit of the root level next to `App`.
 
 **Good.**
 
@@ -58,8 +49,9 @@ export const usePresenter = ({ status }: OrderListProps) => {
     () => orders.filter((o) => o.status === status).map((o) => ({ ...o, total: formatPrice(o.sum) })),
     [orders, status],
   );
-  const open = (id: string) => navigate(`/orders/${id}`);
-  return { rows, isLoading, open };
+  const { page, total, pageCount, setPage } = useOrderPage(status);
+  const pagination: PaginationProps | null = pageCount > 1 ? { page, total, onPageChange: setPage } : null;
+  return { rows, isLoading, pagination, open: (id: string) => navigate(`/orders/${id}`) };
 };
 
 // OrderList/OrderList.tsx
@@ -68,92 +60,30 @@ import { usePresenter, type OrderListProps } from './_logic/usePresenter';
 export type { OrderListProps } from './_logic/usePresenter';
 
 export const OrderList = (props: OrderListProps) => {
-  const { rows, isLoading, open } = usePresenter(props);
+  const { rows, isLoading, pagination, open } = usePresenter(props);
   if (isLoading) return <Spinner />;
-  return rows.map((row) => <OrderRow key={row.id} row={row} onOpen={() => open(row.id)} />);
-};
-```
-
-A value the View passes to a prop is ready too, even when it only turns `null` into `undefined`:
-
-```tsx
-// UserCard/_logic/usePresenter.ts
-export const usePresenter = ({ userId }: UserCardProps) => {
-  const { user } = useUser(userId); // stateful logic: reads the user by id from the users store
-  return { name: user?.name ?? 'Guest', imageSrc: user?.image ?? undefined };
-};
-
-// UserCard/UserCard.tsx
-export const UserCard = (props: UserCardProps) => {
-  const { name, imageSrc } = usePresenter(props);
-  return <Avatar name={name} src={imageSrc} />;
-};
-```
-
-A pattern, not a check: the Presenter returns a child's props as one value, typed by the child's props type, or
-`null` when the child is hidden; the View spreads it. The condition stays in the Presenter, and
-`{pagination && …}` only chooses markup by a ready value:
-
-```tsx
-// OrderList/_logic/usePresenter.ts
-import type { PaginationProps } from '../Pagination/Pagination';
-
-export const usePresenter = ({ status }: OrderListProps) => {
-  // stateful logic: the page of the store's orders for a status; setPage changes only the shown page
-  const { rows, page, total, pageCount, setPage } = useOrderPage(status);
-  const pagination: PaginationProps | null = pageCount > 1 ? { page, total, onPageChange: setPage } : null;
-  return { rows, pagination };
-};
-
-// OrderList/OrderList.tsx
-export const OrderList = (props: OrderListProps) => {
-  const { rows, pagination } = usePresenter(props);
   return (
     <>
-      <OrderTable rows={rows} />
+      {rows.map((row) => <OrderRow key={row.id} row={row} onOpen={() => open(row.id)} />)}
       {pagination && <Pagination {...pagination} />}
     </>
   );
 };
-```
 
-A short handler that acts on the DOM stays inline in the Presenter:
-
-```tsx
-// SearchForm/_logic/usePresenter.ts
-export const usePresenter = ({ onSearch }: SearchFormProps) => {
-  const [query, setQuery] = useState('');
-  const inputRef = useRef<HTMLInputElement>(null);
-  const submit = (event: FormEvent) => {
-    event.preventDefault();
-    onSearch(query);
-  };
-  const clear = () => {
-    setQuery('');
-    inputRef.current?.focus();
-  };
-  return { query, setQuery, inputRef, submit, clear };
+// UserCard/_logic/usePresenter.ts — even turning null into undefined happens here
+export const usePresenter = ({ userId }: UserCardProps) => {
+  const { user } = useUser(userId);
+  return { name: user?.name ?? 'Guest', imageSrc: user?.image ?? undefined };
 };
-```
 
-A component without a Presenter that spreads all its props onto one child, and one with no props:
-
-```tsx
-// SaveButton/SaveButton.tsx
-import { Button, type ButtonProps } from '@/lib/ui-kit/Button/Button';
-
+// SaveButton/SaveButton.tsx — no Presenter; spreads all its props onto one child
 export type SaveButtonProps = ButtonProps;
-
 export const SaveButton = (props: SaveButtonProps) => <Button icon="save" {...props} />;
 
 // EmptyCart/EmptyCart.tsx — no props, no props type
 export const EmptyCart = () => <Text>The cart is empty</Text>;
-```
 
-The start file wraps the entry in what the app mounts around it:
-
-```tsx
-// src/main.tsx
+// src/main.tsx — AppShell is a child unit of the root level; its only user is main.tsx
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AppShell>
@@ -161,21 +91,6 @@ createRoot(document.getElementById('root')!).render(
     </AppShell>
   </StrictMode>,
 );
-
-// src/AppShell/AppShell.tsx — a child unit of the root level; its only user is main.tsx
-export type AppShellProps = { children: ReactNode };
-
-export const AppShell = ({ children }: AppShellProps) => <ThemeProvider theme={theme}>{children}</ThemeProvider>;
-```
-
-Less preferred, but not a violation, so not reported: the View rebuilds the child's props from separate ready
-values.
-
-```tsx
-// OrderList/OrderList.tsx
-const { rows, hasPagination, page, total, changePage } = usePresenter(props);
-// …
-{hasPagination && <Pagination page={page} total={total} onPageChange={changePage} />}
 ```
 
 **Bad.**
@@ -189,9 +104,7 @@ export const OrderList = ({ status }: { status: OrderStatus }) => {
     .filter((o) => o.status === status)
     .map((o) => <OrderRow key={o.id} row={{ ...o, total: o.sum.toFixed(2) }} />);
 };
-```
 
-```tsx
 // UserCard/UserCard.tsx
 export const UserCard = (props: UserCardProps) => {
   const { user } = usePresenter(props);

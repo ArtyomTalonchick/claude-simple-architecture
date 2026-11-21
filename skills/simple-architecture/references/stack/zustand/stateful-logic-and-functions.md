@@ -1,43 +1,30 @@
 ## A Zustand store
 
-**Rule.** A Zustand store (`useOrdersStore`, made by `create`) is a store: its file lives in a stores folder
-(default `_stores/`, or the app's stores folder, default `stores/`) and holds `create(...)` with the state and its
-actions, nothing else. Call its hook only from a Presenter or other stateful logic — never from a View, a task or a
-plain function. A task or a plain function reaches the store outside hooks through `getState()` and `setState()`; a
-View never does.
+**Rule.** A Zustand store (`useOrdersStore`, made by `create`) is a store: its file holds `create(...)` with the
+state and its actions and nothing else, and its hook is called only from a Presenter or other stateful logic. A task
+or a plain function reaches the store through `getState()` and `setState()`; a View never reaches it.
 
-**Why.** A store is shared data with a life of its own. When every subscription goes through a Presenter or a hook,
-a reader can see from the Presenter what data a unit depends on, and a View stays free of hidden dependencies on
-app state. A task or a plain function acts at one moment: it needs the current value and a way to change it, not a
-subscription, and `getState()` / `setState()` give exactly that without React.
+**Why.** When every subscription goes through a Presenter or a hook, a reader sees from the Presenter what data a
+unit depends on, and a View stays free of hidden dependencies on app state. A task or a plain function acts at one
+moment: `getState()` / `setState()` give the current value and a way to change it, without React.
 
 **How to check.**
 
-- A store file — `create(...)` and its actions — goes to the app's stores folder when a task of the app's tasks
-  folder reads or changes it, otherwise to the stores folder of the lowest level that covers all its users
-  ([Levels and placement](../../core/levels.md)). A store file in the logic folder or its tasks
-  folder is a violation, even with one user. Its `use…` name is right even though its own code calls no hook.
+- A store file lies in a stores folder, a level's or the app's ([Levels](../../core/levels.md),
+  [The app's tasks and stores folders](../../core/app-folders.md)); its `use…` name is right even though its own
+  code calls no hook.
 - An action of the store that calls the server, calls a task, or does more than read and change the store's state is
-  a violation: that part is a task ([Tasks](../../core/tasks.md)), and the action only sets the result.
-- A store hook called in a component file (a View) is a violation — also of
-  [View and Presenter](../../core/view-presenter.md).
-- A store hook called in a task or a plain function is a violation: code that subscribes is stateful logic.
-- `getState()` or `setState()` in a View is a violation.
-- In a task or a plain function, `useOrdersStore.getState()` and `useOrdersStore.setState()`, or an action read
-  through `getState()`, are allowed. No middleware such as thunks is needed for that. Using them does not make a
-  function a task: a business action is a task ([Tasks](../../core/tasks.md)); a function that only changes UI
-  state — which screen is shown, a flag for an animation — or reads a value for its caller is a plain function
-  ([Stateful logic and plain functions](../../core/stateful-logic-and-functions.md)).
-- In a Presenter or other stateful logic, a store hook with a selector, and an action taken from it and called
-  once in a handler, are allowed. A store value read with a selector and then watched by a `useEffect` that calls a
-  task is a violation ([Tasks](../../core/tasks.md)): the handler that changed the value calls the task.
-- A task may write the status of its call to a store with `setState` — loading before the request, the result or
-  the error after — when units that did not call it show it; the store keeps that status as plain data. Keeping
-  `isLoading` in the Presenter instead is allowed too. A task that writes its failure to the store where the UI shows
-  it need not rethrow ([Tasks](../../core/tasks.md)).
-- The store may keep the `AbortController` of the ongoing call next to its status, so that a new call aborts the
-  earlier one. Only tasks read it and call `abort()`, through `getState()`; a Presenter, stateful logic or a View that
-  selects it or aborts it is a violation.
+  a violation: that part is a task, and the action only sets the result.
+- A store hook called in a component file (a View), a task or a plain function is a violation; so is `getState()` or
+  `setState()` in a View.
+- In a task or a plain function, `getState()`, `setState()` and an action read through `getState()` are allowed, with
+  no middleware such as thunks. Using them does not make a function a task: its kind is decided by meaning.
+- In a Presenter or other stateful logic, a store hook with a selector, and an action taken from it and called once
+  in a handler, are allowed. A selected value watched by a `useEffect` that calls a task is a violation
+  ([Tasks](../../core/tasks.md)).
+- A task may write the status of its call to the store with `setState` when units that did not call it show it.
+- The store may keep the `AbortController` of the ongoing call next to its status. Only tasks read it and call
+  `abort()`, through `getState()`; a Presenter, stateful logic or a View that selects it or aborts it is a violation.
 
 **Good.**
 
@@ -57,22 +44,9 @@ export const cancelOrder = async (id: string) => {
   useOrdersStore.setState((s) => ({ orders: s.orders.filter((o) => o.id !== id) }));
 };
 
-// tasks/shows/loadShows.ts — a task writes the status of its call where every unit that shows it reads it
-export const loadShows = async () => {
-  const { page, genre } = useShowsStore.getState();
-  useShowsStore.setState({ status: 'loading', error: null });
-  try {
-    const shows = await api.getShows({ page, genre });
-    useShowsStore.setState({ shows, status: 'done' });
-  } catch (error) {
-    useShowsStore.setState({ status: 'error', error: error as Error });
-    throw error;
-  }
-};
-
-// tasks/search/loadShows.ts — the latest call wins through the controller in the store; the failure is
-// written where the results show it with Retry, so the task does not rethrow
-export const loadShows = async (query: string) => {
+// tasks/search/searchShows.ts — the latest call wins through the controller in the store; the failure is
+// written where the results show it, so the task does not rethrow
+export const searchShows = async (query: string) => {
   useSearchStore.getState().request?.abort();
   const request = new AbortController();
   useSearchStore.setState({ request, status: 'loading' });
@@ -106,7 +80,7 @@ export const OrderList = () => {
   return orders.map((o) => <OrderRow key={o.id} row={o} />);
 };
 
-// SearchBar/_logic/usePresenter.ts — the Presenter selects the controller and aborts it: only tasks use the handle
+// SearchBar/_logic/usePresenter.ts — the Presenter selects the controller and aborts it
 export const usePresenter = () => {
   const request = useSearchStore((s) => s.request);
   return { onCancel: () => request?.abort() };

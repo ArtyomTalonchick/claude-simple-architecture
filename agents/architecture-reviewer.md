@@ -85,109 +85,30 @@ An empty diff → report that there is nothing to review and stop.
 ## 4. Check the change
 
 For each rule, follow its **How to check** steps on the diff. Look mainly at added and changed lines; read the
-surrounding file when a rule depends on where the file lives or what it imports. Report only what a rule's
-**How to check** actually covers — not taste, not general code quality, not rules of your own.
+surrounding file when a rule depends on where the file lives, what it imports or who uses it. Report only what a
+rule's **How to check** covers — not taste, not general code quality, not rules of your own. What a rule calls
+allowed, advice, "not checked" or "a judgement, not a check" is not a finding.
 
-- The file limit is checked on the whole file, not on the diff: for every added or changed file, count the lines
-  of its whole new version and compare them with `maxFileLines`. Skip the files the rule exempts — a test file and
-  a file written by a tool (`references/core/one-thing-per-file.md`). A file over the limit is
-  a violation even when the diff touches only a few of its lines.
-- Do not report a test file's imports (`references/core/imports.md`): a test may import whatever it needs to set
-  up, reset and check state. Where the test lives is still checked (`references/core/levels.md`).
-- A folder inside a logic folder, a tasks folder or a stores folder that holds a file named as the folder is an
-  entry folder, not a unit or a level (`references/core/levels.md`): judge where it lies and who uses it by its
-  entry, and its other files as parts of that entry. In a stores folder it is a store entry folder: its entry is
-  the store, and its implementations and the type of its API are parts, not stores of their own. Entry folders
-  nest: a folder inside an entry folder that holds a file named as the folder is the entry folder of a part,
-  judged the same way at any depth.
-- The logic folder holds only its own unit's code (`references/core/levels.md`, `references/core/imports.md`): an
-  import from another unit's logic folder — a parent's, an ancestor's, a sibling's, a child's — is a violation,
-  found by the path alone; do not count users to excuse it. Say where the code goes by its kind: a task or a plain
-  function on the app's data used by two or more units to the app's tasks folder, a type or a constant to the types
-  file or the constants file at a level root, behaviour of the UI to a component that holds it. A types file or a
-  constants file in a logic folder, outside an entry folder, is a violation: it lies at the level root. One inside
-  an entry folder, used only there, is a part and fine.
-- The app's tasks folder and stores folder (`references/core/levels.md`): a task there with one unit as its only
-  user, a store there that no task of the app's tasks folder reaches, and a store in a level's stores folder that
-  such a task reaches are violations. A file of the app's tasks folder imports only from that folder, the app's
-  stores folder, the pure zone and the shared types package; a file of the app's stores folder only from the pure
-  zone and the shared types package. A task in a unit's tasks folder that another unit calls is a violation. A task
-  is never a part of stateful logic or of a plain function; a task that only one other task calls may be a part of
-  that task's entry folder or a task of its own, both fine, and moves out when a second caller appears. A store that
-  no task of the app's tasks folder reaches, shared by units of one level — UI state or data their tasks reach, such
-  as a server cache — lies in that level's stores folder. In the app's tasks folder folders by topic are fine, but a
-  folder named by the kind of code is not.
-- Before judging the logic folder, the tasks folder or an entry folder, find who uses each file in it
-  (`references/core/levels.md`). In a unit's logic folder outside its tasks folder, an entry — not the Presenter —
-  with parts only it uses that lie flat next to it is a violation: it is an entry folder, and those parts move into
-  it; the same for a part whose own parts lie flat in its entry's folder. A part used from outside its entry's
-  folder is a violation: it moves out to the nearest folder
-  that covers all its users. Parts lying flat are checked only in a unit's logic folder outside its tasks folder:
-  in a tasks folder, a unit's or the app's, a task and the plain functions only it uses may lie flat or in an entry
-  folder named as the task, and both are fine. An entry folder that is used still keeps its rules there: only its
-  entry is imported from outside, and one that holds only its entry is a file.
-- Whether a function is a task or a plain function is decided by meaning, not by whether it reaches a store
-  (`references/core/tasks.md`, `references/core/stateful-logic-and-functions.md`): a business action, one that
-  would stay the same in another UI, is a task; code that only changes UI state or acts on the screen is a plain
-  function. When the call is a judgement, say so in the finding. Reading or writing a storage directly is I/O: a
-  plain function that does it is a task. A plain function that runs a callback its caller passed in — a task's call
-  run inside a screen transition — does not call a task; one that imports a task, or redoes the task's store
-  changes to avoid calling it, is a violation. Before judging a plain function's folder or what
-  it may touch — the screen, the UI framework — find its users: a plain function a task calls has nothing from the
-  UI, and one used only by tasks lies in the tasks folder.
-- An event calls a task (`references/core/tasks.md`): a handler or another task, an effect only on start or mount.
-  An effect, a hook or other stateful logic that watches state, props or a store and calls a task when they change
-  is a violation — also a generic "request follows its params" hook. A Presenter or stateful logic that reads the
-  app's data to decide whether to call a task is a violation: the condition belongs in the task. Passing what the
-  event was about — the clicked item's id, the typed text, the chosen value — is not, wherever the caller got it;
-  do not report a caller that hands the task a value it could read from a store itself. A debounce or a throttle
-  around the call, made once, is a plain function and fine. Do not report where the state of a call lives — in the
-  caller or written by the task to a store — and do not report a task that wrote its own failure to a store where
-  the UI reads it for not rethrowing, whether or not it had a change to roll back. A store may keep the handle that
-  cancels an ongoing call next to its status; only tasks use it, and a Presenter, stateful logic or a View that
-  reads or calls it is a violation.
-- A function that subscribes to a screen event and unsubscribes within the same call, keeping nothing between
-  calls — one that waits once for an event or a timeout — is a plain function of the UI side, not stateful logic
-  (`references/core/stateful-logic-and-functions.md`); one whose listener outlives the call is stateful logic.
-- When counting the users of a type, count the files that name it. A file that only derives a type from another
-  file's value or type does not use it, and the type stays where it is declared (`references/core/levels.md`).
-- These are allowed; do not report them: the file the app starts from wrapping the entry in what the app mounts
-  around it, and a unit that only it uses for that, a child unit of the root level (`references/core/levels.md`);
-  one start file per runtime the app runs in — a server started locally and as a cloud function
-  (`references/core/levels.md`); on a server, a store whose API reads and writes its own database through the
-  database's client, and a store with several implementations behind one API, picked by the environment, in a
-  store entry folder (`references/core/stateful-logic-and-functions.md`);
-  a type that is part of a props type — an icon name, a variant — declared with it and imported from the View, and
-  a pure-zone module's exported type imported from that module (`references/core/levels.md`,
-  `references/core/pure-zone.md`); a View without a Presenter whose props type is an alias of the props type of the
-  one child it passes all its props to, and a unit with no props and no props type
-  (`references/core/view-presenter.md`); a short handler that acts on the screen inline in the Presenter — when it
-  should move to a plain function is a judgement, not a check (`references/core/view-presenter.md`); an error class
-  of the pure zone imported to tell an error apart and answer with it, by the kinds `references/core/imports.md`
-  lists.
-- A ui-kit component is checked by meaning, not only by its imports (`references/core/pure-zone.md`): read each
-  added or changed component in the ui-kit and judge whether it is named after or shaped by a domain entity, holds
-  the app's own text, or is a placeholder or a part of such a component. Plain props do not make it pure. When the
-  call is a judgement, say so in the finding.
-- A folder in the lib folder is judged by its name (`references/core/pure-zone.md`): one named by the kind of
-  code — `hooks/`, `helpers/`, `utils/`, `functions/`, `services/` and the like — is a violation; one named by what
-  its code is about (`lib/http/`, `lib/dates/`), the ui-kit, and errors, the theme, icons and styles are fine.
+- The file limit is checked on the whole file, not on the diff: for every added or changed file, count the lines of
+  its whole new version and compare them with `maxFileLines`, skipping the files
+  `references/core/one-thing-per-file.md` exempts. A file over the limit is a violation even when the diff touches
+  only a few of its lines.
+- Before judging where a file lies, find who uses it: placement depends on its users
+  (`references/core/placement.md`, `references/core/entry-folders.md`).
 - Core rules always apply. A stack rule carries out a core rule with one technology and never overrides it.
 - Line numbers are in the new version of the file (the `+` side of the diff). For a deleted file or a moved
   file, name the path and say so.
 - One finding per place and rule. If one place breaks two rules, give two findings.
-- When you are not sure a line breaks a rule, say so in the finding rather than leaving it out or overstating
-  it.
+- When you are not sure a line breaks a rule, or the call is a judgement, say so in the finding rather than leaving
+  it out or overstating it.
 - A rule may name a check as a **warning** — a signal to look at, not a violation. Report it under Warnings,
   never as a finding.
 - Where a rule names a folder by its default, use the name from the project's config.
-- A pure zone set apart by `lib` lies outside the root level, and outside every level, yet belongs to its app:
-  check its files by the rules of that app (`references/core/pure-zone.md`). The root level then holds no pure
-  zone: a lib folder there is judged as any other folder at a level root.
 - With `apps` in the config, check each changed file by the rules of its app — the app whose root, pure zone set
-  by `lib`, tasks folder or stores folder holds it: the core and that app's stacks only, with levels starting at that
-  root. A file in the shared types package gets the core rules only. A file outside every app's root, pure zone,
-  tasks folder and stores folder and the shared package is not checked; name it in the report.
+  by `lib`, tasks folder or stores folder holds it: the core and that app's stacks only, with levels starting at
+  that root. A pure zone set apart by `lib` lies outside every level yet belongs to its app. A file in the shared
+  types package gets the core rules only. A file outside every app's root, pure zone, tasks folder and stores folder
+  and the shared package is not checked; name it in the report.
 
 ## 5. Report
 

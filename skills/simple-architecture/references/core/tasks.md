@@ -1,182 +1,98 @@
 ## Tasks
 
-**Rule.** Write each business action as a task: a user action, or a step of one, that would stay the same action in
-another UI, or in another app on another UI framework — log in, log out, place an order, clear the cart. A task is
-a function named with a verb, with nothing from the UI framework. It reaches stores through their own API, the
-server through generic I/O, may call other tasks and plain functions, returns its result and fails by throwing. An
-event calls it: a handler of a Presenter, of stateful logic or of the entry of a unit with no UI, or another task —
-an effect calls it only on start or mount, never because data changed. The steps and the conditions around the
-app's data belong to the task; the caller only calls it. The state of the call (loading, error) is kept by the
-caller around the call, or written by the task to a store; the Presenter decides what follows, navigation
-included.
+**Rule.** Write each business action — one that would stay the same action in another UI — as a task: a function
+named with a verb, with nothing from the UI framework, that holds the action's steps and its conditions on the
+app's data, returns its result and fails by throwing. Call it from an event — a handler or another task, an effect
+only on start or mount — and leave to the caller only the state of the call and what follows, navigation included.
 
 **Why.** What a business action means does not depend on the UI: logging out is the same in a web app and in a
-mobile app, in any UI framework. Written inside stateful logic, it is tied to the life of a component and can run
-only inside one; spread over a Presenter as a row of calls, it is tied to one screen and cannot be found as one
-action. A task keeps the action in one place that survives a change of the UI layer, can be called and tested on its
-own, and leaves the UI only the UI's part: showing the call and going somewhere after it. A task used by several
-units lives in the app's tasks folder, outside the UI tree, so it does not move when its callers do. When an event
-calls the task, the link between what happened and the request is in one place, read top to bottom; when a handler
-only changes data and an effect elsewhere watches it and calls the task, that link is in the code of neither, and a
-change to one side breaks the other unseen. The test is meaning, not what the code touches: code that changes a
-store only to drive the screen is part of the UI, and calling it a task would carry the UI into the business
-actions.
+mobile app. Written inside stateful logic, it can run only inside a component; spread over a Presenter as a row of
+calls, it cannot be found as one action. A task keeps the action in one place that survives a change of the UI,
+can be called and tested on its own, and leaves the UI only showing the call and going somewhere after it. When an
+event calls the task, the link between what happened and the request is read top to bottom in one place; when a
+handler only changes data and an effect elsewhere calls the task, a change to one side breaks the other unseen.
 
 **How to check.**
 
-- Whether a function is a task is decided by meaning: would it stay the same action in another UI, or in another
-  app on another UI framework? Clearing the cart would — a task, even when it is one store change. Reaching a store
-  does not make a function a task: changing UI state in a store — which screen is shown, a flag for an animation —
-  is not a business action, and such code is a plain function
-  ([Stateful logic and plain functions](stateful-logic-and-functions.md)). In the app, a request to the server is
-  always a step of a business action: a function that does I/O is a task. The one exception is a server store that
-  reads and writes its own database through its API: that is the store's own data, not a business action
-  ([Stateful logic and plain functions](stateful-logic-and-functions.md)).
-- Borderline, decided by meaning: a screen swap that changes two UI-state stores inside a screen transition and then
-  redraws the caret is a plain function in the logic folder, called by stateful logic or the Presenter — not a task;
-  clearing the cart is a task, in the app's tasks folder, called by the Presenter of every unit that offers it.
-  When a task has to run inside such a screen transition, the plain function takes it as a callback and the
-  Presenter passes the call: `goHome(() => clearSearch())`. The plain function then calls no task of its own, and
-  the steps stay with the Presenter ([Stateful logic and plain functions](stateful-logic-and-functions.md)). A plain
-  function that redoes the task's store changes itself, to avoid calling it, is a violation: those changes are the
-  task.
-- A task is one action and one function from the outside; inside it may be split into smaller functions. Its name
-  is a verb (`logout`, `addUser`, `publishPost`).
-- A task uses nothing from the UI framework: no import from it, no call of stateful logic (a store is reached
-  through its own API, below), no plain function that acts on the screen or imports from the UI framework —
-  directly or through other plain functions — and no navigation. Navigation depends on where the app runs, so it
-  stays in the Presenter. Any of these in a task is a violation.
-- A task reads and changes a store once, through the store's own API, at the time it is called; it does not
-  subscribe. Code that follows a store's changes to show them is stateful logic
-  ([Stateful logic and plain functions](stateful-logic-and-functions.md)).
-- An event calls a task: a handler — of a user action in a Presenter or stateful logic, of a request in the entry
-  of a unit with no UI — or another task. An effect, code the UI framework runs after a render or a change, calls a
-  task only on start or mount. An effect or stateful logic that watches state, props or a store and calls a task
-  when they change is a violation: the handler that changed the data calls the task itself. Tasks call each other
-  as plain functions, so the order of an action is read in one place, top to bottom.
-- The steps and the conditions around the app's data belong to the task, not to its caller: "go to the next page"
-  reads the page and the page count from the store, returns when there is no next page, and calls "go to page". A
-  Presenter or stateful logic that reads the app's data to decide whether to call a task is a violation: that
-  condition is the task's job. The Presenter only calls the task, and the store only keeps data. A value the
-  Presenter computes to show — a flag that disables a button — is not such a condition.
-- Passing what the event was about is not a condition: the id of the clicked item, the typed text, the chosen value
-  go to the task as its argument, wherever the caller got them — an id from a list read from a store included.
-  Advice, not checked: a value the task can read from a store itself and that the event does not choose — the
-  current page, the active filters — the task reads as a step of its own, rather than every caller handing it in.
-- A delay before the call (debounce) is a plain function around the task call, made once and called from the
-  handler — not stateful logic that follows a value until it settles and then calls the task.
-- The state of a call may live in either place, and no check chooses between them: the caller keeps it around the
-  call (loading is set, the task awaited, loading is cleared), or the task writes the status of its call to a store
-  — loading before the request, the result or the error after — when units that did not call it show it.
-- A task returns its result and fails by throwing. Catching an error only to return it as a value is a violation;
-  catching an error the action itself handles is not: a failed step it may skip, or its own failure, when the task
-  writes the error to a store where the UI reads it — after rolling back its change, if it made one. Such a task
-  need not rethrow: the store shows the failure, and a task with nothing to roll back is no exception.
-- A task that makes "the latest call wins" — a search typed letter by letter — may keep the handle that cancels its
-  ongoing call in a store, next to the call's status, and cancel the earlier call through it. Only tasks use that
-  handle; a Presenter, stateful logic or a View that reads or calls it is a violation
-  ([Stateful logic and plain functions](stateful-logic-and-functions.md)).
-- An optimistic update and its rollback are one task: it changes the store, makes the request, and on failure
-  undoes its change. Where changes may run in parallel — two quick toggles of one item — the rollback undoes the
-  task's own change, not a snapshot of the whole state taken before it, or it overwrites the other change. Advice,
-  not checked.
-- Generic I/O of the pure zone ([Pure zone](pure-zone.md)) — a request or a storage access that knows nothing of
-  the app — is not a task, and only a task or other generic I/O calls it. A task that calls it is still the step
-  that reaches the server. A Presenter, stateful logic or a plain function that calls it is a violation, as one
-  that reaches the server directly is.
-- A large step that several actions need — unsubscribing from push notifications before logging out — is a task of
-  its own, and the actions call it.
+- A task is decided by meaning: would it stay the same action in another UI, or in another app on another UI
+  framework? Clearing the cart would — a task, even as one store change. Changing UI state in a store — which screen
+  is shown, a flag for an animation — is not, and such code is a plain function
+  ([Stateful logic and plain functions](stateful-logic-and-functions.md)). In the app, a function that does I/O is
+  a task, even when it calls generic I/O; the one exception is a server store reading and writing its own database.
+- Borderline: a screen swap that changes two UI-state stores inside a screen transition and redraws the caret is a
+  plain function, not a task. When a task has to run inside such a transition, the Presenter passes its call as a
+  callback (`goHome(() => clearSearch())`). A plain function that redoes the task's store changes itself, to avoid
+  calling it, is a violation: those changes are the task.
+- From the outside a task is one action and one function; inside it may be split into smaller functions. Its name
+  is a verb (`logout`, `addUser`).
+- A violation in a task: an import from the UI framework, a call of stateful logic, a plain function that acts on the
+  screen or imports from the UI framework — directly or through other plain functions — and navigation, which stays
+  in the Presenter.
+- A task reads and changes a store once, through the store's own API, when it is called; it does not subscribe.
+- An event calls a task: a handler of a user action in a Presenter or stateful logic, of a request in the entry of a
+  unit with no UI, or another task. An effect — code the UI framework runs after a render or a change — calls a task
+  only on start or mount. An effect or stateful logic that watches state, props or a store and calls a task when
+  they change is a violation: the handler that changed the data calls the task.
+- A Presenter or stateful logic that reads the app's data to decide whether to call a task is a violation: "go to
+  the next page" reads the page and the page count from the store itself and returns when there is no next page. A
+  value computed to show — a flag that disables a button — is not such a condition, nor is what the event was
+  about — the clicked item's id, the typed text, the chosen value — passed as an argument, wherever the caller got
+  it. Advice, not checked: a value the event does not choose, such as the current page, the task reads itself.
+- A delay before the call (debounce) is a plain function around the call, made once and called from the handler.
+- The state of a call — loading, error — is kept by the caller around the call, or written by the task to a store
+  (loading before the request, the result or the error after) when units that did not call it show it. No check
+  chooses between them.
+- Catching an error only to return it as a value is a violation. Catching one the action handles is not: a failed
+  step it may skip, or its own failure written to a store where the UI reads it — after rolling back its change, if
+  it made one; such a task need not rethrow.
+- A task that makes "the latest call wins" may keep the handle that cancels its ongoing call in a store, next to the
+  call's status. Only tasks use that handle; a Presenter, stateful logic or a View that reads or calls it is a
+  violation.
+- An optimistic update and its rollback are one task. Where changes may run in parallel, the rollback undoes the
+  task's own change, not a snapshot of the whole state: advice, not checked.
 - Steps of one business action — a server call, several store changes that together make the action, other
   actions — written in a Presenter, in stateful logic or in a plain function are a violation: they are a task. One
-  call of a store's action is not, and neither is a change of UI state: a Presenter or stateful logic may make it
-  itself or hand it to a plain function.
-- Placement follows [Levels and placement](levels.md), by the units that call the task. A task one unit calls
-  lives in the tasks folder (default `_tasks/`) inside that unit's logic folder (default `_logic/`). A task with
-  users in two or more units lives in the app's tasks folder (default `tasks/`, next to the pure zone), and so does
-  a task that tasks of that folder call; it moves there in one step when a second unit calls it, and a store it
-  reaches moves to the app's stores folder (default `stores/`). A task in a level's tasks folder that another unit
-  calls — a child unit, a sibling — is a violation.
-- A task is one file. In a tasks folder — a unit's or the app's — a task and the plain functions only it uses may
-  lie flat in the folder, or in an entry folder named as the task: both are fine. An entry folder, when used, keeps
-  its rules: the file of the same name is its entry, the parts sit next to it, others import only the entry, and a
-  folder that holds only its entry is a file. A large task may be split into smaller tasks: a task that only one
-  other task calls may be a part of that task's entry folder, or a task of its own in the same tasks folder — both
-  are fine. When a second task or a unit calls it, it moves out to the tasks folder, as any part does. A task folder
-  is not a unit ([Levels and placement](levels.md)).
-- Recommended, not checked: a task talks to the server through a small project module of tasks, one per
-  request (`api.logout()`), which call the pure zone's generic I/O — not through generic I/O directly. The module
-  is one file: its users are all the tasks that call any of its requests, so it lies in the app's tasks folder when
-  tasks of two or more units use it.
+  call of a store's action is not, nor is a change of UI state.
+- A large step that several actions need is a task of its own, and the actions call it.
+- Where a task lives: [Levels](levels.md), [The app's tasks and stores folders](app-folders.md),
+  [Entry folders](entry-folders.md).
+- Advice, not checked: a task talks to the server through a small project module of tasks, one per request
+  (`api.logout()`), which call the pure zone's generic I/O. The module is one file, placed by all the tasks that use
+  it.
 
 **Good.**
 
 ```
-tasks/                the app's tasks folder
-  session/            a folder by topic — optional
+tasks/
+  session/
     logout            await unsubscribePush(); await api.logout(); session store: clear
                       — called by LogoutButton and SessionExpired
-    unsubscribePush   await api.unsubscribe(push token from the settings store) — called by logout and
-                      deleteAccount, tasks of this folder
-    deleteAccount
+    unsubscribePush   called by logout and deleteAccount
   shows/
     loadShows         store: status = loading; shows = await api.shows(store.page, store.genre); store: shows,
-                      status = done; on failure store: status = error, the error, and it throws — the list, the
-                      pager and the header show the status, though only one of them called it
+                      status = done; on failure store: status = error, the error, and it throws
     selectGenre       store: genre = genre, page = 1; await loadShows()
     goToPage          prev = store.page; store.page = next
-                      try await loadShows() catch: store.page = prev — an optimistic update with its rollback in
-                      one task; it rolled back and the error is in the store, so it need not rethrow
+                      try await loadShows() catch: store.page = prev — rolled back, error in the store: no rethrow
     nextPage          reads page and page count from the store; returns when there is no next page;
                       await goToPage(page + 1)
-    toggleFavorite    store: flip the flag of id; try await api.toggleFavorite(id) catch: flip the flag of id
-                      back — it undoes its own change, not a snapshot, so a second quick toggle is kept
-    searchShows       cancel store.request; store: request = a new cancel handle, status = loading;
-                      try store: shows = await api.search(text, request) catch: store: status = failed — the
-                      latest call wins through the handle in the store; the failure is in the store, where the
-                      results show it with Retry, so it need not rethrow, with nothing to roll back
+    searchShows       cancel store.request; store: request = a new handle, status = loading;
+                      try store: shows = await api.search(text, request) catch: store: status = failed
   cart/
-    clearCart         cart store: clear — one store change, yet a business action: the same in any UI;
-                      called by CartPage and by placeOrder
-    placeOrder        await reserveItems(cart); await api.placeOrder(toOrderRequest(cart)); clearCart()
-                      — called by CartPage and by QuickBuy
-    reserveItems      a task of its own: reserves the cart's items on the server — called only by placeOrder;
-                      a placeOrder/ entry folder holding it as a part would be as fine
-    toOrderRequest    a plain function on the app's data: cart -> request body — lies next to the tasks
-stores/
-  showsStore          shows, page, page count, genre, status, error
-  sessionStore        cleared by logout
-  cartStore           read by placeOrder, cleared by clearCart
-SessionExpired/
+    clearCart         cart store: clear — one store change, yet a business action
 LogoutButton/
-  LogoutButton        View
   _logic/
     presenter         onClick: loading = true; try await logout(), go to the start page
                       catch error -> error; finally loading = false
 ShowsPage/
   _logic/
-    presenter         on mount: loadShows() — an effect on start only
-                      onGenreClick(genre): selectGenre(genre) — the handler calls the task
-                      onNext: nextPage() — the condition is the task's; hasNext, to disable the button, is
-                      computed for the View
-                      onFavoriteClick(show): toggleFavorite(show.id) — the clicked item of the list read from
-                      the store: what the event was about, not a condition
+    presenter         on mount: loadShows()
+                      onGenreClick(genre): selectGenre(genre)
+                      onNext: nextPage() — hasNext, to disable the button, is computed for the View
+                      onFavoriteClick(show): toggleFavorite(show.id) — what the event was about
 SearchBox/
   _logic/
-    presenter         search = debounce(searchShows, 300), made once; onChange(text): keep text; search(text)
-OrdersPage/
-  _logic/
-    _tasks/
-      exportOrders/   a task only OrdersPage calls, with a plain function only it uses, in an entry folder —
-                      allowed, not required
-        exportOrders
-        toCsvRow
-      importOrders    a task with a plain function only it uses, lying flat in _tasks/ — as fine as a folder
-      parseCsvRow
-SearchPage/
-  _logic/
-    presenter         onSubmit: showResults(query)
-    showResults       a plain function: screen store and search store changed inside a screen transition, then
-                      the caret redrawn — UI state, not a business action
+    presenter         search = debounce(searchShows, 300), made once; onChange(text): search(text)
 ```
 
 **Bad.**
@@ -184,32 +100,22 @@ SearchPage/
 ```
 LogoutButton/
   _logic/
-    presenter         onClick: await api.unsubscribe(...); await api.logout(); session store: clear;
-                      go to the start page — the action lives in the Presenter
-UserMenu/
+    presenter         onClick: await api.unsubscribe(...); await api.logout(); session store: clear — the action
+                      lives in the Presenter
+ShowsPage/
   _logic/
-    presenter         onOpen: user = await fetchJson('/user') from lib/http/ — generic I/O outside a task
+    presenter         onGenreClick(genre): genre = genre; an effect watches genre and calls loadShows
+                      onNext: if page < pageCount: goToPage(page + 1) — a condition on the app's data
+SearchBox/
+  _logic/
+    debouncedQuery    the text once typing stops; an effect calls searchShows when it changes
 SearchPage/
   _logic/
     _tasks/
-      showResults     the screen swap with a screen transition — UI code as a task, acting on the screen
-ShowsPage/
-  _logic/
-    presenter         onGenreClick(genre): genre = genre; an effect watches genre and calls loadShows — the
-                      handler only changes state, so the request is in the code of neither: it calls selectGenre
-                      onNext: if page < pageCount: goToPage(page + 1) — a condition on the app's data in the
-                      Presenter: it belongs in the task nextPage
-    showsRequest      stateful logic: builds the params from the state and calls loadShows whenever they change —
-                      a request that follows its params
-SearchBox/
-  _logic/
-    debouncedQuery    stateful logic: the text once typing stops; an effect calls searchShows when it changes —
-                      the delay belongs around the call: debounce(searchShows, 300)
+      showResults     the screen swap with a screen transition — UI code as a task
 CartPage/
   _logic/
     clearCart         cart store: clear — a business action outside a tasks folder
-    _tasks/
-      placeOrder      called by CartPage and by QuickBuy — two units: it belongs in the app's tasks folder
 tasks/
   logout              ...; navigate to the start page — navigation in a task
   publishPost         try await api.publish(post) catch e: return { error: e } — the error as a value

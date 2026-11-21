@@ -5,42 +5,36 @@ description: Rules for code structure by Simple Architecture — layers, module 
 
 # Simple Architecture
 
-Rules for how code is split into layers and modules. They come in two parts:
-
-- **Core** — applies to every project. Names no technology.
-- **Stack** — one file per technology. A project loads only the files for the stack it declares.
+Rules for how code is split into layers and modules, in two parts: the **core**, which applies to every project and
+names no technology, and the **stacks**, one folder per technology, read only for the stacks a project declares.
 
 ## The principle
 
-Architecture exists to cut the human effort of building and keeping a system. Of that effort, changing code that
-exists matters more than adding new code: a feature is added once and changed many times.
-
-So when two ways to write something both work, pick the one that is easier to change later, even if it takes
-longer to write now. Every rule below serves this. When a case is not covered by a rule, decide it by this
-principle.
+Architecture exists to cut the human effort of building and keeping a system, and changing code that exists matters
+more than adding new code: a feature is added once and changed many times. So when two ways to write something both
+work, pick the one that is easier to change later, even if it takes longer to write now. Every rule serves this; a
+case no rule covers is decided by it.
 
 ## When it applies
 
 Use these rules when you write, change, move or review code structure — new files and modules, imports, where a
-piece of code belongs — in a project that follows Simple Architecture. A project follows it when it has the
-config file `.claude/simple-architecture/config.json` (see below).
+piece of code belongs — in a project that has the config file `.claude/simple-architecture/config.json`. No file
+means the project does not follow Simple Architecture.
 
 ## Order of reading
 
-1. The core: [references/core/](references/core/README.md) and every rule file in it. Core rules come first and
-   always apply.
-2. The stacks the project declares, in the order it lists them: for each, `references/stack/<name>/README.md`
-   and every rule file in that folder. A stack rule file is named as the core rule it carries out; it says how
-   that rule is carried out with one technology and never overrides it.
+1. The core: [references/core/](references/core/README.md) and every rule file in it. Core rules always apply.
+2. The stacks the project declares, in the order it lists them: for each, `references/stack/<name>/README.md` and
+   every rule file in that folder. A stack rule file is named as the core rule it carries out and never overrides
+   it.
 
-Do not read stacks the project does not declare. In a project with several apps (`apps` in the config), read the
-core and then only the stacks of the app whose root, pure zone set by `lib`, tasks folder or stores folder holds the
-code; code in the shared types package gets the core only.
+Do not read stacks the project does not declare. With `apps` in the config, read the core and then only the stacks
+of the app whose root, pure zone set by `lib`, tasks folder or stores folder holds the code; code in the shared types
+package gets the core only.
 
 ## The config
 
-A project opts in with one file at its root: `.claude/simple-architecture/config.json`. Every key is optional;
-a missing key takes its default. The full file with the defaults:
+Every key is optional; a missing key takes its default. The full file with the defaults:
 
 ```json
 {
@@ -64,25 +58,22 @@ a missing key takes its default. The full file with the defaults:
 - **`lib`** — the folder of the pure zone set apart from the root level, relative to the project root, for example
   `"root": "src/App", "lib": "src/lib"`; the pure zone then lies outside every level. No default: without it, the
   pure zone is `folders.lib` under `root`.
-- **`tasks`**, **`stores`** — the app's tasks folder and stores folder, relative to the project root: the tasks
-  that two or more units call and the stores those tasks reach, outside every level
-  ([Levels and placement](references/core/levels.md)); not `folders.tasks` and `folders.stores`. Default: next to
-  the pure zone — next to the folder `lib` names, or, without `lib`, `<root>/tasks` and `<root>/stores`.
+- **`tasks`**, **`stores`** — the app's tasks folder and stores folder, relative to the project root
+  ([The app's tasks and stores folders](references/core/app-folders.md)); not `folders.tasks` and `folders.stores`.
+  Default: next to the pure zone — next to the folder `lib` names, or, without `lib`, `<root>/tasks` and
+  `<root>/stores`.
 - **`folders.lib`** — the pure zone, relative to `root`; when `lib` is set, `lib` takes its place. Default `lib`.
 - **`folders.uiKit`** — the ui-kit, relative to `root`: part of the pure zone, so its name does not follow
   `folders.components`. Default `lib/ui-kit`; with `lib` set, it lies inside `lib` as inside `folders.lib`
   (`<lib>/ui-kit`), and a ui-kit set outside `folders.lib` is taken as relative to `lib`.
-- **`folders.logic`** — the folder next to a level's entry with the own unit's non-UI code but its stores — the
-  Presenter, stateful logic, plain functions and its tasks — imported only by the unit's entry and the folder's own
-  files. Default `_logic`.
+- **`folders.logic`** — a level's logic folder ([Levels](references/core/levels.md)). Default `_logic`.
 - **`folders.tasks`** — the tasks folder inside the logic folder: the tasks only its unit calls. Default `_tasks`.
-- **`folders.stores`** — the folder next to a level's entry with the level's stores — the own unit's and those the
-  level's units share — as files or store entry folders. Default `_stores`.
-- **`folders.components`** — the folder for the child units that two or more units of a level share. Default
+- **`folders.stores`** — a level's stores folder. Default `_stores`.
+- **`folders.components`** — a level's folder for the child units that two or more of its units share. Default
   `_components`.
 - The same folder names are used on every level.
-- **`maxFileLines`** — the size in lines above which a file is a violation; test files and files written by a
-  tool are not checked. Default `120`.
+- **`maxFileLines`** — the size in lines above which a file is a violation
+  ([One thing per file](references/core/one-thing-per-file.md)). Default `120`.
 
 A repository with several apps — a client, a server and a package of types they share — declares them instead of
 `root`, `stack`, `lib`, `tasks` and `stores`:
@@ -98,21 +89,18 @@ A repository with several apps — a client, a server and a package of types the
 ```
 
 - **`apps`** — the apps, by name, each with a `root` (required), a `stack` (default `[]`) and an optional `lib`,
-  `tasks` and `stores`, read as the top-level keys are; each app is checked on its own, from its own root, by
-  its own stacks. In their place the top-level `root`, `stack`, `lib`, `tasks` and `stores` are ignored;
-  `folders` and `maxFileLines` apply to every app.
+  `tasks` and `stores`, read as the top-level keys are; each app is checked on its own, from its own root, by its own
+  stacks. The top-level `root`, `stack`, `lib`, `tasks` and `stores` are then ignored; `folders` and `maxFileLines`
+  apply to every app.
 - **`shared`** — the shared types package, relative to the project root: types only, imported by every app,
   importing no app ([Imports](references/core/imports.md)). Optional, no default, with or without `apps`.
 
 The rules name a folder by its role and its default, for example "the logic folder (default `_logic/`)"; in a
 project, use the configured name.
 
-No file means the project does not follow Simple Architecture.
-
-At session start a hook reads the config, passes the resolved values to the agent and names every value it could
-not use. When those values are not in the context (a subagent, a hook that did not run), read the config by the
-keys above, and handle a wrong value — or a file that cannot be read — by
-[references/config.md](references/config.md).
+At session start a hook reads the config, passes the resolved values to the agent and names every value it could not
+use. When those values are not in the context (a subagent, a hook that did not run), read the config by the keys
+above, and handle a wrong value — or a file that cannot be read — by [references/config.md](references/config.md).
 
 ## Reference files
 

@@ -1,68 +1,46 @@
 ## Stateful logic in React is a hook
 
-**Rule.** Stateful logic is a hook: a function whose name starts with `use` and that calls at least one React
-hook — `useState`, `useEffect`, a context, a store or a query hook, or a custom hook — or that a hook library
-creates for you. A function that is neither is a task ([Tasks in React](tasks.md)) or a plain function: its name
-does not start with `use`. The one exception is the Presenter, `usePresenter`: it is a hook by convention, whether
-or not it calls one. A store made by a store library is a hook too, named `use…`, but it is a store, not stateful
-logic, and lives in the stores folder
-([Stateful logic and plain functions](../../core/stateful-logic-and-functions.md)).
+**Rule.** Stateful logic is a hook: a function named `use…` that calls at least one React hook — `useState`,
+`useEffect`, a context, a store or a query hook, a custom hook — or that a hook library creates; any other function
+is a task or a plain function, and its name does not start with `use`. The Presenter, `usePresenter`, is a hook by
+convention whether or not it calls one, and a store a store library makes is named `use…` but is a store.
 
-**Why.** React enforces its rules of hooks by the `use` prefix. A `use` name on a plain function puts those
-limits on code that does not need them, and a plain function that calls a hook breaks at run time.
+**Why.** React enforces its rules of hooks by the `use` prefix. A `use` name on a plain function puts those limits on
+code that does not need them, and a plain function that calls a hook breaks at run time.
 
 **How to check.**
 
 - A function named `use…` that calls no hook and is not created by a hook library is a violation: rename it, and
-  decide its kind by meaning, not by what it touches. A business action, or a step of one, is a task and moves to
-  the tasks folder (default `_logic/_tasks/`, or the app's tasks folder when two or more units call it,
-  [Tasks in React](tasks.md)) — so does any function that reaches the server. Anything else is a plain function,
-  even when it reaches a store: it stays in the logic folder, or moves to the tasks folder when only tasks use it.
+  decide its kind by meaning ([Stateful logic and plain functions](../../core/stateful-logic-and-functions.md)) — a
+  business action or a function that reaches the server is a task ([Tasks in React](tasks.md)); anything else is a
+  plain function, even when it reaches a store.
 - A function whose name does not start with `use` and that calls a hook is a violation.
 - A function that uses the DOM outside React — `document.activeElement`, `focus()`, `setSelectionRange`,
   `document.startViewTransition` — or the part of React DOM that is not a hook, such as `flushSync`, and calls no
-  hook is a plain function, not `use…`. Only the UI side — a Presenter, a hook, other such plain functions — may
-  call it; a task never does, directly or through other plain functions ([Tasks in React](tasks.md)). One that keeps
-  a ref, a listener or other state between calls is a hook.
-- A listener added and removed within one call does not count: it is not kept between calls. An async function
-  that waits once for the window's `resize` or an element's `transitionend` — it resolves on the first event or
-  after a timeout, and removes its listener before it resolves — is a plain function of the UI side, not `use…`.
-  One that adds a listener and returns with it still in place is a hook.
-- A hook calls a task from a handler it returns, or in `useEffect` with an empty dependency list, on mount. A hook
-  whose `useEffect` has dependencies and calls a task — a "request follows its params" hook such as
-  `useRequest(fn, params)` or `useShows(genre)` — is a violation ([Tasks in React](tasks.md)).
-- `debounce` and `throttle` that keep their timer in the closure of the function they return are plain functions:
-  they call no hook. The Presenter or a hook makes the wrapped function once — `useMemo(() => debounce(fn, 300),
-  [])` or a ref — and its handler calls it. `useDebouncedValue(text)` is a hook; feeding its result to an effect
-  that calls a task is the violation above.
-- The Presenter, `usePresenter`, is a hook: it may call hooks and plain functions. A `usePresenter` that calls no
-  hook but computes something from its props is not a violation of this rule — the View always calls its Presenter
-  the same way, so a hook added later changes nothing for the View. A Presenter with no computation at all is
-  judged by [View and Presenter in React](view-presenter.md).
+  hook is a plain function of the UI side, not `use…`. One that keeps a ref, a listener or other state between calls
+  is a hook.
+- An async function that waits once for the window's `resize` or an element's `transitionend` — it resolves on the
+  first event or after a timeout and removes its listener before it resolves — is a plain function, not `use…`; one
+  that adds a listener and returns with it still in place is a hook.
+- A hook calls a task from a handler it returns, or in `useEffect` with an empty dependency list. A hook whose
+  `useEffect` has dependencies and calls a task — `useRequest(fn, params)`, `useShows(genre)` — is a violation.
+- `debounce` and `throttle` that keep their timer in the closure of the function they return call no hook: plain
+  functions. The Presenter or a hook makes the wrapped function once — `useMemo(() => debounce(fn, 300), [])` or a
+  ref. `useDebouncedValue(text)` is a hook; feeding its result to an effect that calls a task is a violation.
+- A `usePresenter` that calls no hook but computes something from its props is not a violation of this rule; one
+  with no computation at all is judged by [View and Presenter in React](view-presenter.md).
 
 **Good.**
 
 ```ts
-// _logic/useOrderFilters.ts
-export const useOrderFilters = () => {
-  const [status, setStatus] = useState<OrderStatus>('new');
-  return { status, setStatus };
-};
-
 // _logic/useCurrentUser.ts
 export const useCurrentUser = () => useUserStore((s) => s.user);
 
 // _logic/formatPrice.ts
 export const formatPrice = (sum: number) => sum.toFixed(2);
 
-// _logic/openResults/redrawCaret.ts — a part of openResults: acts on the page, keeps nothing between calls
-export const redrawCaret = () => {
-  const field = document.activeElement;
-  if (field instanceof HTMLInputElement) field.setSelectionRange(field.selectionStart, field.selectionEnd);
-};
-
-// _logic/openResults/openResults.ts — an entry folder with its one part; a plain function of the UI side: UI state in two stores inside a screen transition,
-// flushSync from react-dom, then the caret; no hook. Called by the Presenter.
+// _logic/openResults/openResults.ts — a plain function of the UI side: UI state in two stores inside a screen
+// transition, flushSync from react-dom, then redrawCaret, its part; no hook. Called by the Presenter.
 export const openResults = (query: string) => {
   document.startViewTransition(() => {
     flushSync(() => {
@@ -73,8 +51,7 @@ export const openResults = (query: string) => {
   });
 };
 
-// _logic/waitForResize.ts — waits once inside one call: the listener is removed before the promise resolves, so
-// nothing is kept between calls. A plain function of the UI side, called by the Presenter.
+// _logic/waitForResize.ts — the listener is removed before the promise resolves: nothing is kept between calls
 export const waitForResize = (timeout: number) =>
   new Promise<void>((resolve) => {
     const done = () => {
@@ -90,12 +67,6 @@ export const waitForResize = (timeout: number) =>
 **Bad.**
 
 ```ts
-// _logic/useOrderFilters.ts
-export const useOrderFilters = () => {
-  const [status, setStatus] = useState<OrderStatus>('new');
-  return { status, setStatus };
-};
-
 // _logic/getCurrentUser.ts — calls a hook
 export const getCurrentUser = () => useUserStore((s) => s.user);
 
@@ -107,14 +78,13 @@ export const useCancelOrder = async (id: string) => {
   await api.cancelOrder(id);
 };
 
-// _logic/useShowDetails.ts — calls no hook; changes UI state in a store, not a business action:
-// a plain function, _logic/showDetails
+// _logic/useShowDetails.ts — calls no hook; changes UI state: a plain function, _logic/showDetails
 export const useShowDetails = () => useScreenStore.getState().setScreen('details');
 
-// _logic/watchResize.ts — the listener stays after the call and follows the window: a hook, useWindowSize
+// _logic/watchResize.ts — the listener stays after the call: a hook, useWindowSize
 export const watchResize = (onResize: () => void) => window.addEventListener('resize', onResize);
 
-// _logic/useOrdersSearch.ts — follows the query and calls the task when it changes: the change handler calls it
+// _logic/useOrdersSearch.ts — calls the task when the query changes: the change handler calls it
 export const useOrdersSearch = (query: string) => {
   useEffect(() => {
     searchOrders(query);
