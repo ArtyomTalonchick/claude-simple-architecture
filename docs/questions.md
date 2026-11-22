@@ -632,3 +632,17 @@ condition a computation (Q10), so the reviewer would move the read to the Presen
 **Answer.** Yes: the key is ready and the table is a plain value, so the read is a style lookup, like a theme
 value. The key's default and a key chosen by a condition stay in the Presenter, as Q10 says. Written into "View
 and Presenter" and "View and Presenter in React", with a Good example of the table checked by `satisfies`.
+
+## Q43. Does a ref of one inline handler count as a group of state?
+
+**Question.** A Presenter kept a reference to its input, used only by the clear handler to move the focus back,
+next to a debounced search. The reviewer warned that these are two groups of state that could move out as stateful
+logic, though moving the reference out would make stateful logic that only hands the Presenter that reference.
+
+**Context.** #67, from a project that follows the plugin and left the Presenter as it was.
+
+**Status.** answered
+
+**Answer.** No. A reference to an element that only one inline handler uses, to move the focus, forms no group,
+like a value computed from the input; the short inline handler that uses it is allowed by "View and Presenter".
+Written into "Stateful logic and plain functions" and "Stateful logic in React is a hook".

@@ -37,6 +37,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   style lookup, like a theme value, not a value picked by a condition. The key's default and a key chosen by a
   condition stay in the Presenter. "View and Presenter in React" shows the table, checked with
   `satisfies Record<Variant, CSSProperties>`.
+- A reference to an element that only one inline handler uses, to move the focus (a `useRef` of an input that the
+  clear handler focuses again), forms no group of state in the two-concerns test of "Stateful logic and plain
+  functions", so a Presenter that keeps it next to a debounced search gets no warning of two groups.
 
 ## [0.2.8] — 2026-11-21
 

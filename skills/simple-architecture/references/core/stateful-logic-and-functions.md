@@ -56,8 +56,8 @@ without touching the logic around it, and the few kinds that reach it show who d
     use the UI framework's API that is not stateful logic, and call a task as a Presenter does: await it and decide
     what the screen shows. It keeps no state between calls;
   - following the screen's changes means across calls. A function that subscribes to a screen event and removes its
-    listener within the same call — it waits once for the next resize, finishing on the first event or a timeout —
-    is a plain function of the UI side; one whose listener outlives the call is stateful logic;
+    listener within the same call — it waits once for the next resize — is a plain function of the UI side; one
+    whose listener outlives the call is stateful logic;
   - a wrapper that delays or thins out calls — a debounce, a throttle — and keeps its timer in the closure of the
     function it returns is a plain function. The caller makes it once and keeps it; the handler calls it;
   - where a plain function lives: [Placement by users](placement.md).
@@ -77,9 +77,9 @@ without touching the logic around it, and the few kinds that reach it show who d
     Split it and join the two, passing that value, in the Presenter or in other stateful logic. Steps of one job —
     waiting, cancelling and retrying one request — are one concern;
   - the groups are formed by state and lifecycle, not by results: a value computed only from the input forms no
-    group and stays with the state it is returned next to — a filter's options computed from the list, its selected
-    option and the filtered list are one concern. A request or a subscription has state of its
-    own and can form a second group.
+    group and stays with the state it is returned next to — a filter's options, its selected option and the filtered
+    list are one concern. A request or a subscription has its own state and can form a second group; a reference to
+    an element only one inline handler uses, to move the focus, forms none.
 
 **Good.**
 
