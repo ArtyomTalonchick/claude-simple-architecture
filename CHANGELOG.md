@@ -20,6 +20,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   neither. The check "catching an error only to return it as a value is a violation" and its React form
   (`return { error }`) are gone. What stays: an optimistic update and its rollback are one task, and a failure shown
   by units that did not call the task is written to a store — such a task need not also report it to its caller.
+- A plain function that only the UI side uses — a Presenter, stateful logic, other such plain functions — may call
+  a task the way a Presenter does: await it and decide what the screen shows, such as a toast, its Undo and an error
+  toast. A plain function that a task calls still may not call a task, and a task still knows nothing of the UI. In
+  "Entry folders", a part that calls a task and decides what the screen shows is not a step of the business action
+  and keeps its kind. "Imports" lets such a plain function import tasks. Passing the task's call as a callback
+  (`goHome(() => clearSearch())`) is still allowed, no longer required.
 
 ## [0.2.8] — 2026-11-21
 

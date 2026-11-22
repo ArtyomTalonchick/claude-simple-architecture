@@ -19,6 +19,8 @@ code that does not need them, and a plain function that calls a hook breaks at r
   `document.startViewTransition` — or the part of React DOM that is not a hook, such as `flushSync`, and calls no
   hook is a plain function of the UI side, not `use…`. One that keeps a ref, a listener or other state between calls
   is a hook.
+- A function that calls no hook, awaits a task and shows toasts around it — a toggle's toast with its Undo, an
+  error toast on failure — is a plain function of the UI side, not `use…`.
 - An async function that waits once for the window's `resize` or an element's `transitionend` — it resolves on the
   first event or after a timeout and removes its listener before it resolves — is a plain function, not `use…`; one
   that adds a listener and returns with it still in place is a hook.

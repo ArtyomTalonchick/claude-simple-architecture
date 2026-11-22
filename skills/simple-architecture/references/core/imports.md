@@ -3,8 +3,8 @@
 **Rule.** Import only along the structure — your own children through their entry, your own unit's logic folder,
 the shared folders and files of your level and of the levels above, the app's tasks folder and stores folder, the
 pure zone, the shared types package — and from an entry folder only its entry. Imports go one way: levels → the
-app's tasks folder → the app's stores folder → the pure zone, and View → Presenter → stateful logic → tasks → plain
-functions, with stores and generic I/O open only to the kinds listed below.
+app's tasks folder → the app's stores folder → the pure zone, and View → Presenter → stateful logic and the UI side's
+plain functions → tasks → plain functions, with stores and generic I/O open only to the kinds listed below.
 
 **Why.** When imports follow the folders, the folders tell the truth: a unit can be changed inside without
 breaking anyone, moved or deleted with its folder, and every dependency is visible from where a file lies. A
@@ -65,8 +65,8 @@ sibling and branch are as in [Levels](levels.md).
     View, a Presenter, stateful logic, the UI framework, or a plain function that acts on the screen or imports
     from the UI framework ([Tasks](tasks.md));
   - plain function → plain functions, stores, types, constants, and pure functions, error classes, types and
-    constants of the pure zone — never a task, stateful logic or generic I/O; one that only the UI side uses may
-    also import the UI framework's API that is not stateful logic
+    constants of the pure zone — never stateful logic or generic I/O; one that only the UI side uses may also
+    import tasks and the UI framework's API that is not stateful logic
     ([Stateful logic and plain functions](stateful-logic-and-functions.md));
   - store → plain functions that reach no store, directly or through other plain functions, types, constants, and
     pure functions, types and constants of the pure zone — never another store, a task or stateful logic. The entry
@@ -151,7 +151,7 @@ src/
     OrdersPage/
       OrdersPage        imports OrderTable/_logic/presenter — inside a child
       _logic/
-        formatTotal     imports tasks/notifyUser — a plain function importing a task
+        formatTotal     imports tasks/notifyUser — a plain function exportOrders uses, importing a task
         _tasks/
           exportOrders/
             exportOrders  imports toCsvRow/formatCsvCell — a part of a nested entry folder, from outside it

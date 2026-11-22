@@ -1,9 +1,9 @@
 ## Stateful logic and plain functions
 
 **Rule.** Split non-UI code into stateful logic (it uses state, lifecycle or a store subscription, or calls other
-stateful logic), tasks ([Tasks](tasks.md)) and plain functions (no business logic, no I/O, no call of a task or of
-stateful logic), keep shared data apart in stores, and let each kind be called only by the kinds listed below. Give
-one piece of stateful logic one concern.
+stateful logic), tasks ([Tasks](tasks.md)) and plain functions (no business logic, no I/O, no call of stateful
+logic, nor of a task unless only the UI side uses them), keep shared data apart in stores, and let each kind be
+called only by the kinds listed below. Give one piece of stateful logic one concern.
 
 **Why.** A plain function keeps nothing between calls and needs nothing set up around it, so it can be moved, reused
 and tested anywhere its users are; it holds no order of business steps, so the action stays in its task. Stateful
@@ -17,8 +17,8 @@ without touching the logic around it, and the few kinds that reach it show who d
 - Who calls whom:
   - stateful logic: only a Presenter or other stateful logic. Called from a plain function or a task it is a
     violation; from a View, a violation of [View and Presenter](view-presenter.md);
-  - a task: an event handler of a Presenter, of stateful logic or of the entry of a unit with no UI, or another
-    task ([Tasks](tasks.md));
+  - a task: an event handler of a Presenter, of stateful logic or of the entry of a unit with no UI, a plain
+    function only the UI side uses, or another task ([Tasks](tasks.md));
   - a plain function: a Presenter, stateful logic, a task, another plain function, the entry of a unit with no UI,
     or a store when the plain function reaches no store;
   - a store: a task and a plain function through the store's own API, once, at the time they are called, on any
@@ -45,18 +45,16 @@ without touching the logic around it, and the few kinds that reach it show who d
     computation, a change of UI state in a store (which screen is shown, a flag for an animation) or an act on the
     screen is a plain function;
   - a plain function that does I/O — calls the server, reads or writes a storage directly (the platform's key-value
-    storage, a file), calls generic I/O — is a violation: it is a task. So is one that calls a task; one that calls
-    stateful logic, subscribes to a store or uses state or lifecycle is stateful logic;
-  - running a callback its caller passed in is not calling a task: a plain function of the UI side that plays a
-    screen transition may take what to run inside it as a callback, and the Presenter or stateful logic passes the
-    task's call (`goHome(() => clearSearch())`). It imports no task;
+    storage, a file), calls generic I/O — is a violation: it is a task. One that calls stateful logic,
+    subscribes to a store or uses state or lifecycle is stateful logic;
   - a plain function may call other plain functions and use types, constants, and the pure zone's pure functions,
     error classes, types and constants;
   - a plain function that a task calls, directly or through other plain functions, has nothing from the UI: it does
-    not read or change the focus, the selection or the elements on the screen, starts no screen transition, and
-    imports nothing from the UI framework. One that does is a violation, also of [Tasks](tasks.md). One that only the
-    UI side uses may act on the screen and use the UI framework's API that is not stateful logic, as long as it keeps
-    no state between calls;
+    not read or change the focus, the selection or the elements on the screen, starts no screen transition,
+    imports nothing from the UI framework and calls no task. One that does is a violation, also of [Tasks](tasks.md).
+    One that only the UI side uses — a Presenter, stateful logic, other such plain functions — may act on the screen,
+    use the UI framework's API that is not stateful logic, and call a task as a Presenter does: await it and decide
+    what the screen shows. It keeps no state between calls;
   - following the screen's changes means across calls. A function that subscribes to a screen event and removes its
     listener within the same call — it waits once for the next resize, finishing on the first event or a timeout —
     is a plain function of the UI side; one whose listener outlives the call is stateful logic;
@@ -109,8 +107,12 @@ SearchPage/
     showResults         a plain function: screen store and search store changed inside a screen transition,
                         then the caret redrawn — UI state
     waitForResize       a plain function: waits once for the next resize or a timeout, removing its listener
-    goHome              a plain function: runs the callback it is given inside a screen transition — the presenter
-                        calls goHome(() => clearSearch())
+    goHome              a plain function: calls the task clearSearch inside a screen transition
+BookmarkButton/
+  _logic/
+    toggle/             a plain function the presenter calls
+      toggle            a toast; awaits the task toggleBookmark; on failure an error toast
+      undo              a part: the toast's Undo — awaits the task addBookmark, with toasts around it
 ```
 
 On a server:
@@ -139,6 +141,7 @@ OrdersPage/
     _tasks/
       currentUser       subscribes to the store — stateful logic, not a task
       focusFirstError   called by placeOrder, moves the focus — a task acting on the screen through it
+      orderLines        called by placeOrder, calls the task loadPrices — it is a task
   _stores/
     cartStore           the cart and loadCart, which calls the server — a task inside a store
   OrderSearch/
@@ -148,7 +151,6 @@ OrdersPage/
 SearchPage/
   _logic/
     watchResize         adds a resize listener and returns, leaving it in place — stateful logic
-    goHome              imports the task clearSearch and calls it — it takes the call as a callback
     getClientId         reads and writes the platform's storage — I/O: a task
 prices/
   _stores/

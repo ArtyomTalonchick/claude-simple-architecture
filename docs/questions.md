@@ -581,3 +581,21 @@ when it changes.
 **Answer.** As advice, not a check: what only the calling unit shows — the loaded list, its loading flag, its error
 — the task returns and the Presenter keeps; a store is for state several units need, a small store of UI state
 shared by a few units included. Written into "Tasks", with a Good example next to `loadShows`.
+
+## Q40. May a plain function of the UI side call a task?
+
+**Question.** A plain function could not call a task, so a toggle that shows a toast, awaits a task and shows an
+error toast on failure had to stay inline in the Presenter or take the task's call as a callback (Q34). Both are
+harder to read and to test than a plain function that calls the task itself.
+
+**Context.** #62. The same case made the reviewer call such a function's part — a toast's Undo that calls a task —
+a task, as "a step of a business action".
+
+**Status.** answered
+
+**Answer.** Yes, when only the UI side uses it — a Presenter, stateful logic, other such plain functions: it calls
+the task as a Presenter does, awaits it and decides what the screen shows. A plain function that a task calls,
+directly or through other plain functions, still calls no task, and a task still knows nothing of the UI. A part of
+an entry folder that calls a task and decides what the screen shows keeps its kind. The callback of Q34 stays
+allowed, no longer the only way. Written into "Stateful logic and plain functions", its summary in the core README,
+"Entry folders", "Tasks", "Imports" and "Stateful logic in React is a hook".

@@ -22,22 +22,23 @@ without the task.
   a function that does I/O is a task, even when it calls generic I/O; the one exception is a server store reading
   and writing its own database.
 - Borderline: a screen swap that changes two UI-state stores inside a screen transition and redraws the caret is a
-  plain function, not a task. When a task has to run inside such a transition, the Presenter passes its call as a
-  callback (`goHome(() => clearSearch())`). A plain function that redoes the task's store changes itself, to avoid
-  calling it, is a violation: those changes are the task.
+  plain function, not a task; it may call a task inside the transition, or take its call as a callback. A plain
+  function that redoes a task's store changes itself is a violation: those changes are the task.
 - From the outside a task is one action and one function; inside it may be split into smaller functions.
 - A violation in a task: an import from the UI framework, a call of stateful logic, a plain function that acts on the
   screen or imports from the UI framework — directly or through other plain functions — and navigation.
 - A task reads and changes a store once, through the store's own API, when it is called; it does not subscribe.
-- An event calls a task: a handler of a user action in a Presenter or stateful logic, of a request in the entry of a
-  unit with no UI, or another task. An effect — code the UI framework runs after a render or a change — calls a task
-  only on start or mount. An effect or stateful logic that watches state, props or a store and calls a task when
-  they change is a violation: the handler that changed the data calls the task.
-- A Presenter or stateful logic that reads the app's data to decide whether to call a task is a violation: "go to
-  the next page" reads the page and the page count from the store itself and returns when there is no next page. A
-  value computed to show — a flag that disables a button — is not such a condition, nor is what the event was
-  about — the clicked item's id, the chosen value — passed as an argument, wherever the caller got it. Advice, not
-  checked: a value the event does not choose, such as the current page, the task reads itself.
+- An event calls a task: a handler of a user action in a Presenter or stateful logic, directly or through a plain
+  function of the UI side, of a request in the entry of a unit with no UI, or another task. An effect — code the UI
+  framework runs after a render or a change — calls a task only on start or mount. An effect or stateful logic that
+  watches state, props or a store and calls a task when they change is a violation: the handler that changed the
+  data calls the task.
+- A Presenter, stateful logic or a plain function of the UI side that reads the app's data to decide whether to
+  call a task is a violation: "go to the next page" reads the page and the page count from the store itself and
+  returns when there is no next page. A value computed to show — a flag that disables a button — is not such a
+  condition, nor is what the event was about — the clicked item's id, the chosen value — passed as an argument,
+  wherever the caller got it. Advice, not checked: a value the event does not choose, such as the current page, the
+  task reads itself.
 - A delay before the call (debounce) is a plain function around the call, made once and called from the handler.
 - The state of a call — loading, error — and its result are kept by the caller around the call, or written by the
   task to a store (loading before the request, the result or the error after) when units that did not call it show

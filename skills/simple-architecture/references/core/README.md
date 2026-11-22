@@ -27,8 +27,9 @@ to a stack folder in [../stack/](../stack/). Each rule has its own file, written
   A type that is part of an API — a props type, a pure-zone module's type, a store's data — stays with that API.
 - [Stateful logic and plain functions](stateful-logic-and-functions.md) — Split non-UI code into stateful logic (it
   uses state, lifecycle or a store subscription, or calls other stateful logic), tasks and plain functions (no
-  business logic, no I/O, no call of a task or of stateful logic), keep shared data apart in stores, and let each
-  kind be called only by the kinds listed below. Give one piece of stateful logic one concern.
+  business logic, no I/O, no call of stateful logic, nor of a task unless only the UI side uses them), keep shared
+  data apart in stores, and let each kind be called only by the kinds listed below. Give one piece of stateful
+  logic one concern.
 - [Tasks](tasks.md) — Write each business action — one that would stay the same action in another UI — as a task:
   a function named with a verb, with nothing from the UI framework, that holds the action's steps and its
   conditions on the app's data. Call it from an event — a handler or another task, an effect only on start or
@@ -45,4 +46,5 @@ to a stack folder in [../stack/](../stack/). Each rule has its own file, written
   logic folder, the shared folders and files of your level and of the levels above, the app's tasks folder and
   stores folder, the pure zone, the shared types package — and from an entry folder only its entry. Imports go one
   way: levels → the app's tasks folder → the app's stores folder → the pure zone, and View → Presenter → stateful
-  logic → tasks → plain functions, with stores and generic I/O open only to the kinds listed below.
+  logic and the UI side's plain functions → tasks → plain functions, with stores and generic I/O open only to the
+  kinds listed below.

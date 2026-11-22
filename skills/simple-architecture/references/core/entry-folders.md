@@ -5,8 +5,8 @@ the entry and those parts, and nest a part with parts of its own the same way, a
 a folder is allowed, not required. From outside the folder, import only its entry.
 
 **Why.** The parts of one function, kept in its folder, are not mistaken for other code of the unit, and a reader
-sees which files belong together — a flat list of files does not say what uses what. With only the entry used from
-outside, the parts can change without checking anyone else.
+sees which files belong together. With only the entry used from outside, the parts can change without checking
+anyone else.
 
 **How to check.**
 
@@ -19,8 +19,9 @@ outside, the parts can change without checking anyone else.
   API, its implementations and the plain functions only it uses; a types file or a constants file used only inside
   the folder. A part keeps its own kind and is checked as that kind.
 - A task is never a part of stateful logic or of a plain function: it lies in a tasks folder, and a part of either
-  that does I/O or is a step of a business action is a task. A task that only one other task calls may be a part of
-  that task's entry folder or a task of its own in the tasks folder: both are fine.
+  that does I/O or is a step of a business action is a task. A part that calls a task and decides what the screen
+  shows — a toast's Undo — is not a step of the business action: it keeps its kind. A task that only one other task
+  calls may be a part of that task's entry folder or a task of its own in the tasks folder: both are fine.
 - The parts decide, not the line count: an entry with parts only it uses is a folder at any size.
 - The folder holds its entry, its parts as files — one thing each — the entry folders of parts with parts of their
   own, and its tests (a tests folder or files beside the code, by the project's convention). Any other folder in it
