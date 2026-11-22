@@ -31,9 +31,8 @@ to a stack folder in [../stack/](../stack/). Each rule has its own file, written
   kind be called only by the kinds listed below. Give one piece of stateful logic one concern.
 - [Tasks](tasks.md) — Write each business action — one that would stay the same action in another UI — as a task:
   a function named with a verb, with nothing from the UI framework, that holds the action's steps and its
-  conditions on the app's data, returns its result and fails by throwing. Call it from an event — a handler or
-  another task, an effect only on start or mount — and leave to the caller only the state of the call and what
-  follows, navigation included.
+  conditions on the app's data. Call it from an event — a handler or another task, an effect only on start or
+  mount — and leave to the caller only the state of the call and what follows, navigation included.
 - [Pure zone](pure-zone.md) — Keep code that knows nothing of the app — by import, by key or by meaning — in the
   pure zone: the lib folder (default `lib/`) at the root level, or where the app's `lib` key puts it, with the
   ui-kit and the design-system theme, in folders named by what their code is about, never by the kind of code.

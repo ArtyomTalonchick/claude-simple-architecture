@@ -2,8 +2,8 @@
 
 **Rule.** Write each business action — one that would stay the same action in another UI — as a task: a function
 named with a verb, with nothing from the UI framework, that holds the action's steps and its conditions on the
-app's data, returns its result and fails by throwing. Call it from an event — a handler or another task, an effect
-only on start or mount — and leave to the caller only the state of the call and what follows, navigation included.
+app's data. Call it from an event — a handler or another task, an effect only on start or mount — and leave to the
+caller only the state of the call and what follows, navigation included.
 
 **Why.** What a business action means does not depend on the UI: logging out is the same in a web app and in a
 mobile app. Written inside stateful logic, it can run only inside a component; spread over a Presenter as a row of
@@ -40,15 +40,14 @@ handler only changes data and an effect elsewhere calls the task, a change to on
   it. Advice, not checked: a value the event does not choose, such as the current page, the task reads itself.
 - A delay before the call (debounce) is a plain function around the call, made once and called from the handler.
 - The state of a call — loading, error — is kept by the caller around the call, or written by the task to a store
-  (loading before the request, the result or the error after) when units that did not call it show it. No check
-  chooses between them.
-- Catching an error only to return it as a value is a violation. Catching one the action handles is not: a failed
-  step it may skip, or its own failure written to a store where the UI reads it — after rolling back its change, if
-  it made one; such a task need not rethrow.
+  (loading before the request, the result or the error after) when units that did not call it show it; such a task
+  need not also report the failure to its caller. No check chooses between them, nor between a task that throws its
+  failure and one that returns it.
 - A task that makes "the latest call wins" may keep the handle that cancels its ongoing call in a store, next to the
   call's status. Only tasks use that handle; a Presenter, stateful logic or a View that reads or calls it is a
   violation.
-- An optimistic update and its rollback are one task. Where changes may run in parallel, the rollback undoes the
+- An optimistic update and its rollback are one task: on failure it undoes its change, then reports the failure or
+  writes it to a store. Where changes may run in parallel, the rollback undoes the
   task's own change, not a snapshot of the whole state: advice, not checked.
 - Steps of one business action — a server call, several store changes that together make the action, other
   actions — written in a Presenter, in stateful logic or in a plain function are a violation: they are a task. One
@@ -118,7 +117,6 @@ CartPage/
     clearCart         cart store: clear — a business action outside a tasks folder
 tasks/
   logout              ...; navigate to the start page — navigation in a task
-  publishPost         try await api.publish(post) catch e: return { error: e } — the error as a value
   checkout            await placeOrder(cart); ...; focusFirstError() — a plain function that acts on the screen
 ```
 

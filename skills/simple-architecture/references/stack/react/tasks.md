@@ -22,8 +22,6 @@ place; an effect that fetches when its dependencies change hides that link and n
   while it stays mounted can get `key` from its parent, so a new value is a new mount.
 - A debounce before a task's call is made once — `const search = useMemo(() => debounce(searchShows, 300), [])` —
   and called from the handler; `useDebouncedValue(text)` followed by an effect that calls the task is a violation.
-- A task that catches an error only to return it (`return { error }`) is a violation: it throws, and the Presenter
-  catches it in `try` / `catch`.
 - A condition on the app's data before a task's call — `if (page < pageCount) goToPage(page + 1)` in a Presenter —
   is a violation; `onFavoriteClick(show.id)` for the clicked item of a list read with a store hook is not.
 
@@ -83,16 +81,12 @@ export const usePresenter = () => {
 **Bad.**
 
 ```ts
-// tasks/logout.ts — a hook, navigation and the error as a value
+// tasks/logout.ts — a hook and navigation
 export const useLogout = () => {
   const navigate = useNavigate();
   return async () => {
-    try {
-      await api.logout();
-      navigate('/');
-    } catch (e) {
-      return { error: e };
-    }
+    await api.logout();
+    navigate('/');
   };
 };
 

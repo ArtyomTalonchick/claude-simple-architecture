@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- The rules no longer say how a task reports a failure: a task may throw it or return it, and the reviewer reports
+  neither. The check "catching an error only to return it as a value is a violation" and its React form
+  (`return { error }`) are gone. What stays: an optimistic update and its rollback are one task, and a failure shown
+  by units that did not call the task is written to a store — such a task need not also report it to its caller.
+
 ## [0.2.8] — 2026-11-21
 
 ### Added

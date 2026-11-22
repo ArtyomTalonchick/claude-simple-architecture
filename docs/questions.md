@@ -553,3 +553,17 @@ an entry folder is a part. Read together the file is allowed, but the texts clas
 
 **Answer.** The check covers only files outside an entry folder; one inside it, used only there, is a part. Written
 into "Levels and placement" and the architecture-reviewer agent.
+
+## Q38. Must a task fail by throwing, not by returning its error?
+
+**Question.** The rules made a task throw on failure and called an error returned as a value a violation. Both shapes
+keep the action in the task, the task free of the UI and the state of the call with the caller.
+
+**Context.** #68; it reverses the "throws on failure" part of Q17.
+
+**Status.** answered
+
+**Answer.** No. How a task reports a failure is left to the project, and no check chooses between throwing and
+returning. An optimistic update and its rollback stay one task, and a failure shown by units that did not call the
+task is still written to a store; such a task need not also report it to its caller (Q35). Written into "Tasks",
+its summary in the core README and "Tasks in React".
