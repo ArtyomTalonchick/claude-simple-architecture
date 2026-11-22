@@ -1,9 +1,10 @@
 ## Tasks in React
 
 **Rule.** A task ([Tasks](../../core/tasks.md)) is a function, usually `async`, named with a verb without `use`,
-that imports nothing from React, React DOM or the router and calls no hook. The Presenter or a hook calls it in an
-event handler or in a `useEffect` with an empty dependency list, awaits it, keeps `isLoading` and `error` in its own
-state unless the task writes them to a store, and the Presenter navigates after it.
+that imports nothing from React, React DOM or the router and calls no hook. The Presenter or a hook calls it,
+directly or through a plain function of the UI side, in an event handler or in a `useEffect` with an empty dependency
+list, awaits it, keeps `isLoading` and `error` in its own state unless the task writes them to a store, and the
+Presenter navigates after it.
 
 **Why.** A task that calls no hook can run anywhere — in a handler, a test, another app — and the rules of hooks do
 not apply to it. A task called from the handler of the event that needs it keeps the cause and the request in one
