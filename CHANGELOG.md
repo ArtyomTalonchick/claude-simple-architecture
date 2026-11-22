@@ -13,6 +13,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   result and the error of its own task with no store. The "Why" of "Imports" gives the reason for the direction:
   code that changes often imports code that changes less often. The "Why" of "Tasks" and "View and Presenter" says
   the caller sets the interface, so what is behind it can change without the caller.
+- A check in "View and Presenter": a child unit reads the store and calls the task in its own Presenter. A Presenter
+  that hands a child unit a value read from a store or computed from one, or a handler that only calls a task, is a
+  violation. Props carry the item a list repeats the child for — whole, its id or a ready row — and options of the
+  look; a component of the ui-kit or of a components folder takes all as props. What several units read is a store,
+  in the shape they read it. "Imports" no longer says "data comes down through props" and points here instead.
+- "View and Presenter" and its React form say that a plain read of a prop's field is not a computation: a Presenter
+  that only returns its props or reads their fields (`{ show, name: show.name }`) is a pass-through Presenter.
 
 ### Changed
 

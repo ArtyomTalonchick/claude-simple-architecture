@@ -38,7 +38,8 @@ sibling and branch are as in [Levels](levels.md).
   - an import from inside a child unit — its logic folder, stores folder, components folder, types file, constants
     file or its own children: they are open to the level and the levels below it, never to the levels above;
   - an import from another branch — anything under a level that is not the own level or one above it;
-  - an import of a parent's or an ancestor's entry: data comes down through props;
+  - an import of a parent's or an ancestor's entry; what comes through props is set by
+    [View and Presenter](view-presenter.md);
   - in the app's tasks folder, an import from any level; in the app's stores folder, an import from any level or
     from the app's tasks folder. A file of the app's tasks folder imports only from that folder, the app's stores
     folder, the pure zone and the shared types package; a file of the app's stores folder only from the pure zone

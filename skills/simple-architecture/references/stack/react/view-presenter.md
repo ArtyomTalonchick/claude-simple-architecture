@@ -14,9 +14,9 @@ View's concern.
   `useState`, `useEffect`, `useMemo`, `useCallback`, a store or a query hook, a custom hook — is a violation.
 - A styling hook is one from the project's UI or styling library that only returns style values: a style recipe or
   slot recipe, a theme token, a style value picked by screen size. A hook whose result the View uses for anything
-  but a style prop — in a condition, as text, passed to a handler — is not a styling hook.
+  but a style prop — a condition, text, a handler's argument — is not a styling hook.
 - Allowed in JSX: `{flag && <A />}` and `{flag ? <A /> : <B />}` on a value from the Presenter;
-  `{pagination && <Pagination {...pagination} />}` on a child's ready props or `null`;
+  `{pagination && <Pagination {...pagination} />}` on a component's ready props or `null`;
   `{items.map((item) => <Row key={item.id} … />)}` on a ready array; `onClick={onSave}`;
   `onClick={() => onSelect(item.id)}`; style props, `className`, `style`.
 - A violation in JSX: `.filter`, `.sort`, `.reduce`, `.find` on data; `.toFixed`, `toLocaleString` or a template
@@ -25,7 +25,8 @@ View's concern.
   `label={isOpen ? 'Hide' : 'Show'}`); an optional read `a?.b`.
 - The same counts anywhere in the component file: a module-level constant built with `.map`, `.flatMap`, `.filter`
   or a template string goes to `usePresenter.ts`. A literal array or object is allowed.
-- A `usePresenter.ts` with no hook call and no computation — it only returns its props — is a violation.
+- A `usePresenter.ts` that calls no hook and only returns its props or their fields (`name: show.name`) is a
+  violation.
 - The props type is declared in `usePresenter.ts` and re-exported from the component file
   (`export type { ButtonProps, ButtonVariant } from './_logic/usePresenter'`, with the types that are part of it); a
   component without a Presenter declares it in its own file. One that spreads all its props onto one child may alias
@@ -49,7 +50,7 @@ export const usePresenter = ({ status }: OrderListProps) => {
     () => orders.filter((o) => o.status === status).map((o) => ({ ...o, total: formatPrice(o.sum) })),
     [orders, status],
   );
-  const { page, total, pageCount, setPage } = useOrderPage(status);
+  const { page, total, pageCount, setPage } = useOrderPage(status); // Pagination: a ui-kit component
   const pagination: PaginationProps | null = pageCount > 1 ? { page, total, onPageChange: setPage } : null;
   return { rows, isLoading, pagination, open: (id: string) => navigate(`/orders/${id}`) };
 };

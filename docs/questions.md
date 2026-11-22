@@ -599,3 +599,22 @@ directly or through other plain functions, still calls no task, and a task still
 an entry folder that calls a task and decides what the screen shows keeps its kind. The callback of Q34 stays
 allowed, no longer the only way. Written into "Stateful logic and plain functions", its summary in the core README,
 "Entry folders", "Tasks", "Imports" and "Stateful logic in React is a hook".
+
+## Q41. Does a child get store data and task calls from its parent, through props?
+
+**Question.** "Imports" said "data comes down through props", which reads as advice to pass data down. A parent
+read the store once, computed a view and handed its children values and callbacks that only call a task, and no
+check reported it. Nor was it clear whether a Presenter that only reads fields of its prop is a pass-through one.
+
+**Context.** #60, after #69: what only one unit shows stays in its Presenter.
+
+**Status.** answered
+
+**Answer.** No. A child unit reads the store and calls the task in its own Presenter; a Presenter that hands a
+child unit a value read from a store or computed from one, or a handler that only calls a task, is a violation.
+Props carry the item a list repeats the child for — whole, its id or a ready row — and options of the look. A
+component, of the ui-kit or of a components folder, takes all as props: it has several users. What several units
+read is a store, in the shape they read it; what one unit shows stays in its Presenter (Q39). A plain read of a
+prop's field is not a computation, so a Presenter that only returns its props or their fields is a pass-through
+Presenter. Written into "View and Presenter", "View and Presenter in React", "Imports" and "Stateful logic and
+plain functions".

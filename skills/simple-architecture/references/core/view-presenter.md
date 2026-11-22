@@ -12,7 +12,7 @@ disabled, or what a handler does, can change without it.
 
 **How to check.**
 
-- The rule covers UI units. The entry of a unit in an app with no UI is not a View and is not checked by it.
+- The entry of a unit in an app with no UI is not a View.
 - A View may: call its own Presenter once and read values from the result; hold markup and styles, reading styles
   from the design system included (a style by its name, a theme value, a value per screen size); show or hide a part
   by a ready flag (an "if" or a two-way choice on it) or by a ready value that is there or not; repeat a part for each
@@ -22,27 +22,29 @@ disabled, or what a handler does, can change without it.
   formatting of raw data (filtering, sorting, comparing, rounding, joining text); a handler that does more than call
   one Presenter handler.
 - Choosing a value by a condition is a computation too: a fallback or a default for a missing value, a value picked
-  by a condition, a read of a field that may be missing, turning one kind of "no value" into another. Choosing which
-  markup to show by a ready flag is not.
-- The whole View file counts: a constant built by a computation outside the markup (a list mapped from another list,
-  text joined from parts) is a computation in the View, and the unit then needs a Presenter. Reading styles from the
-  design system is not stateful logic.
-- How a Presenter calls a business action — from a handler or an effect on start, with no steps of the action or
-  conditions on the app's data of its own — is set by [Tasks](tasks.md).
-- A Presenter file with no logic in it (an empty or pass-through Presenter) is a violation.
+  by a condition, a read of a field that may be missing, turning one "no value" into another; choosing which markup
+  to show by a ready flag is not.
+- The whole View file counts: a constant computed outside the markup (a list mapped from another, text joined from
+  parts) is a computation in the View. Reading styles from the design system is not stateful logic.
+- How a Presenter calls a task is set by [Tasks](tasks.md).
+- A Presenter file with no logic in it (an empty or pass-through Presenter) is a violation. A plain read of a prop's
+  field is not logic: a Presenter that only returns its props or their fields (`name = props.show.name`) is one.
+- A child unit reads the store and calls the task in its own Presenter: handing it a value read from a store or
+  computed from one, or a handler that only calls a task, is a violation. Props carry the item a list repeats the
+  child for — whole, its id or a ready row — and options of the look (a size, a variant); a component, of the
+  ui-kit or a components folder, takes all as props. What several units read is a store, in the shape they read
+  it; what one unit shows stays in its Presenter ([Tasks](tasks.md)).
 - A **warning**, not a violation: a Presenter whose own state and lifecycle fall into two or more groups by the
   two-concerns test of [Stateful logic and plain functions](stateful-logic-and-functions.md). Name the groups and
-  which could move out as stateful logic to the unit's logic folder. Not counted: the stateful logic it calls, the
-  values it computes from props or from that logic, and the loading and error of a task kept by the handler that
-  calls it. A Presenter with one group of its own stays whole.
+  which could move out as stateful logic. Not counted: the stateful logic it calls, values computed from props or
+  from it, and a task's loading and error kept by the handler that calls it.
 - A short handler that acts on the screen — prevent the default action, move the focus — may stay inline in the
-  Presenter; it moves to a plain function when it grows or another file needs it. Where that line lies is a
-  judgement: an inline handler of this kind is not a violation.
+  Presenter, which is never a violation; it moves to a plain function when it grows or another file needs it.
 - The props type lives in the Presenter, and the View passes it on to its users, who import it from the View; a View
-  without a Presenter declares its own. A type that is part of the props type — the type of one prop, such as an icon
-  name or a variant — goes the same way, however many files use it, and never moves to a types file.
-- A View without a Presenter that passes all its props on to one child may declare its props type as an alias of the
-  child's. A unit with no props has no props type — not an empty one.
+  without a Presenter declares its own. A type that is part of it — the type of one prop, such as a variant — goes
+  the same way, however many files use it, never to a types file.
+- A View without a Presenter that passes all its props on to one child may alias the child's props type. A unit
+  with no props has none, not an empty one.
 
 **Good.**
 
@@ -66,21 +68,19 @@ EmptyCart/
 ```
 
 A pattern, not a check: a View with several screens or states only chooses which one to show, each its own child
-unit; and a Presenter may return a child's props as one ready value, typed by the child's props type (a type-only
-import, [Imports](imports.md)), or nothing when the child is hidden. A View that passes separate ready values
-instead is not a violation.
+unit; and a Presenter may return a component's props as one ready value, typed by its props type (a type-only
+import, [Imports](imports.md)), or nothing when it is hidden. Separate ready values are not a violation.
 
 ```
 OrderPage/
   OrderPage   (View)       p = presenter(props)
                            p.isEmpty ? OrderStart : OrderResults
-                           if p.pagination: Pagination(p.pagination as its props)
+                           if p.pagination: Pagination(p.pagination as its props) — a ui-kit component
   _logic/
     presenter (Presenter)  isEmpty = no filter is set
                            pagination = page count > 1 ? { page, total, onPageChange = go to page } : nothing
   OrderStart/
-  OrderResults/
-  Pagination/
+  OrderResults/            its own Presenter reads the orders store
 ```
 
 A large Presenter only joins: each group of its own state moves out as stateful logic.
@@ -102,6 +102,10 @@ OrderList/
   OrderList   (View)       orders = load orders
                            for order in orders where order.status == props.status:
                              OrderRow(order, total = round(order.sum * 1.2, 2), title = order.name or "Untitled")
+OrderPage/
+  OrderPage   (View)       OrderResults(count = p.count, onRetry = p.onRetry)
+  _logic/
+    presenter (Presenter)  count from the orders store, onRetry calls loadOrders — handed down
 ```
 
 **Stack notes.** [react/view-presenter.md](../stack/react/view-presenter.md) — View and Presenter in React.

@@ -28,8 +28,8 @@ without touching the logic around it, and the few kinds that reach it show who d
   - generic I/O: only a task and other generic I/O ([Pure zone](pure-zone.md)).
 - Stores:
   - a store is data that lives longer than one call and is shared by the code that reads it — state several UI
-    units read, a cache or an in-memory table on a server. It is a kind of its own; code that subscribes to it to
-    show its data is stateful logic;
+    units read, each itself ([View and Presenter](view-presenter.md)), a cache or an in-memory table on a server.
+    It is a kind of its own; code that subscribes to it to show its data is stateful logic;
   - a store file holds the data and its own API — reading and changing that data — and nothing else. A server call,
     a step of a business action, a subscription to show the data or a computation for one of its users in it is a
     violation;
@@ -74,11 +74,11 @@ without touching the logic around it, and the few kinds that reach it show who d
     ([Tasks](tasks.md));
   - two concerns in one piece is a violation: its state and results fall into two groups, and one needs from the
     other at most a plain value it could take as an argument — the value of a field and the request made with it.
-    Split it, pass that value as an argument, and join the two in the Presenter or in other stateful logic. Steps
-    of one job — waiting, cancelling and retrying one request — are one concern;
-  - the groups are formed by state and lifecycle, not by results: a value computed only from the input, memoized or
-    not, forms no group and stays with the state it is returned next to — a filter's options computed from the
-    list, its selected option and the filtered list are one concern. A request or a subscription has state of its
+    Split it and join the two, passing that value, in the Presenter or in other stateful logic. Steps of one job —
+    waiting, cancelling and retrying one request — are one concern;
+  - the groups are formed by state and lifecycle, not by results: a value computed only from the input forms no
+    group and stays with the state it is returned next to — a filter's options computed from the list, its selected
+    option and the filtered list are one concern. A request or a subscription has state of its
     own and can form a second group.
 
 **Good.**
