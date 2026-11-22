@@ -4,28 +4,29 @@
 its Presenter, and a Presenter, which holds all its logic — state, effects, data access, computations, handlers. A
 UI unit with no logic has no Presenter.
 
-**Why.** Markup and logic change for different reasons and at different times. Mixed in one place, a change to
-either means reading both, and the logic cannot be found, reused or tested apart from the markup. Kept apart, a
-layout change touches only the View, a behaviour change only the Presenter, and a View reads as a plain picture of
-the screen. The View, the caller, sets the interface — values and handlers ready to render — so when a field is
-disabled, or what a handler does, can change without it.
+**Why.** Markup and logic change for different reasons. Mixed in one place, a change to either means reading
+both, and the logic cannot be found, reused or tested apart from the markup. Kept apart, a layout change touches
+only the View, a behaviour change only the Presenter, and a View reads as a plain picture of the screen. The View,
+the caller, sets the interface — values and handlers ready to render — so when a field is disabled, or what a
+handler does, can change without it.
 
 **How to check.**
 
 - The entry of a unit in an app with no UI is not a View.
-- A View may: call its own Presenter once and read values from the result; hold markup and styles, reading styles
-  from the design system included (a style by its name, a theme value, a value per screen size); show or hide a part
-  by a ready flag (an "if" or a two-way choice on it) or by a ready value that is there or not; repeat a part for each
-  item of a ready list; pass a ready handler; wrap a Presenter handler only to pass it an argument
-  (`select(item.id)`); keep a constant written out as a plain value (a list of labels, a size).
+- A View may: call its own Presenter once and read values from the result; hold markup and styles — of the design
+  system (a style by name, a theme value, a value per screen size) or a row of its own literal style table by a
+  ready key (`STYLES[p.size]`); show or hide a part by a ready flag (an "if" or a two-way choice on it) or by a ready
+  value that is there or not; repeat a part for each item of a ready list; pass a ready handler; wrap a Presenter
+  handler only to pass it an argument (`select(item.id)`); keep a constant written out as a plain value (a list of
+  labels, a size).
 - A violation in a View: state, effects or lifecycle code; reading data or a store directly; a computation or
   formatting of raw data (filtering, sorting, comparing, rounding, joining text); a handler that does more than call
   one Presenter handler.
 - Choosing a value by a condition is a computation too: a fallback or a default for a missing value, a value picked
-  by a condition, a read of a field that may be missing, turning one "no value" into another; choosing which markup
-  to show by a ready flag is not.
+  by a condition, a read of a field that may be missing, turning one "no value" into another, for a style key too;
+  choosing markup by a ready flag, or a style row by a ready key, is not.
 - The whole View file counts: a constant computed outside the markup (a list mapped from another, text joined from
-  parts) is a computation in the View. Reading styles from the design system is not stateful logic.
+  parts) is a computation in the View. Reading design-system styles is not stateful logic.
 - How a Presenter calls a task is set by [Tasks](tasks.md).
 - A Presenter file with no logic in it (an empty or pass-through Presenter) is a violation. A plain read of a prop's
   field is not logic: a Presenter that only returns its props or their fields (`name = props.show.name`) is one.
@@ -39,7 +40,7 @@ disabled, or what a handler does, can change without it.
   which could move out as stateful logic. Not counted: the stateful logic it calls, values computed from props or
   from it, and a task's loading and error kept by the handler that calls it.
 - A short handler that acts on the screen — prevent the default action, move the focus — may stay inline in the
-  Presenter, which is never a violation; it moves to a plain function when it grows or another file needs it.
+  Presenter; it moves to a plain function when it grows or another file needs it.
 - The props type lives in the Presenter, and the View passes it on to its users, who import it from the View; a View
   without a Presenter declares its own. A type that is part of it — the type of one prop, such as a variant — goes
   the same way, however many files use it, never to a types file.
@@ -69,7 +70,7 @@ EmptyCart/
 
 A pattern, not a check: a View with several screens or states only chooses which one to show, each its own child
 unit; and a Presenter may return a component's props as one ready value, typed by its props type (a type-only
-import, [Imports](imports.md)), or nothing when it is hidden. Separate ready values are not a violation.
+import, [Imports](imports.md)), or nothing when it is hidden.
 
 ```
 OrderPage/

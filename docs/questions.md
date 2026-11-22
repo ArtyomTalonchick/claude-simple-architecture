@@ -618,3 +618,17 @@ read is a store, in the shape they read it; what one unit shows stays in its Pre
 prop's field is not a computation, so a Presenter that only returns its props or their fields is a pass-through
 Presenter. Written into "View and Presenter", "View and Presenter in React", "Imports" and "Stateful logic and
 plain functions".
+
+## Q42. May a View read its own style table by a key?
+
+**Question.** A component whose look depends on a variant keeps a literal table of styles above its View, and the
+View reads a row by a key from its Presenter (`STYLES[size]`). "View and Presenter" calls a value picked by a
+condition a computation (Q10), so the reviewer would move the read to the Presenter.
+
+**Context.** #61, from a project that follows the plugin and kept the table in the View as a local exception.
+
+**Status.** answered
+
+**Answer.** Yes: the key is ready and the table is a plain value, so the read is a style lookup, like a theme
+value. The key's default and a key chosen by a condition stay in the Presenter, as Q10 says. Written into "View
+and Presenter" and "View and Presenter in React", with a Good example of the table checked by `satisfies`.

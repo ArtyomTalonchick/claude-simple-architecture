@@ -5,8 +5,7 @@
 re-exports. The only hooks a View calls are its own `usePresenter` and styling hooks.
 
 **Why.** One file name per role makes the pair easy to find, and a short list of allowed hooks is easy to check: any
-other hook in a component means logic has leaked into the View. Styling hooks only return styles, and styles are the
-View's concern.
+other hook means logic has leaked into the View. Styling hooks only return styles, the View's concern.
 
 **How to check.**
 
@@ -24,7 +23,8 @@ View's concern.
   with a condition; `??`, `||` or `?:` that picks a value (`src={image ?? undefined}`, `title={name || 'Untitled'}`,
   `label={isOpen ? 'Hide' : 'Show'}`); an optional read `a?.b`.
 - The same counts anywhere in the component file: a module-level constant built with `.map`, `.flatMap`, `.filter`
-  or a template string goes to `usePresenter.ts`. A literal array or object is allowed.
+  or a template string goes to `usePresenter.ts`. A literal array or object is allowed, a style table read by a
+  ready key included.
 - A `usePresenter.ts` that calls no hook and only returns its props or their fields (`name: show.name`) is a
   violation.
 - The props type is declared in `usePresenter.ts` and re-exported from the component file
@@ -75,6 +75,17 @@ export const OrderList = (props: OrderListProps) => {
 export const usePresenter = ({ userId }: UserCardProps) => {
   const { user } = useUser(userId);
   return { name: user?.name ?? 'Guest', imageSrc: user?.image ?? undefined };
+};
+
+// Badge/Badge.tsx — usePresenter returns the key ready: tone: props.tone ?? 'info'
+const TONE_STYLES = {
+  info: { color: 'navy' },
+  warning: { color: 'darkorange' },
+} satisfies Record<BadgeTone, CSSProperties>;
+
+export const Badge = (props: BadgeProps) => {
+  const { tone, label } = usePresenter(props);
+  return <span style={TONE_STYLES[tone]}>{label}</span>;
 };
 
 // SaveButton/SaveButton.tsx — no Presenter; spreads all its props onto one child

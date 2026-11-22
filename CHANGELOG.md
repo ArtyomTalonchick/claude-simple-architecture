@@ -33,6 +33,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   "Entry folders", a part that calls a task and decides what the screen shows is not a step of the business action
   and keeps its kind. "Imports" lets such a plain function import tasks. Passing the task's call as a callback
   (`goHome(() => clearSearch())`) is still allowed, no longer required.
+- A View may read a row of its own literal style table by a ready key from its Presenter (`STYLES[p.size]`): a
+  style lookup, like a theme value, not a value picked by a condition. The key's default and a key chosen by a
+  condition stay in the Presenter. "View and Presenter in React" shows the table, checked with
+  `satisfies Record<Variant, CSSProperties>`.
 
 ## [0.2.8] — 2026-11-21
 
