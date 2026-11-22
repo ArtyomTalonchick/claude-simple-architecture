@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Advice in "Tasks", not a check: data that only the calling unit shows — the loaded list, its loading flag, its
+  error — is returned by the task and kept in the Presenter, and a store is for state several units need, a small
+  store of UI state shared by a few units included. A Good example shows a Presenter that keeps the loading, the
+  result and the error of its own task with no store. The "Why" of "Imports" gives the reason for the direction:
+  code that changes often imports code that changes less often. The "Why" of "Tasks" and "View and Presenter" says
+  the caller sets the interface, so what is behind it can change without the caller.
+
 ### Changed
 
 - The rules no longer say how a task reports a failure: a task may throw it or return it, and the reviewer reports

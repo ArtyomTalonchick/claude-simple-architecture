@@ -9,9 +9,10 @@ functions, with stores and generic I/O open only to the kinds listed below.
 **Why.** When imports follow the folders, the folders tell the truth: a unit can be changed inside without
 breaking anyone, moved or deleted with its folder, and every dependency is visible from where a file lies. A
 single import into another branch or a parent ties two places that look apart, and the next change to one breaks
-the other. The one-way order between the app's parts keeps business code free of the UI tree, and the one between
-kinds of code keeps logic out of Views, the order of an action's steps with its caller, and plain functions free to
-run wherever their users are.
+the other. A change to a file can reach every file that imports it, so code that changes often imports code that
+changes less often: the UI changes more often than business actions and data, which is why levels import tasks
+and stores, never the reverse. The order between kinds of code keeps logic out of Views and plain functions free to run
+wherever their users are.
 
 **How to check.** For each import, find where its target lies and what kind of code both sides are. Level, parent,
 sibling and branch are as in [Levels](levels.md).

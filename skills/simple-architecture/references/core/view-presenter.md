@@ -7,7 +7,8 @@ UI unit with no logic has no Presenter.
 **Why.** Markup and logic change for different reasons and at different times. Mixed in one place, a change to
 either means reading both, and the logic cannot be found, reused or tested apart from the markup. Kept apart, a
 layout change touches only the View, a behaviour change only the Presenter, and a View reads as a plain picture of
-the screen.
+the screen. The View, the caller, sets the interface — values and handlers ready to render — so when a field is
+disabled, or what a handler does, can change without it.
 
 **How to check.**
 

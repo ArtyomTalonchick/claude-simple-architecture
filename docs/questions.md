@@ -567,3 +567,17 @@ keep the action in the task, the task free of the UI and the state of the call w
 returning. An optimistic update and its rollback stay one task, and a failure shown by units that did not call the
 task is still written to a store; such a task need not also report it to its caller (Q35). Written into "Tasks",
 its summary in the core README and "Tasks in React".
+
+## Q39. Where does the result of a call go when only the calling unit shows it?
+
+**Question.** "Tasks" let the state of a call stay with the caller or go to a store, but did not say where its
+result goes, and its first Good example writes everything to a store.
+
+**Context.** #69. Every part of the app depends on its stores, so the less a store holds, the fewer places break
+when it changes.
+
+**Status.** answered
+
+**Answer.** As advice, not a check: what only the calling unit shows — the loaded list, its loading flag, its error
+— the task returns and the Presenter keeps; a store is for state several units need, a small store of UI state
+shared by a few units included. Written into "Tasks", with a Good example next to `loadShows`.
