@@ -15,18 +15,21 @@ handler does, can change without it.
 - The entry of a unit in an app with no UI is not a View.
 - A View may: call its own Presenter once and read values from the result; hold markup and styles — of the design
   system (a style by name, a theme value, a value per screen size) or a row of its own literal style table by a
-  ready key (`STYLES[p.size]`); show or hide a part by a ready flag (an "if" or a two-way choice on it) or by a ready
-  value that is there or not; repeat a part for each item of a ready list; pass a ready handler; wrap a Presenter
-  handler only to pass it an argument (`select(item.id)`); keep a constant written out as a plain value (a list of
-  labels, a size).
+  ready key (`STYLES[p.size]`); read a resource text by a literal key, with ready values as parameters; show or
+  hide a part by a ready flag (an "if" or a two-way choice on it) or by a ready value that is there or not; repeat
+  a part for each item of a ready list; pass a ready handler; wrap a Presenter handler only to pass it an argument
+  (`select(item.id)`); keep a constant written out as a plain value (a list of labels, a size).
 - A violation in a View: state, effects or lifecycle code; reading data or a store directly; a computation or
   formatting of raw data (filtering, sorting, comparing, rounding, joining text); a handler that does more than call
   one Presenter handler.
+- A text's plural forms and formats are the resource's: a View may pass them a ready raw value. A violation: a key
+  built from data (`"status." + p.status`), a computation in the parameters, a text chosen by a condition, reading
+  or changing the language.
 - Choosing a value by a condition is a computation too: a fallback or a default for a missing value, a value picked
   by a condition, a read of a field that may be missing, turning one "no value" into another, for a style key too;
   choosing markup by a ready flag, or a style row by a ready key, is not.
 - The whole View file counts: a constant computed outside the markup (a list mapped from another, text joined from
-  parts) is a computation in the View. Reading design-system styles is not stateful logic.
+  parts) is a computation in the View.
 - How a Presenter calls a task is set by [Tasks](tasks.md).
 - A Presenter file with no logic in it (an empty or pass-through Presenter) is a violation. A plain read of a prop's
   field is not logic: a Presenter that only returns its props or their fields (`name = props.show.name`) is one.

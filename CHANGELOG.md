@@ -40,6 +40,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - A reference to an element that only one inline handler uses, to move the focus (a `useRef` of an input that the
   clear handler focuses again), forms no group of state in the two-concerns test of "Stateful logic and plain
   functions", so a Presenter that keeps it next to a debounced search gets no warning of two groups.
+- A View may read a text from the app's resources by a literal key, with ready values from its Presenter as
+  parameters: a text by key is markup, like a style by name. Plural forms and formats declared in the resource may
+  take a ready raw value. A key built from data, a computation in the parameters, a text chosen by a condition and
+  reading or changing the language stay violations. "View and Presenter in React" allows `t` of a translation hook
+  and `<Trans>` in a component, only as text, and `usePresenter.ts` may call `t` for a text that depends on data.
 
 ## [0.2.8] — 2026-11-21
 

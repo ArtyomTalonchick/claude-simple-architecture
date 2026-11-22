@@ -2,18 +2,24 @@
 
 **Rule.** A component is a View, `MyComponent/MyComponent.tsx`, named as its folder; its Presenter is the hook
 `usePresenter.ts` in the unit's logic folder (default `_logic/`), which declares the props type that the View
-re-exports. The only hooks a View calls are its own `usePresenter` and styling hooks.
+re-exports. The only hooks a View calls are its own `usePresenter`, styling hooks and a translation hook.
 
 **Why.** One file name per role makes the pair easy to find, and a short list of allowed hooks is easy to check: any
-other hook means logic has leaked into the View. Styling hooks only return styles, the View's concern.
+other hook means logic has leaked into the View. Styling and translation hooks return only styles and texts, the
+View's concern.
 
 **How to check.**
 
-- In a component file (`.tsx` that returns JSX), a hook call other than `usePresenter(props)` and a styling hook —
-  `useState`, `useEffect`, `useMemo`, `useCallback`, a store or a query hook, a custom hook — is a violation.
+- In a component file (`.tsx` that returns JSX), a hook call other than `usePresenter(props)`, a styling hook and a
+  translation hook — `useState`, `useEffect`, `useMemo`, `useCallback`, a store or a query hook, a custom hook — is
+  a violation.
 - A styling hook is one from the project's UI or styling library that only returns style values: a style recipe or
   slot recipe, a theme token, a style value picked by screen size. A hook whose result the View uses for anything
   but a style prop — a condition, text, a handler's argument — is not a styling hook.
+- `t` of a translation hook and `<Trans>` render only text by a literal key, ready values as parameters, raw ones
+  for a plural or a format of the resource (`{{total, currency}}`). A violation: `` t(`status.${status}`) ``, an
+  expression in the parameters, `i18n.language` or `changeLanguage` in a component. `usePresenter.ts` may call `t`
+  for a text that depends on data.
 - Allowed in JSX: `{flag && <A />}` and `{flag ? <A /> : <B />}` on a value from the Presenter;
   `{pagination && <Pagination {...pagination} />}` on a component's ready props or `null`;
   `{items.map((item) => <Row key={item.id} … />)}` on a ready array; `onClick={onSave}`;
@@ -88,6 +94,13 @@ export const Badge = (props: BadgeProps) => {
   return <span style={TONE_STYLES[tone]}>{label}</span>;
 };
 
+// CartSummary/CartSummary.tsx — the resource formats the raw total and picks the plural
+export const CartSummary = (props: CartSummaryProps) => {
+  const { t } = useTranslation();
+  const { count, total, status } = usePresenter(props); // status: t(`status.${cart.status}`)
+  return <Text>{t('cart.summary', { count, total })} {status}</Text>;
+};
+
 // SaveButton/SaveButton.tsx — no Presenter; spreads all its props onto one child
 export type SaveButtonProps = ButtonProps;
 export const SaveButton = (props: SaveButtonProps) => <Button icon="save" {...props} />;
@@ -122,6 +135,10 @@ export const UserCard = (props: UserCardProps) => {
   const { user } = usePresenter(props);
   return <Avatar name={user?.name ?? 'Guest'} src={user?.image ?? undefined} />;
 };
+
+// CartSummary/CartSummary.tsx
+const { t, i18n } = useTranslation();
+return <Text>{t(`status.${cart.status}`)} {t('cart.items', { count: cart.items.length })} {i18n.language}</Text>;
 ```
 
 **Stack notes.** Carries out the core rule [View and Presenter](../../core/view-presenter.md).

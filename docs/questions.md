@@ -646,3 +646,19 @@ logic, though moving the reference out would make stateful logic that only hands
 **Answer.** No. A reference to an element that only one inline handler uses, to move the focus, forms no group,
 like a value computed from the input; the short inline handler that uses it is allowed by "View and Presenter".
 Written into "Stateful logic and plain functions" and "Stateful logic in React is a hook".
+
+## Q44. May a View read a text from translation resources?
+
+**Question.** A View could call only its Presenter and styling hooks, so a translation hook in a component was a
+violation, and every text went through the Presenter, which bloated it and tied its tests to the translations.
+
+**Context.** #23, the same question as Q4 and Q42 of what a View reads on its own.
+
+**Status.** answered
+
+**Answer.** Yes: a text by key is markup, like a style by name or a row of the View's own style table. The key is a
+literal and the parameters are ready values from the Presenter; a plural form or a format declared in the resource
+takes a ready raw value, since how it is shown is the resource's concern, like a theme. A key built from data, a
+computation in the parameters, a text chosen by a condition and reading or changing the language are violations: a
+text that depends on data is built by the Presenter. Written into "View and Presenter" and "View and Presenter in
+React".
