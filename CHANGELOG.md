@@ -31,6 +31,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   a style row. A ready key compared to a literal is a violation — a two-way choice goes by a ready flag, one of
   three or more by the table. The type of a key the Presenter returns lives in the Presenter, and the View imports
   it. The React rule shows the table of components in a Good example; its word budget is raised 1050→1100 for it.
+- A store file may export its own readings — on Zustand, read hooks and selectors — when a reading means the same
+  to every user, such as "is a user signed in"; a Presenter or stateful logic calls them as it calls the store. The
+  core and the Zustand rule now say the same. A computation for one user in a store file stays a violation, and the
+  Zustand rule shows both cases; its word budget is raised 700→750 for them.
 
 ## [0.3.0] — 2026-11-22
 

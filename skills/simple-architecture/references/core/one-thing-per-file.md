@@ -15,7 +15,8 @@ thing; a limit that is only a signal gets waved away, so it is a rule.
   a function it is split into — is a violation, whether the second is exported or not: it gets its own file, placed
   by [Placement by users](placement.md).
 - Not a second thing: a type or a constant used only in this file, the props type of a View or a Presenter and the
-  types that are part of it, and a View passing them on.
+  types that are part of it, a View passing them on, and a store's own readings in the store file
+  ([Stateful logic and plain functions](stateful-logic-and-functions.md)).
 - A file over `maxFileLines` lines is a violation: name the file, its size and the limit, and say what could move
   out — stateful logic, a task, a plain function, a store, a child unit. A long View is split into child units.
 - Not checked against the limit: a test file, and a file written by a tool — marked as generated, or in a folder a

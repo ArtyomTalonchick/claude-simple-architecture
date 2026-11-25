@@ -1,18 +1,22 @@
 ## A Zustand store
 
 **Rule.** A Zustand store (`useOrdersStore`, made by `create`) is a store: its file holds `create(...)` with the
-state and its actions and nothing else, and its hook is called only from a Presenter or other stateful logic. A task
-or a plain function reaches the store through `getState()` and `setState()`; a View never reaches it.
+state and its actions, its read hooks and selectors, and nothing else, and its hooks are called only from a
+Presenter or other stateful logic. A task or a plain function reaches the store through `getState()` and
+`setState()`; a View never reaches it.
 
 **Why.** When every subscription goes through a Presenter or a hook, a reader sees from the Presenter what data a
-unit depends on, and a View stays free of hidden dependencies on app state. A task or a plain function acts at one
-moment: `getState()` / `setState()` give the current value and a way to change it, without React.
+unit depends on, and a View stays free of hidden dependencies on app state. A task or a plain function does not
+subscribe: `getState()` / `setState()` give the current value and a way to change it, without React.
 
 **How to check.**
 
 - A store file lies in a stores folder, a level's or the app's ([Levels](../../core/levels.md),
   [The app's tasks and stores folders](../../core/app-folders.md)); its `use…` name is right even though its own
   code calls no hook.
+- A read hook or a selector in the store file is the store's own when it means the same to every user
+  (`useHasOrders`), called as the store hook is. One that computes for one user is a violation: that unit's
+  stateful logic.
 - An action of the store that calls the server, calls a task, or does more than read and change the store's state is
   a violation: that part is a task, and the action only sets the result.
 - A store hook called in a component file (a View), a task or a plain function is a violation; so is `getState()` or
@@ -29,16 +33,17 @@ moment: `getState()` / `setState()` give the current value and a way to change i
 **Good.**
 
 ```ts
-// _stores/useOrdersStore.ts — the store: its state and actions only
+// _stores/useOrdersStore.ts — the store and its read hook
 export const useOrdersStore = create<OrdersState>()((set) => ({
   orders: [],
   setOrders: (orders) => set({ orders }),
 }));
+export const useHasOrders = () => useOrdersStore((s) => s.orders.length > 0);
 
 // _logic/useOrderCount.ts — stateful logic subscribes to the store
 export const useOrderCount = () => useOrdersStore((s) => s.orders.length);
 
-// _logic/_tasks/cancelOrder.ts — a task changes the store once
+// _logic/_tasks/cancelOrder.ts — a task changes the store
 export const cancelOrder = async (id: string) => {
   await api.cancelOrder(id);
   useOrdersStore.setState((s) => ({ orders: s.orders.filter((o) => o.id !== id) }));
@@ -73,6 +78,9 @@ export const useOrdersStore = create<OrdersState>()((set) => ({
   orders: [],
   load: async () => set({ orders: await api.getOrders() }),
 }));
+
+// _stores/useOrdersStore.ts — a hook for one page: that page's stateful logic
+export const useOrdersPageTitle = () => useOrdersStore((s) => `Orders (${s.orders.length})`);
 
 // OrderList/OrderList.tsx — a View reads the store
 export const OrderList = () => {

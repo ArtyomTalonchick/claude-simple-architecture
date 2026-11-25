@@ -31,9 +31,11 @@ without touching the logic around it, and the few kinds that reach it show who d
   - a store is data that lives longer than one call and is shared by the code that reads it — state several UI
     units read, each itself ([View and Presenter](view-presenter.md)), a cache or an in-memory table on a server.
     It is a kind of its own; code that subscribes to it to show its data is stateful logic;
-  - a store file holds the data and its own API — reading and changing that data — and nothing else. A server call,
-    a step of a business action, a subscription to show the data or a computation for one of its users in it is a
-    violation;
+  - a store file holds the data and its own API — reading and changing that data — and nothing else. A reading may
+    be a subscription the file exports for a Presenter or stateful logic — whether a user is signed in — when it
+    means the same to every user: it is part of the store, not a unit's stateful logic. A server call, a step of a
+    business action or a computation for one of its users — one page's title — in it is a violation: the
+    computation is that user's own logic;
   - on a server, a store's API may read and write its own database through the database's client: that is the
     store's own data, not a business action. A store that calls generic I/O, another service or another store's
     database is a violation;
