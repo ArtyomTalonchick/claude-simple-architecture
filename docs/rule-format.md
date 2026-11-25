@@ -61,6 +61,8 @@ Every fix adds text, so the rules are held short by a test and a review:
   `LC_ALL=C wc -w` counts them.
 - `node --test` fails when a file is over its budget, when a file has no budget, when a rule lacks a section of the
   template, and when a **Rule.** is longer than two sentences.
+- A check is stated in one rule file; another rule that needs it links to it and does not repeat it. An example
+  case is shown once, and a README only lists the rules.
 - A change that takes a file over its budget shortens the file in the same change. Raising a budget is a decision,
   stated in the commit message with the reason.
 - Before each release, the rules added since the last one are read again, and what repeats or no longer applies is

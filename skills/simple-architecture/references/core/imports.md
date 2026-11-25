@@ -113,6 +113,8 @@ src/
         StatusBadge
       OrderTable/
         OrderTable      imports _logic/presenter, OrdersPage/_components/StatusBadge
+        _logic/
+          presenter     imports tasks/cancelOrder
       OrderFilters/
         _logic/
           presenter     imports OrdersPage/_stores/filtersStore, OrdersPage/types, tasks/notifyUser

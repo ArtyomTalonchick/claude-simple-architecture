@@ -27,10 +27,10 @@ without the task.
   screen or imports from the UI framework — directly or through other plain functions — and navigation.
 - An event calls a task: a handler of a user action in a Presenter or stateful logic, directly or through a plain
   function of the UI side, of a request in the entry of a unit with no UI, or another task. An effect — code the UI
-  framework runs after a render or a change — and stateful logic outside a handler call a task only on start or
-  mount. One that watches state, props or a store and calls a task when they change is a violation — a "request
-  follows its params" piece and a delay that follows a value until it settles included: the handler that changed
-  the data calls the task, through a debounce made once when the call is delayed.
+  framework runs after a render or a change — and stateful logic outside a handler it returns or runs call a task
+  only on start or mount. One that watches state, props or a store and calls a task when they change is a
+  violation — a "request follows its params" piece and a delay that follows a value until it settles included:
+  the handler that changed the data calls the task, through a debounce made once when the call is delayed.
 - A Presenter, stateful logic or a plain function of the UI side that reads the app's data to decide whether to
   call a task is a violation: the condition is the task's — "go to the next page" itself returns when there is no
   next page. A value computed to show — a flag that disables a button — is not such a

@@ -24,7 +24,7 @@ than needed looks shared, so every change to it needs a search for users that do
   that child's stores folder), a type or a constant in a level's types file or constants file whose only users sit
   in one child unit (it goes into that child), a unit in the components folder with only one user (it goes to that
   user's folder as its child unit).
-- A file of a logic folder used from outside its unit ([Levels](levels.md)) goes where its kind says: a task or a
+- A file of a logic folder used from outside its unit ([Imports](imports.md)) goes where its kind says: a task or a
   plain function on the app's data used by two or more units to the app's tasks folder; code that knows nothing of
   the app to the pure zone ([Pure zone](pure-zone.md)); a type or a constant to the types file or the constants file
   of the lowest level that covers its users; behaviour of the UI to a component; a file whose only user is one child

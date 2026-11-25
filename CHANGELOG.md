@@ -7,6 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- The rules are shorter and say the same: a check stated in two rule files stays in one, and the other links to it
+  — when an effect or stateful logic may call a task is in "Tasks" only, what a plain function may import in
+  "Imports" only, who may import a file of a logic folder in "Imports" only. "Imports" no longer adds "never …" where
+  its closed lists already forbid the import. An example case is shown once. The core `README.md` is an index of the
+  rules, not a copy of each **Rule.** paragraph. Word budgets lowered to fit: the reviewer agent 1600→1400, the
+  core `README.md` 850→300, `core/pure-zone.md` 1450→1400, `core/stateful-logic-and-functions.md` 1700→1650, the
+  React `stateful-logic-and-functions.md` 750→700. `docs/rule-format.md` says how rules are kept short.
 - The reviewer agent is shorter: it resolves the config by `SKILL.md` instead of repeating the list of its values,
   and no longer has a "No rules yet" report — the core always has rules.
 
