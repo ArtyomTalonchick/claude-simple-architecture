@@ -20,8 +20,10 @@ without touching the logic around it, and the few kinds that reach it show who d
   - a task: an event, as [Tasks](tasks.md) sets;
   - a plain function: a Presenter, stateful logic, a task, another plain function, the entry of a unit with no UI,
     or a store when the plain function reaches no store;
-  - a store: a task and a plain function through the store's own API, once, at the time they are called, on any
-    app; on a client also a Presenter or stateful logic, which subscribe to it or call its API. A View, another store
+  - a store: a task and a plain function through the store's own API, at any moment they run, on any app — a task
+    after its own `await` too, such as a check that the answer still fits the store. The limit is against a
+    subscription, not against a second read. On a client also a Presenter or stateful logic, which subscribe to it
+    or call its API. A View, another store
     or the entry of a unit with no UI that reaches a store directly is a violation: a View takes the data from its
     Presenter, an entry calls a task. A store is not stateful logic, so reaching one calls none;
   - generic I/O: only a task and other generic I/O ([Pure zone](pure-zone.md)).
@@ -86,7 +88,7 @@ OrdersPage/
                         orders — one concern
     formatPrice         a plain function: number -> text
     _tasks/
-      cancelOrder       server call, then _stores/ordersStore: remove the order — once, no subscription
+      cancelOrder       server call, then _stores/ordersStore: remove the order — no subscription
   _stores/
     ordersStore         a store: the orders and its API — read, set, remove
   OrderSearch/

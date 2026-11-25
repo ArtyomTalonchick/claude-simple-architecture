@@ -16,6 +16,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   React `stateful-logic-and-functions.md` 750→700. `docs/rule-format.md` says how rules are kept short.
 - The reviewer agent is shorter: it resolves the config by `SKILL.md` instead of repeating the list of its values,
   and no longer has a "No rules yet" report — the core always has rules.
+- "Tasks" and "Stateful logic and plain functions" say that a task may read and change a store at any moment it
+  runs, after its own `await` too — the limit is against a subscription, not against a second read. A Good example
+  shows a task that checks the store again before it writes the answer.
 
 ## [0.3.0] — 2026-11-22
 

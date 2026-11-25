@@ -20,6 +20,8 @@ without the task.
   UI state in a store — which screen is shown, a flag for an animation — is a plain function. A function of the
   app that does I/O is a task. Both, and how a task reaches a store:
   [Stateful logic and plain functions](stateful-logic-and-functions.md).
+- A task may read and change a store at any moment it runs, after its own `await` too — such as a check that the
+  answer still fits. The limit is against a subscription, not a second read.
 - A plain function of the UI side — a screen swap inside a screen transition — may call a task, or take its call
   as a callback; one that redoes a task's store changes itself is a violation: those changes are the task.
 - From the outside a task is one action and one function; inside it may be split into smaller functions.
@@ -65,6 +67,8 @@ tasks/
     logout            await unsubscribePush(); await api.logout(); session store: clear
                       — called by LogoutButton and SessionExpired
     unsubscribePush   called by logout and deleteAccount
+    restoreSession    token = store.token; session = await api.refresh(token); store: session — if the
+                      store still holds that token: a second read, after the await
   shows/
     loadShows         store: status = loading; shows = await api.shows(store.page, store.genre); store: shows,
                       status = done; on failure store: status = error, the error, and it throws — several
