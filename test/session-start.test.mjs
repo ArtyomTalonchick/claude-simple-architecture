@@ -151,7 +151,7 @@ test('a byte order mark at the start of the file is ignored', () => {
   assert.match(out, /Stack: react\./);
 });
 
-test('several apps and a shared types package: each app with its own root and stack', () => {
+test('several apps and a shared package: each app with its own root and stack', () => {
   const out = runHook(
     JSON.stringify({
       apps: { client: { root: 'client/src', stack: ['React'] }, server: { root: 'server/src' } },
@@ -161,7 +161,10 @@ test('several apps and a shared types package: each app with its own root and st
   assert.match(out, /an app never imports from another app/);
   assert.match(out, /- client: root level client\/src\/; stack react; pure zone client\/src\/lib\//);
   assert.match(out, /- server: root level server\/src\/; stack none - core rules only;/);
-  assert.match(out, /Shared types package: shared\/src\/ - types only; every app may import it, and it imports no app\./);
+  assert.match(
+    out,
+    /Shared package: shared\/src\/ - types and the runtime code two or more apps use; every app may import it, and it imports no app\./
+  );
   assert.match(out, /only the declared stacks of the app whose root, or pure zone, holds the code\./);
   assert.doesNotMatch(out, /Root level: src|problems|Unknown/);
 });

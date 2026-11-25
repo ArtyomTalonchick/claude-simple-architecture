@@ -70,7 +70,7 @@ does not follow Simple Architecture. Every key is optional, so `{}` is a valid c
 }
 ```
 
-A repository with several apps declares them in `apps`, with a `shared` package of types they import; each app is
+A repository with several apps declares them in `apps`, with a `shared` package of the types and code they share; each app is
 checked on its own, by the core and its own stacks. Every key, its default and the form with `apps` are described in
 [SKILL.md](skills/simple-architecture/SKILL.md), section "The config"; what happens to a value that cannot be used,
 in [references/config.md](skills/simple-architecture/references/config.md).

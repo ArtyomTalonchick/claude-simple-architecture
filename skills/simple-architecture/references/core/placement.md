@@ -40,7 +40,8 @@ than needed looks shared, so every change to it needs a search for users that do
   used by tasks of the app's tasks folder or by two or more units lies in the app's tasks folder, and a Presenter
   may import it.
 - The pure zone and the app's tasks folder and stores folder are not placed by this rule: their code stays there
-  whatever the number of its users.
+  whatever the number of its users. Nor is what two apps use: [Imports](imports.md) says what the shared package
+  holds.
 
 **Good.**
 

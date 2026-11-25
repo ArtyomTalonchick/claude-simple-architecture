@@ -94,7 +94,8 @@ allowed, advice, "not checked" or "a judgement, not a check" is not a finding.
   never as a finding.
 - With `apps` in the config, check each changed file by the core and the stacks of its own app only, as `SKILL.md`
   assigns them, with levels starting at that app's root. A file outside every app's root, pure zone, tasks folder
-  and stores folder and the shared types package is not checked; name it in the report.
+  and stores folder and the shared package is not checked; name it in the report. A file of the shared package
+  gets the core only and is checked as its kind; first find which apps use it (`references/core/imports.md`).
 
 ## 5. Report
 

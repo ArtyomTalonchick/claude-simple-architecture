@@ -330,7 +330,7 @@ function main() {
     );
   }
   if (config.shared) {
-    lines.push(`Shared types package: ${config.shared}/ - types only; every app may import it, and it imports no app.`);
+    lines.push(`Shared package: ${config.shared}/ - types and the runtime code two or more apps use; every app may import it, and it imports no app.`);
   }
   lines.push(
     `On every level: the own unit's non-UI code in ${f.logic}/ next to its entry - only the unit itself imports from it - and the tasks only it calls in ${f.logic}/${f.tasks}/; its stores in ${f.stores}/, never in ${f.logic}/; its types and constants files at the level root; shared child units in ${f.components}/.`,

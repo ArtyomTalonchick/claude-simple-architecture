@@ -29,8 +29,8 @@ means the project does not follow Simple Architecture.
    it.
 
 Do not read stacks the project does not declare. With `apps` in the config, read the core and then only the stacks
-of the app whose root, pure zone set by `lib`, tasks folder or stores folder holds the code; code in the shared types
-package gets the core only.
+of the app whose root, pure zone set by `lib`, tasks folder or stores folder holds the code; code in the shared package
+gets the core only.
 
 ## The config
 
@@ -75,7 +75,7 @@ Every key is optional; a missing key takes its default. The full file with the d
 - **`maxFileLines`** — the size in lines above which a file is a violation
   ([One thing per file](references/core/one-thing-per-file.md)). Default `120`.
 
-A repository with several apps — a client, a server and a package of types they share — declares them instead of
+A repository with several apps — a client, a server and a package of code they share — declares them instead of
 `root`, `stack`, `lib`, `tasks` and `stores`:
 
 ```json
@@ -92,8 +92,8 @@ A repository with several apps — a client, a server and a package of types the
   `tasks` and `stores`, read as the top-level keys are; each app is checked on its own, from its own root, by its own
   stacks. The top-level `root`, `stack`, `lib`, `tasks` and `stores` are then ignored; `folders` and `maxFileLines`
   apply to every app.
-- **`shared`** — the shared types package, relative to the project root: types only, imported by every app,
-  importing no app ([Imports](references/core/imports.md)). Optional, no default, with or without `apps`.
+- **`shared`** — the shared package, relative to the project root: types and the runtime code two or more apps
+  use, imported by every app, importing no app ([Imports](references/core/imports.md)). Optional, no default, with or without `apps`.
 
 The rules name a folder by its role and its default, for example "the logic folder (default `_logic/`)"; in a
 project, use the configured name.

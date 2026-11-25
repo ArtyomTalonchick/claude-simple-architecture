@@ -2,7 +2,7 @@
 
 **Rule.** Import only along the structure — your own children through their entry, your own unit's logic folder,
 the shared folders and files of your level and of the levels above, the app's tasks folder and stores folder, the
-pure zone, the shared types package — and from an entry folder only its entry. Imports go one way: levels → the
+pure zone, the shared package — and from an entry folder only its entry. Imports go one way: levels → the
 app's tasks folder → the app's stores folder → the pure zone, and View → Presenter → stateful logic and the UI side's
 plain functions → tasks → plain functions, with stores and generic I/O open only to the kinds listed below.
 
@@ -27,7 +27,8 @@ sibling and branch are as in [Levels](levels.md).
   - the app's tasks folder, from any level and from inside it; the app's stores folder, from any level and from the
     app's tasks folder;
   - the pure zone of the own app, from anywhere in the app; a type of it from the module that exports it;
-  - the shared types package (`shared` in the config), from any app and any kind of code;
+  - the shared package (`shared` in the config), from any app: types, and the runtime code two or more apps use —
+    plain functions on its types, constants, schemas, and what would lie in a pure zone, generic I/O included;
   - packages from outside the project, from any kind of code.
 - An entry folder, a store entry folder included, at any depth and in any folder, is imported only through its
   entry ([Entry folders](entry-folders.md)); inside it, the entry imports its parts and the parts import each other.
@@ -42,15 +43,18 @@ sibling and branch are as in [Levels](levels.md).
     [View and Presenter](view-presenter.md);
   - in a logic folder, an import of the own unit's entry, of a type too: the file that needs a type declares it;
   - in the app's tasks folder, an import from anywhere but that folder, the app's stores folder, the pure zone and
-    the shared types package; in the app's stores folder, from anywhere but the pure zone and the shared types
-    package — no level, and no task from a store;
+    the shared package; in the app's stores folder, from anywhere but the pure zone and the shared package — no
+    level, and no task from a store;
   - with `apps` in the config, an import from another app — its code, its pure zone, anything under its root; what
-    two apps share goes to the shared types package, if it is a type;
-  - in the shared types package, an import from any app, or any runtime code — a function, a constant, a value;
+    two apps share goes to the shared package;
+  - in the shared package, an import from any app; a store, a task, stateful logic or a component; code only one
+    app uses — it goes to that app;
   - in the pure zone, an import from the app ([Pure zone](pure-zone.md)).
 - By kind, among the allowed targets, an import outside this list is a violation. Code of the pure zone counts as
   its kind: a pure function as a plain function, pure stateful logic as stateful logic, a ui-kit component as a
-  component. An error class of the pure zone — such as the error generic I/O throws — is
+  component. Code of the shared package is checked as its kind too ([One thing per file](one-thing-per-file.md),
+  [Entry folders](entry-folders.md)) and counts here as the pure zone of the app that imports it, so only a task
+  calls its generic I/O. An error class of the pure zone — such as the error generic I/O throws — is
   imported to throw it, or to tell the error apart by its class and answer with it:
   - the file the app starts from → the root entry, the child units of the root level it wraps the entry in, the
     tasks of the root unit's tasks folder it calls on start ([Levels](levels.md)), the pure zone, types, constants;
@@ -128,12 +132,17 @@ client/src/             app "client"
   OrderList/
     _logic/
       presenter         imports shared/src/order (the Order type)
+      _tasks/
+        signIn          imports shared/src/isValidPassword and shared/src/http/fetchJson
 server/src/             app "server"
   orders/
     orders              the entry: imports _logic/_tasks/createOrder, and lib/errors/NotFoundError to answer
                         "not found" when the task throws it
-shared/src/             the shared types package
-  order                 type Order — types only
+shared/src/             the shared package
+  order                 type Order
+  isValidPassword       a plain function with its constant — both apps check by it
+  http/
+    fetchJson           generic I/O
 ```
 
 **Bad.**
@@ -168,7 +177,8 @@ client/src/
       presenter         imports server/src/orders/_logic/_tasks/createOrder — another app
 shared/src/
   order                 imports client/src/OrderList — the shared package importing an app
-  orderStatuses         ORDER_STATUSES = ['new', 'paid'] — runtime code in the shared package
+  formatOrderRow        used only by client — it goes to client
+  sessionStore          a store
 ```
 
 **Stack notes.** None.

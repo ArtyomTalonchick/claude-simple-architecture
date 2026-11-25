@@ -42,6 +42,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   app needs before it runs, such as a server that stops when its config is wrong. "Levels" says it and shows it,
   "Imports" lists that task among the start file's targets, and "Tasks" lists the app's start among a task's
   callers; the word budget of `core/tasks.md` is raised 1400→1450 for it.
+- The shared package (`shared` in the config) may hold, next to types, the runtime code two or more apps use and
+  that imports no app: plain functions on its types, constants, schemas, and code that would lie in a pure zone,
+  generic I/O included. A store, a task, stateful logic, a component and code only one app uses are violations
+  there. Its files are checked as their kind, and only a task calls its generic I/O. The session-start hook, the
+  skill and the reviewer no longer call it types-only. The word budget of `core/imports.md` is raised 1550→1600
+  for the new target, its violations and the two example cases.
 
 ## [0.3.0] — 2026-11-22
 

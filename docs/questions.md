@@ -662,3 +662,20 @@ takes a ready raw value, since how it is shown is the resource's concern, like a
 computation in the parameters, a text chosen by a condition and reading or changing the language are violations: a
 text that depends on data is built by the Presenter. Written into "View and Presenter" and "View and Presenter in
 React".
+
+## Q45. May the shared package hold runtime code that two apps share?
+
+**Question.** The shared package held types only (Q22), so code a client and a server must run the same way — the
+rule of valid credentials, schemas, a generic request function — was copied into each app, where the copies drift
+apart unseen, or was kept in the shared package as a written exception.
+
+**Context.** #81, split out of #35; from a project that follows the plugin.
+
+**Status.** answered
+
+**Answer.** Yes, when two or more apps use it and it imports no app: plain functions on the shared types,
+constants, schemas, and code that would lie in an app's pure zone, generic I/O included. A store, a task, stateful
+logic, a component and code only one app uses stay violations there. A file of the shared package is checked as its
+kind, and for the by-kind import limits it counts as the pure zone of the app that imports it, so only a task calls
+its generic I/O. This replaces "types only" of Q22. Written into "Imports", with a line in "Placement by users" and
+"Pure zone", `SKILL.md`, the session-start hook and the architecture-reviewer agent.

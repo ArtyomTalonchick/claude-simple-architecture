@@ -13,7 +13,7 @@ unit's code says what that unit does, and whether a file may import from it is a
 **How to check.**
 
 - A level is the app root (`root` in the config; with `apps`, each app's root — no level spans two apps, and the
-  shared types package is not a level) and every unit folder: a folder next to the unit's entry or in a components folder
+  shared package is not a level) and every unit folder: a folder next to the unit's entry or in a components folder
   that holds a file named as the folder, the unit's entry. In an app with a UI the entry is the unit's View; in an
   app with no UI it is the file that gives the unit to its users, such as the one that builds a server's routes.
 - The logic folder, the stores folder, the components folder, the types file and the constants file, and the files
