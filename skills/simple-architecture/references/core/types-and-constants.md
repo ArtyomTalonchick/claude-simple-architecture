@@ -13,17 +13,15 @@ with one user looks shared while it is not. A type that belongs to an API is fou
 - A file uses a type when it names it. A file that derives a type from another file's value or type — the type of
   a function, of its parameters or of its result — without naming the type it reaches does not use it and is not
   counted among its users.
-- The users of a type or a constant are files. Used by two or more files — of the own unit, of its child units, or
-  both — it lies in the types file or the constants file at the root of the lowest level that covers them; used by
-  a file of the app's tasks folder, in that folder's types file or constants file
-  ([The app's tasks and stores folders](app-folders.md)); used only inside one entry folder, in a types file or a
-  constants file in it ([Entry folders](entry-folders.md)).
+- The users are files — of the own unit, of its child units, or both — and a level's types file and constants file
+  lie at its root. Which types and constants the app's tasks folder and an entry folder keep in their own:
+  [The app's tasks and stores folders](app-folders.md), [Entry folders](entry-folders.md).
 - A violation: a type or a constant in a types file or a constants file with only one user file (it belongs in that
   file); one exported from one of its users to the others (it belongs in the shared file).
 - A props type and the types that are part of it stay with the View ([View and Presenter](view-presenter.md)),
   however many files use them: that is not a type exported from one of its users.
-- The pure zone has no types file: a pure-zone module's type stays in the module ([Pure zone](pure-zone.md)). The
-  type of a store's data is declared in the store file and imported from there.
+- A pure-zone module's type stays in the module ([Pure zone](pure-zone.md)); the type of a store's data is declared
+  in the store file and imported from there.
 
 **Good.**
 
@@ -42,8 +40,8 @@ OrdersPage/
 
 ```
 OrdersPage/
-  types                 OpenOrderOptions — moved out of openOrder because the presenter derives the type of
-                        openOrder's parameters; that is no use: it belongs in openOrder
+  types                 OpenOrderOptions — the presenter only derives it from openOrder's parameters, which is no
+                        use: it belongs in openOrder
                         SortKey — used only by orderFilters: it belongs in orderFilters
   _logic/
     orderFilters        exports OrderFilter, which the presenter imports — it belongs in OrdersPage/types

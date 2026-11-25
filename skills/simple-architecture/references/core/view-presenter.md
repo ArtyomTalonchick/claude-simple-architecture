@@ -26,13 +26,12 @@ handler does, can change without it.
   built from data (`"status." + p.status`), a computation in the parameters, a text chosen by a condition, reading
   or changing the language.
 - Choosing a value by a condition is a computation too: a fallback or a default for a missing value, a value picked
-  by a condition, a read of a field that may be missing, turning one "no value" into another, for a style key too;
-  choosing markup by a ready flag, or a style row by a ready key, is not.
+  by a condition, a read of a field that may be missing, turning one "no value" into another, for a style key too.
 - The whole View file counts: a constant computed outside the markup (a list mapped from another, text joined from
   parts) is a computation in the View.
 - How a Presenter calls a task is set by [Tasks](tasks.md).
-- A Presenter file with no logic in it (an empty or pass-through Presenter) is a violation. A plain read of a prop's
-  field is not logic: a Presenter that only returns its props or their fields (`name = props.show.name`) is one.
+- A Presenter file with no logic — empty or pass-through — is a violation. A plain read of a prop's field is not
+  logic: a Presenter that only returns its props or their fields (`name = props.show.name`) is one.
 - A child unit reads the store and calls the task in its own Presenter: handing it a value read from a store or
   computed from one, or a handler that only calls a task, is a violation. Props carry the item a list repeats the
   child for — whole, its id or a ready row — and options of the look (a size, a variant); a component, of the
@@ -40,8 +39,8 @@ handler does, can change without it.
   it; what one unit shows stays in its Presenter ([Tasks](tasks.md)).
 - A **warning**, not a violation: a Presenter whose own state and lifecycle fall into two or more groups by the
   two-concerns test of [Stateful logic and plain functions](stateful-logic-and-functions.md). Name the groups and
-  which could move out as stateful logic. Not counted: the stateful logic it calls, values computed from props or
-  from it, and a task's loading and error kept by the handler that calls it.
+  which could move out as stateful logic, as `OrderSearch` there. Not counted: the stateful logic it calls, values
+  computed from props or from it, and a task's loading and error kept by the handler that calls it.
 - A short handler that acts on the screen — prevent the default action, move the focus — may stay inline in the
   Presenter; it moves to a plain function when it grows or another file needs it.
 - The props type lives in the Presenter, and the View passes it on to its users, who import it from the View; a View
@@ -85,18 +84,6 @@ OrderPage/
                            pagination = page count > 1 ? { page, total, onPageChange = go to page } : nothing
   OrderStart/
   OrderResults/            its own Presenter reads the orders store
-```
-
-A large Presenter only joins: each group of its own state moves out as stateful logic.
-
-```
-SearchPage/
-  _logic/
-    presenter  (Presenter) field = searchField(); results = searchRequest(); screen = searchScreen()
-                           onChange(text): field.change(text); results.search(text)
-    searchField            the field: value, change, clear
-    searchRequest          the request: calls the task search, keeps its loading and result
-    searchScreen           which screen is shown, and the switch between them
 ```
 
 **Bad.**
