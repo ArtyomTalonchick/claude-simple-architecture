@@ -22,15 +22,17 @@ View's concern.
   for a text that depends on data.
 - Allowed in JSX: `{flag && <A />}` and `{flag ? <A /> : <B />}` on a value from the Presenter;
   `{pagination && <Pagination {...pagination} />}` on a component's ready props or `null`;
-  `{items.map((item) => <Row key={item.id} … />)}` on a ready array; `onClick={onSave}`;
-  `onClick={() => onSelect(item.id)}`; style props, `className`, `style`.
+  `{items.map((item) => <Row key={item.id} … />)}` on a ready array; `<Content />` for
+  `Content = CONTENTS[content]`; `onClick={onSave}`; `onClick={() => onSelect(item.id)}`; style props,
+  `className`, `style`.
 - A violation in JSX: `.filter`, `.sort`, `.reduce`, `.find` on data; `.toFixed`, `toLocaleString` or a template
-  string built from data; a comparison on raw data (`a > b`, `status === 'paid'`); an arrow with more than one call or
-  with a condition; `??`, `||` or `?:` that picks a value (`src={image ?? undefined}`, `title={name || 'Untitled'}`,
-  `label={isOpen ? 'Hide' : 'Show'}`); an optional read `a?.b`.
+  string built from data; a comparison on raw data or a ready key (`a > b`, `status === 'paid'`,
+  `content === 'empty'`); an arrow with more than one call or with a condition; `??`, `||` or `?:` that picks a
+  value (`src={image ?? undefined}`, `title={name || 'Untitled'}`, `label={isOpen ? 'Hide' : 'Show'}`); an optional
+  read `a?.b`.
 - The same counts anywhere in the component file: a module-level constant built with `.map`, `.flatMap`, `.filter`
-  or a template string goes to `usePresenter.ts`. A literal array or object is allowed, a style table read by a
-  ready key included.
+  or a template string goes to `usePresenter.ts`. A literal array or object is allowed, a table read by a ready key
+  included.
 - A `usePresenter.ts` that calls no hook and only returns its props or their fields (`name: show.name`) is a
   violation.
 - The props type is declared in `usePresenter.ts` and re-exported from the component file
@@ -94,6 +96,17 @@ export const Badge = (props: BadgeProps) => {
   return <span style={TONE_STYLES[tone]}>{label}</span>;
 };
 
+// CartPage/CartPage.tsx — usePresenter declares CartContent, the key's type
+import { usePresenter, type CartContent } from './_logic/usePresenter';
+
+const CONTENTS = { guest: CartGuest, empty: EmptyCart, list: CartList } satisfies Record<CartContent, FC>;
+
+export const CartPage = () => {
+  const { content } = usePresenter();
+  const Content = CONTENTS[content];
+  return <Content />;
+};
+
 // CartSummary/CartSummary.tsx — the resource formats the raw total and picks the plural
 export const CartSummary = (props: CartSummaryProps) => {
   const { t } = useTranslation();
@@ -108,7 +121,7 @@ export const SaveButton = (props: SaveButtonProps) => <Button icon="save" {...pr
 // EmptyCart/EmptyCart.tsx — no props, no props type
 export const EmptyCart = () => <Text>The cart is empty</Text>;
 
-// src/main.tsx — AppShell is a child unit of the root level; its only user is main.tsx
+// src/main.tsx — AppShell is a child unit of the root level
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AppShell>

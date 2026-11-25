@@ -27,6 +27,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   UI state stay in the handler or a plain function. A type goes the way the code does: a logic file that needs a
   part of the props type declares and exports it, and the Presenter imports it from there — in the types file when
   several logic files need it; a logic file that imports from its own View or Presenter, a type too, is a violation.
+- "View and Presenter": a View may pick one child of several from its own literal table by a ready key, as it picks
+  a style row. A ready key compared to a literal is a violation — a two-way choice goes by a ready flag, one of
+  three or more by the table. The type of a key the Presenter returns lives in the Presenter, and the View imports
+  it. The React rule shows the table of components in a Good example; its word budget is raised 1050→1100 for it.
 
 ## [0.3.0] — 2026-11-22
 
