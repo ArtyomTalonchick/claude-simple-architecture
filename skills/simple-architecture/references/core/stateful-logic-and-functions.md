@@ -17,8 +17,7 @@ without touching the logic around it, and the few kinds that reach it show who d
 - Who calls whom:
   - stateful logic: only a Presenter or other stateful logic. Called from a plain function or a task it is a
     violation; from a View, a violation of [View and Presenter](view-presenter.md);
-  - a task: an event handler of a Presenter, of stateful logic or of the entry of a unit with no UI, a plain
-    function only the UI side uses, or another task ([Tasks](tasks.md));
+  - a task: an event, as [Tasks](tasks.md) sets;
   - a plain function: a Presenter, stateful logic, a task, another plain function, the entry of a unit with no UI,
     or a store when the plain function reaches no store;
   - a store: a task and a plain function through the store's own API, once, at the time they are called, on any
@@ -42,13 +41,11 @@ without touching the logic around it, and the few kinds that reach it show who d
     [The app's tasks and stores folders](app-folders.md).
 - Plain functions:
   - the kind is decided by meaning, not by reaching a store: a business action, or a step of one, is a task; a
-    computation, a change of UI state in a store (which screen is shown, a flag for an animation) or an act on the
-    screen is a plain function;
+    computation, a change of UI state in a store or an act on the screen is a plain function;
   - a plain function that does I/O — calls the server, reads or writes a storage directly (the platform's key-value
     storage, a file), calls generic I/O — is a violation: it is a task. One that calls stateful logic,
     subscribes to a store or uses state or lifecycle is stateful logic;
-  - a plain function may call other plain functions and use types, constants, and the pure zone's pure functions,
-    error classes, types and constants;
+  - what a plain function may import: [Imports](imports.md);
   - a plain function that a task calls, directly or through other plain functions, has nothing from the UI: it does
     not read or change the focus, the selection or the elements on the screen, starts no screen transition,
     imports nothing from the UI framework and calls no task. One that does is a violation, also of [Tasks](tasks.md).
@@ -68,10 +65,7 @@ without touching the logic around it, and the few kinds that reach it show who d
     storage, calls generic I/O or carries out a business action is a violation: it is a task, for the tasks folder.
     A file in the tasks folder that uses state, lifecycle or a subscription, or calls stateful logic, is a
     violation: it is stateful logic, for the logic folder;
-  - stateful logic calls a task from a handler it returns or runs, or once on start or mount. Stateful logic that
-    watches a value — state, props, a store — and calls a task when it changes is a violation, a "request follows
-    its params" piece included, and so is a delay that follows a value until it settles and then calls the task
-    ([Tasks](tasks.md));
+  - when stateful logic may call a task: [Tasks](tasks.md);
   - two concerns in one piece is a violation: its state and results fall into two groups, and one needs from the
     other at most a plain value it could take as an argument — the value of a field and the request made with it.
     Split it and join the two, passing that value, in the Presenter or in other stateful logic. Steps of one job —
@@ -124,10 +118,7 @@ orders/
       loadOrder         reads _stores/ordersCache; on a miss, loads the order and puts it there
   _stores/
     ordersCache         orders by id in memory, with get, put and clear
-    favoritesStore/     two implementations behind one API
-      favoritesStore    the entry: picks the database where the app is deployed, memory otherwise
-      memoryStore
-      databaseStore     the API over the app's own database, through its client — the store's own I/O
+    favoritesStore      the API over the app's own database, through its client — the store's own I/O
 ```
 
 **Bad.**
@@ -147,7 +138,6 @@ OrdersPage/
   OrderSearch/
     _logic/
       orderSearch       the field and the request in one — two concerns
-      ordersRequest     watches the query it is given and calls searchOrders when it changes
 SearchPage/
   _logic/
     watchResize         adds a resize listener and returns, leaving it in place — stateful logic

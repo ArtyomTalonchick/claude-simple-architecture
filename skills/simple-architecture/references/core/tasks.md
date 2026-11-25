@@ -16,42 +16,37 @@ without the task.
 
 **How to check.**
 
-- A task is decided by meaning: would it stay the same action in another UI? Clearing the cart would — a task, even
-  as one store change. Changing UI state in a store — which screen is shown, a flag for an animation — is not, and
-  such code is a plain function ([Stateful logic and plain functions](stateful-logic-and-functions.md)). In the app,
-  a function that does I/O is a task, even when it calls generic I/O; the one exception is a server store reading
-  and writing its own database.
-- Borderline: a screen swap that changes two UI-state stores inside a screen transition and redraws the caret is a
-  plain function, not a task; it may call a task inside the transition, or take its call as a callback. A plain
-  function that redoes a task's store changes itself is a violation: those changes are the task.
+- A task is decided by meaning, by the Rule's test: clearing the cart is a task, even as one store change; changing
+  UI state in a store — which screen is shown, a flag for an animation — is a plain function. A function of the
+  app that does I/O is a task. Both, and how a task reaches a store:
+  [Stateful logic and plain functions](stateful-logic-and-functions.md).
+- A plain function of the UI side — a screen swap inside a screen transition — may call a task, or take its call
+  as a callback; one that redoes a task's store changes itself is a violation: those changes are the task.
 - From the outside a task is one action and one function; inside it may be split into smaller functions.
 - A violation in a task: an import from the UI framework, a call of stateful logic, a plain function that acts on the
   screen or imports from the UI framework — directly or through other plain functions — and navigation.
-- A task reads and changes a store once, through the store's own API, when it is called; it does not subscribe.
 - An event calls a task: a handler of a user action in a Presenter or stateful logic, directly or through a plain
   function of the UI side, of a request in the entry of a unit with no UI, or another task. An effect — code the UI
-  framework runs after a render or a change — calls a task only on start or mount. An effect or stateful logic that
-  watches state, props or a store and calls a task when they change is a violation: the handler that changed the
-  data calls the task.
+  framework runs after a render or a change — and stateful logic outside a handler call a task only on start or
+  mount. One that watches state, props or a store and calls a task when they change is a violation — a "request
+  follows its params" piece and a delay that follows a value until it settles included: the handler that changed
+  the data calls the task, through a debounce made once when the call is delayed.
 - A Presenter, stateful logic or a plain function of the UI side that reads the app's data to decide whether to
-  call a task is a violation: "go to the next page" reads the page and the page count from the store itself and
-  returns when there is no next page. A value computed to show — a flag that disables a button — is not such a
+  call a task is a violation: the condition is the task's — "go to the next page" itself returns when there is no
+  next page. A value computed to show — a flag that disables a button — is not such a
   condition, nor is what the event was about — the clicked item's id, the chosen value — passed as an argument,
   wherever the caller got it. Advice, not checked: a value the event does not choose, such as the current page, the
   task reads itself.
-- A delay before the call (debounce) is a plain function around the call, made once and called from the handler.
 - The state of a call — loading, error — and its result are kept by the caller around the call, or written by the
-  task to a store (loading before the request, the result or the error after) when units that did not call it show
-  them; such a task need not also report the failure to its caller. No check chooses between them, nor between
+  task to a store when units that did not call it show them; such a task need not also report the failure to its caller. No check chooses between them, nor between
   throwing a failure and returning it. Advice, not checked: what only the calling unit shows — the loaded list, its
   loading flag, its error — the task returns and the Presenter keeps; a store is for state several units need, a few
   units' UI state included.
-- A task that makes "the latest call wins" may keep the handle that cancels its ongoing call in a store, next to the
-  call's status. Only tasks use that handle; a Presenter, stateful logic or a View that reads or calls it is a
-  violation.
+- For "the latest call wins", a task may keep the handle that cancels its ongoing call in a store, next to the
+  call's status. Only tasks use it; a Presenter, stateful logic or a View that reads or calls it is a violation.
 - An optimistic update and its rollback are one task: on failure it undoes its change, then reports the failure or
-  writes it to a store. Where changes may run in parallel, the rollback undoes the
-  task's own change, not a snapshot of the whole state: advice, not checked.
+  writes it to a store. Advice, not checked: where changes may run in parallel, the rollback undoes the task's own
+  change, not a snapshot of the whole state.
 - Steps of one business action — a server call, several store changes that together make the action, other
   actions — in a Presenter, stateful logic or a plain function are a violation: they are a task. One call of a
   store's action is not, nor is a change of UI state.
@@ -85,8 +80,7 @@ tasks/
     clearCart         cart store: clear — one store change, yet a business action
 LogoutButton/
   _logic/
-    presenter         onClick: loading = true; try await logout(), go to the start page
-                      catch error -> error; finally loading = false
+    presenter         onClick: await logout(); go to the start page — navigation is the caller's
 ShowsPage/
   _logic/
     presenter         on mount: loadShows()
