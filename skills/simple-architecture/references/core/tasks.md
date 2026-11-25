@@ -18,13 +18,12 @@ without the task.
 
 - A task is decided by meaning, by the Rule's test: clearing the cart is a task, even as one store change; changing
   UI state in a store — which screen is shown, a flag for an animation — is a plain function. A function of the
-  app that does I/O is a task. Both, and how a task reaches a store:
+  app that does I/O is a task. Both, and how a task reaches a store — after its own `await` too:
   [Stateful logic and plain functions](stateful-logic-and-functions.md).
-- A task may read and change a store at any moment it runs, after its own `await` too — such as a check that the
-  answer still fits. The limit is against a subscription, not a second read.
 - A plain function of the UI side — a screen swap inside a screen transition — may call a task, or take its call
   as a callback; one that redoes a task's store changes itself is a violation: those changes are the task.
-- From the outside a task is one action and one function; inside it may be split into smaller functions.
+- From the outside a task is one action and one function. A function it is split into is a file of its own, a part
+  of the task ([Entry folders](entry-folders.md)).
 - A violation in a task: an import from the UI framework, a call of stateful logic, a plain function that acts on the
   screen or imports from the UI framework — directly or through other plain functions — and navigation.
 - An event calls a task: a handler of a user action in a Presenter or stateful logic, directly or through a plain
@@ -50,8 +49,9 @@ without the task.
   writes it to a store. Advice, not checked: where changes may run in parallel, the rollback undoes the task's own
   change, not a snapshot of the whole state.
 - Steps of one business action — a server call, several store changes that together make the action, other
-  actions — in a Presenter, stateful logic or a plain function are a violation: they are a task. One call of a
-  store's action is not, nor is a change of UI state.
+  actions — in a Presenter, stateful logic or a plain function are a violation: they are a task. The number of
+  store actions a handler calls, or of stores, does not decide: changes of UI state stay in the handler or a plain
+  function.
 - A large step that several actions need is a task of its own, and the actions call it.
 - Where a task lives: [Levels](levels.md), [The app's tasks and stores folders](app-folders.md),
   [Entry folders](entry-folders.md).
@@ -91,6 +91,7 @@ ShowsPage/
                       onGenreClick(genre): selectGenre(genre)
                       onNext: nextPage() — hasNext, to disable the button, is computed for the View
                       onFavoriteClick(show): toggleFavorite(show.id) — what the event was about
+                      onFiltersClick: draft store: reset; drawer store: open — UI state: no task
 ShowDetails/
   _logic/
     presenter         on mount: loading = true; try show = await loadShow(props.id)

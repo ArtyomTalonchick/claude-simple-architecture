@@ -18,8 +18,9 @@ with one user looks shared while it is not. A type that belongs to an API is fou
   [The app's tasks and stores folders](app-folders.md), [Entry folders](entry-folders.md).
 - A violation: a type or a constant in a types file or a constants file with only one user file (it belongs in that
   file); one exported from one of its users to the others (it belongs in the shared file).
-- A props type and the types that are part of it stay with the View ([View and Presenter](view-presenter.md)),
-  however many files use them: that is not a type exported from one of its users.
+- A props type and the types that are part of it are placed by [View and Presenter](view-presenter.md), however
+  many files use them: in the Presenter, or in the one logic file that needs the type, from which the Presenter
+  imports it — in the types file when several logic files need it. None of these is a violation here.
 - A pure-zone module's type stays in the module ([Pure zone](pure-zone.md)); the type of a store's data is declared
   in the store file and imported from there.
 
@@ -31,6 +32,7 @@ OrdersPage/
   _logic/
     presenter           derives the type of openOrder's parameters without naming it
     orderFilters
+    sortOrders          declares OrderSort, the type of a prop; the presenter imports it for the props type
     openOrder           declares OpenOrderOptions — its one user, so the type stays here
   _stores/
     filtersStore        declares Filters, the type of its data; its users import it from here

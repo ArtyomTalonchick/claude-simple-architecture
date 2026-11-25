@@ -11,9 +11,9 @@ thing; a limit that is only a signal gets waved away, so it is a rule.
 
 **How to check.**
 
-- A file that defines two or more things — two Views, a View and stateful logic, two plain functions — is a
-  violation, whether the second is exported or not: it gets its own file, placed by
-  [Placement by users](placement.md).
+- A file that defines two or more things — two Views, a View and stateful logic, two plain functions, a task and
+  a function it is split into — is a violation, whether the second is exported or not: it gets its own file, placed
+  by [Placement by users](placement.md).
 - Not a second thing: a type or a constant used only in this file, the props type of a View or a Presenter and the
   types that are part of it, and a View passing them on.
 - A file over `maxFileLines` lines is a violation: name the file, its size and the limit, and say what could move

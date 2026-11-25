@@ -47,7 +47,10 @@ handler does, can change without it.
   Presenter; it moves to a plain function when it grows or another file needs it.
 - The props type lives in the Presenter, and the View passes it on to its users, who import it from the View; a View
   without a Presenter declares its own. A type that is part of it — the type of one prop, such as a variant — goes
-  the same way, however many files use it, never to a types file.
+  the same way, however many units use it.
+- A type goes the way the code does: a logic file that needs a part of the props type declares and exports it, and
+  the Presenter imports it from there. A logic file never imports from its own View or Presenter
+  ([Imports](imports.md)).
 - A View without a Presenter that passes all its props on to one child may alias the child's props type. A unit
   with no props has none, not an empty one.
 

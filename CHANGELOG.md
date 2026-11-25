@@ -22,6 +22,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - "View and Presenter" says what the child-unit check limits — what a parent passes to a child unit of its own. A
   component of the ui-kit or a components folder may get any value or handler; a unit of a components folder may
   also read a store and call a task in its own Presenter, a ui-kit component may not.
+- Three places where the reviewer had to judge are settled. A function a task is split into is a file of its own, a
+  part of the task. The number of store actions a handler calls, or of stores, does not make it a task: changes of
+  UI state stay in the handler or a plain function. A type goes the way the code does: a logic file that needs a
+  part of the props type declares and exports it, and the Presenter imports it from there — in the types file when
+  several logic files need it; a logic file that imports from its own View or Presenter, a type too, is a violation.
 
 ## [0.3.0] — 2026-11-22
 

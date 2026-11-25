@@ -40,6 +40,7 @@ sibling and branch are as in [Levels](levels.md).
   - an import from another branch — anything under a level that is not the own level or one above it;
   - an import of a parent's or an ancestor's entry; what comes through props is set by
     [View and Presenter](view-presenter.md);
+  - in a logic folder, an import of the own unit's entry, of a type too: the file that needs a type declares it;
   - in the app's tasks folder, an import from anywhere but that folder, the app's stores folder, the pure zone and
     the shared types package; in the app's stores folder, from anywhere but the pure zone and the shared types
     package — no level, and no task from a store;
@@ -157,6 +158,7 @@ src/
                         imports OrderFilters/_logic/presenter — another branch
                         imports OrdersPage/_components/StatusBadge — a Presenter importing a component
                         imports lib/http/fetchJson — generic I/O outside a task
+          rowLabel      imports the row type from OrderTable — its own entry
       OrderFilters/
         _stores/
           filterStore   imported by OrdersPage/_logic/orderFilters — inside a child

@@ -34,10 +34,10 @@ View's concern.
 - A `usePresenter.ts` that calls no hook and only returns its props or their fields (`name: show.name`) is a
   violation.
 - The props type is declared in `usePresenter.ts` and re-exported from the component file
-  (`export type { ButtonProps, ButtonVariant } from './_logic/usePresenter'`, with the types that are part of it); a
-  component without a Presenter declares it in its own file. One that spreads all its props onto one child may alias
-  the child's (`export type SaveButtonProps = ButtonProps`); one with no props has no props type and takes no
-  parameter.
+  (`export type { ButtonProps, ButtonVariant } from './_logic/usePresenter'`, with the types that are part of it;
+  one a logic file declares, from that file); a component without a Presenter declares it in its own file. One that
+  spreads all its props onto one child may alias the child's (`export type SaveButtonProps = ButtonProps`); one
+  with no props has no props type and takes no parameter.
 - A short handler that acts on the DOM — `event.preventDefault()`, `inputRef.current?.focus()` — may stay inline in
   `usePresenter.ts`.
 - The start file (`main.tsx`) renders `App` and may wrap it in `StrictMode` and the providers the app mounts around
