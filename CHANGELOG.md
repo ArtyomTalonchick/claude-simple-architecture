@@ -48,6 +48,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   there. Its files are checked as their kind, and only a task calls its generic I/O. The session-start hook, the
   skill and the reviewer no longer call it types-only. The word budget of `core/imports.md` is raised 1550→1600
   for the new target, its violations and the two example cases.
+- The `architecture-reviewer` agent gets the diff before it reads the rules: when no changed file lies inside an
+  app or the shared package it says so at once and reads no rule file, and it reads only the stacks of the apps
+  that hold a changed file. The skill says a caller may skip the reviewer only for such a diff.
 
 ## [0.3.0] — 2026-11-22
 

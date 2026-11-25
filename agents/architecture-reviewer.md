@@ -21,9 +21,18 @@ git commands that change the index, the working tree, refs or the remote.
 3. No such file → the project does not follow Simple Architecture. Report that and stop; do not review.
    Not valid JSON, or a top level that is not an object → report that the config cannot be read and stop.
 
-The values are resolved in section 2, once `SKILL.md` is read.
+The values are resolved in section 3, once `SKILL.md` is read.
 
-## 2. Find the rules
+## 2. Get the diff
+
+- By default: `git diff HEAD` — staged and unstaged changes against the last commit. Also check
+  `git status --porcelain` for untracked files; read new untracked files in full and treat every line as added.
+- If the caller passes a range (for example `main...HEAD` or `abc123..def456`): `git diff <range>`.
+- If the caller passes files: `git diff HEAD -- <files>`, plus untracked ones among them read in full.
+
+An empty diff → report that there is nothing to review and stop.
+
+## 3. Find the rules
 
 The rules live in this plugin's `simple-architecture` skill: `skills/simple-architecture/` with `SKILL.md`,
 `references/core/` and `references/stack/<name>/`. Use the version the session loaded, so the skill and the review
@@ -41,6 +50,11 @@ check against the same rules. Find that folder in this order and use the first t
 
 If none exists, report that the rules could not be found and stop. Never review from memory.
 
+**The files to check.** Read `SKILL.md` and resolve every config value — with `apps`, each app's — by its section
+`## The config`, and a value that cannot be used by `references/config.md`. Say each such value in the report.
+Then list the files of the diff that lie inside an app's root level, pure zone, tasks folder or stores folder, or
+the shared package. No such file → say so at once and stop; read no rule file.
+
 **The rules version.** Read `version` from `.claude-plugin/plugin.json` two levels above the rules folder (the
 plugin's root, which holds `skills/`). If the file or the field is missing, the version is unknown; say so.
 
@@ -54,23 +68,11 @@ version.
 
 Then read, in this order:
 
-1. `SKILL.md`. Then resolve every config value — with `apps`, each app's — by its section `## The config`, and a
-   value that cannot be used by `references/config.md`. Say each such value in the report.
-2. The core: `references/core/README.md` and every other `.md` file in `references/core/`.
-3. For each declared stack, in the order the config lists them: its `README.md` and every rule file in its
-   folder. Do not read stacks the project does not declare. With `apps`, read the stacks of every app that holds
-   a changed file.
+1. The core: `references/core/README.md` and every other `.md` file in `references/core/`.
+2. The stacks of each app that holds a listed file, in the order the config lists them: each stack's `README.md`
+   and every rule file in its folder. Read no other stack.
 
 A rule is a `## <Rule name>` section with a **Rule.** paragraph. Do not invent rules or borrow them from elsewhere.
-
-## 3. Get the diff
-
-- By default: `git diff HEAD` — staged and unstaged changes against the last commit. Also check
-  `git status --porcelain` for untracked files; read new untracked files in full and treat every line as added.
-- If the caller passes a range (for example `main...HEAD` or `abc123..def456`): `git diff <range>`.
-- If the caller passes files: `git diff HEAD -- <files>`, plus untracked ones among them read in full.
-
-An empty diff → report that there is nothing to review and stop.
 
 ## 4. Check the change
 
@@ -92,10 +94,10 @@ allowed, advice, "not checked" or "a judgement, not a check" is not a finding.
   it out or overstating it.
 - A rule may name a check as a **warning** — a signal to look at, not a violation. Report it under Warnings,
   never as a finding.
-- With `apps` in the config, check each changed file by the core and the stacks of its own app only, as `SKILL.md`
-  assigns them, with levels starting at that app's root. A file outside every app's root, pure zone, tasks folder
-  and stores folder and the shared package is not checked; name it in the report. A file of the shared package
-  gets the core only and is checked as its kind; first find which apps use it (`references/core/imports.md`).
+- A file section 3 did not list is not checked; name it in the report.
+- With `apps` in the config, check each listed file by the core and the stacks of its own app only, as `SKILL.md`
+  assigns them, with levels starting at that app's root. A file of the shared package gets the core only and is
+  checked as its kind; first find which apps use it (`references/core/imports.md`).
 
 ## 5. Report
 
@@ -129,10 +131,10 @@ Warnings:
 - A newer version of the plugin is installed (0.2.0); this session uses 0.1.1. Restart the session to load the new rules.
 ```
 
-The warnings from section 2 — a newer version installed, the session's version not known — go here too.
+The warnings from section 3 — a newer version installed, the session's version not known — go here too.
 
-**Cannot review** (no config, config that cannot be read, rules not found, empty diff): one line that says which
-and why.
+**Cannot review** (no config, config that cannot be read, rules not found, empty diff, no file to check): one line
+that says which and why.
 
 Write in plain, short English. Do not suggest fixes unless the caller asks; the finding and its reason are the
 report.

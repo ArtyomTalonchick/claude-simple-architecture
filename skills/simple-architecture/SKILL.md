@@ -18,19 +18,21 @@ case no rule covers is decided by it.
 ## When it applies
 
 Use these rules when you write, change, move or review code structure — new files and modules, imports, where a
-piece of code belongs — in a project that has the config file `.claude/simple-architecture/config.json`. No file
-means the project does not follow Simple Architecture.
+piece of code belongs — in a project that has `.claude/simple-architecture/config.json`. No file means the project
+does not follow Simple Architecture.
+
+A caller may skip the `architecture-reviewer` agent only when no changed file lies inside an app or the shared
+package; one such file is reviewed.
 
 ## Order of reading
 
-1. The core: [references/core/](references/core/README.md) and every rule file in it. Core rules always apply.
+1. The core: [references/core/](references/core/README.md) and every rule file in it.
 2. The stacks the project declares, in the order it lists them: for each, `references/stack/<name>/README.md` and
    every rule file in that folder. A stack rule file is named as the core rule it carries out and never overrides
    it.
 
-Do not read stacks the project does not declare. With `apps` in the config, read the core and then only the stacks
-of the app whose root, pure zone set by `lib`, tasks folder or stores folder holds the code; code in the shared package
-gets the core only.
+With `apps` in the config, read the core and then only the stacks of the app whose root, pure zone set by `lib`,
+tasks folder or stores folder holds the code; code in the shared package gets the core only.
 
 ## The config
 
