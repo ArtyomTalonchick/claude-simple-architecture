@@ -38,6 +38,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - "Tasks": in an app with no UI the framework that takes its requests is not the UI framework — a task may import
   it, as its database client. A middleware is a task: one that two route units share lies in the app's tasks folder
   ("Placement by users"), and the one-user middleware in the example of "Levels" lies in its unit's tasks folder.
+- The file the app starts from may call, on start, a task of the root unit's tasks folder — a check or a setup the
+  app needs before it runs, such as a server that stops when its config is wrong. "Levels" says it and shows it,
+  "Imports" lists that task among the start file's targets, and "Tasks" lists the app's start among a task's
+  callers; the word budget of `core/tasks.md` is raised 1400→1450 for it.
 
 ## [0.3.0] — 2026-11-22
 

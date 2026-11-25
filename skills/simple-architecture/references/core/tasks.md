@@ -2,8 +2,8 @@
 
 **Rule.** Write each business action — one that would stay the same action in another UI — as a task: a function
 named with a verb, with nothing from the UI framework, that holds the action's steps and its conditions on the
-app's data. Call it from an event — a handler or another task, an effect only on start or mount — and leave to the
-caller only the state of the call and what follows, navigation included.
+app's data. Call it from an event — a handler, another task or the app's start, an effect only on start or
+mount — and leave to the caller only the state of the call and what follows, navigation included.
 
 **Why.** What a business action means does not depend on the UI: logging out is the same in a web app and a
 mobile one. Written inside stateful logic, it can run only inside a component; spread over a Presenter as a row of
@@ -29,11 +29,12 @@ without the task.
   app with no UI, the framework that takes requests is not the UI framework: a task, a middleware included, may
   import it, as its database client.
 - An event calls a task: a handler of a user action in a Presenter or stateful logic, directly or through a plain
-  function of the UI side, of a request in the entry of a unit with no UI, or another task. An effect — code the UI
-  framework runs after a render or a change — and stateful logic outside a handler it returns or runs call a task
-  only on start or mount. One that watches state, props or a store and calls a task when they change is a
-  violation — a "request follows its params" piece and a delay that follows a value until it settles included:
-  the handler that changed the data calls the task, through a debounce made once when the call is delayed.
+  function of the UI side, of a request in the entry of a unit with no UI, or another task. The file the app starts
+  from calls one on start ([Levels](levels.md)). An effect — code the UI framework runs after a render or a
+  change — and stateful logic outside a handler it returns or runs call a task only on start or mount. One that
+  watches state, props or a store and calls a task when they change is a violation — a "request follows its
+  params" piece and a delay that follows a value until it settles included: the handler that changed the data
+  calls the task, through a debounce made once when the call is delayed.
 - A Presenter, stateful logic or a plain function of the UI side that reads the app's data to decide whether to
   call a task is a violation: the condition is the task's — "go to the next page" itself returns when there is no
   next page. A value computed to show — a flag that disables a button — is not such a

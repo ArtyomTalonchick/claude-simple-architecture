@@ -45,10 +45,11 @@ unit's code says what that unit does, and whether a file may import from it is a
 - A child unit needs no prefix of its parent's name.
 - The root level is not named after its entry. Its root holds the entry, the file that builds the app (`App`,
   `createApp`), and the file the app starts from (`main`, `index`), which runs the entry and may wrap it in what the
-  app mounts around it — a theme, a data cache, a stricter checking mode for development. An app that runs in more
+  app mounts around it — a theme, a data cache, a stricter checking mode for development. On start it may call a
+  task of the root unit's tasks folder: a check or a setup the app needs before it runs. An app that runs in more
   than one runtime — a server started locally and as a cloud function — has one start file per runtime (`index`,
   `function`), each running the same entry; a second start file for one runtime is a violation. A unit that only the
-  start files use to wrap the entry is a child unit of the root level, next to the entry, and is not a violation.
+  start files use to wrap the entry is a child unit of the root level, next to the entry.
   The root level has no other exception: the rest of its unit's code follows the shape.
 - A test lives next to the code it tests — a test file beside it, or a tests folder in the folder that holds it, by
   the project's convention — and is not a unit, a level or a folder of the shape. Only where it lives is checked:
@@ -93,9 +94,12 @@ src/
 
 ```
 src/
-  index                 starts the app locally: serves createApp
+  index                 starts the app locally: awaits checkConfig, exits when it fails, serves createApp
   function              starts it as a cloud function: wraps createApp — one start file per runtime
   createApp             the root unit's entry: builds the app with its route modules
+  _logic/
+    _tasks/
+      checkConfig       a task: the check index awaits on start
   orders/
     orders              the entry: builds the routes of /orders
     _logic/
