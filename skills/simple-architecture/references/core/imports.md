@@ -103,7 +103,7 @@ src/
         presenter       imports _logic/orderFilters, tasks/cancelOrder, tasks/formatPrice, the row type from
                         OrderTable
         orderFilters    imports _stores/filtersStore, types, lib/debounce/debounce
-        selectedCount   a plain function: imports stores/ordersStore and reads it once
+        selectedCount   a plain function: imports stores/ordersStore and reads it
         _tasks/
           exportOrders/ the presenter imports exportOrders, its entry, and nothing else in it
             exportOrders  imports csvHeader and toCsvRow/toCsvRow — its parts, a nested entry folder through

@@ -19,9 +19,8 @@ with one user looks shared while it is not. A type that belongs to an API is fou
 - A violation: a type or a constant in a types file or a constants file with only one user file (it belongs in that
   file); one exported from one of its users to the others (it belongs in the shared file).
 - A props type, the types that are part of it and the type of a key the Presenter returns are placed by
-  [View and Presenter](view-presenter.md), however many files use them: in the Presenter, or in the one logic file
-  that needs the type, from which the Presenter imports it — in the types file when several logic files need it.
-  None of these is a violation here.
+  [View and Presenter](view-presenter.md), however many files use them; one that several logic files need lies in
+  the types file. None of these is a violation here.
 - A pure-zone module's type stays in the module ([Pure zone](pure-zone.md)); the type of a store's data is declared
   in the store file and imported from there.
 

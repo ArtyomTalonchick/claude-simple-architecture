@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.3.1] — 2026-11-25
+
 ### Changed
 
 - The rules are shorter and say the same: a check stated in two rule files stays in one, and the other links to it
@@ -55,6 +57,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   later commit of the same task adds — the file and its unit — and that user would make the placement right; the
   warning names the planned user. A user planned for another task does not count, and the placement rules do not
   change: code is placed by today's users.
+- "Types and constants" links to "View and Presenter" for where a props type, its parts and a key type live
+  instead of repeating it, and the example of "Imports" no longer says a plain function reads a store "once".
 
 ## [0.3.0] — 2026-11-22
 
