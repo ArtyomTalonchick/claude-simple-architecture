@@ -37,8 +37,7 @@ unit's code says what that unit does, and whether a file may import from it is a
   `hooks/`) or a file of non-UI code goes to the logic folder, a store to the stores folder, a unit next to the entry
   or to the components folder. Tests, the pure zone ([Pure zone](pure-zone.md)) and the app's tasks folder and
   stores folder are not part of the shape.
-- A file of the logic folder that anything but the unit's entry and the files of that folder imports is a
-  violation, found by the path ([Imports](imports.md)); where it goes is set by [Placement by users](placement.md).
+- Who may import a file of the logic folder: [Imports](imports.md).
 - A types file or a constants file in the logic folder, outside an entry folder, is a violation: it lies at the
   level root. A store in the logic folder or its tasks folder is a violation, even with one user: it goes to the
   stores folder of the same level.

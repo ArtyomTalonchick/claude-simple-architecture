@@ -40,38 +40,33 @@ sibling and branch are as in [Levels](levels.md).
   - an import from another branch — anything under a level that is not the own level or one above it;
   - an import of a parent's or an ancestor's entry; what comes through props is set by
     [View and Presenter](view-presenter.md);
-  - in the app's tasks folder, an import from any level; in the app's stores folder, an import from any level or
-    from the app's tasks folder. A file of the app's tasks folder imports only from that folder, the app's stores
-    folder, the pure zone and the shared types package; a file of the app's stores folder only from the pure zone
-    and the shared types package;
-  - an import of a part of an entry folder from outside that folder;
+  - in the app's tasks folder, an import from anywhere but that folder, the app's stores folder, the pure zone and
+    the shared types package; in the app's stores folder, from anywhere but the pure zone and the shared types
+    package — no level, and no task from a store;
   - with `apps` in the config, an import from another app — its code, its pure zone, anything under its root; what
     two apps share goes to the shared types package, if it is a type;
   - in the shared types package, an import from any app, or any runtime code — a function, a constant, a value;
   - in the pure zone, an import from the app ([Pure zone](pure-zone.md)).
 - By kind, among the allowed targets, an import outside this list is a violation. Code of the pure zone counts as
   its kind: a pure function as a plain function, pure stateful logic as stateful logic, a ui-kit component as a
-  component, generic I/O as generic I/O. An error class of the pure zone — such as the error generic I/O throws — is
+  component. An error class of the pure zone — such as the error generic I/O throws — is
   imported to throw it, or to tell the error apart by its class and answer with it:
   - the file the app starts from → the root entry, the child units of the root level it wraps the entry in, the
     pure zone, types, constants;
   - View → its own Presenter, child units, components from components folders and the ui-kit, types, constants;
   - the entry of a unit with no UI → child units, tasks, plain functions, error classes of the pure zone, types,
-    constants — never stateful logic;
-  - Presenter → stateful logic, tasks, stores, plain functions, error classes of the pure zone, types, constants —
-    never a View or a component;
-  - stateful logic → stateful logic, tasks, stores, plain functions, error classes of the pure zone, types,
     constants;
-  - task → tasks, stores, plain functions, generic I/O, error classes of the pure zone, types, constants — never a
-    View, a Presenter, stateful logic, the UI framework, or a plain function that acts on the screen or imports
-    from the UI framework ([Tasks](tasks.md));
+  - Presenter → stateful logic, tasks, stores, plain functions, error classes of the pure zone, types, constants;
+  - stateful logic → as a Presenter;
+  - task → tasks, stores, plain functions, generic I/O, error classes of the pure zone, types, constants — never
+    the UI framework, or a plain function that acts on the screen or imports from the UI framework
+    ([Tasks](tasks.md));
   - plain function → plain functions, stores, types, constants, and pure functions, error classes, types and
-    constants of the pure zone — never stateful logic or generic I/O; one that only the UI side uses may also
-    import tasks and the UI framework's API that is not stateful logic
-    ([Stateful logic and plain functions](stateful-logic-and-functions.md));
+    constants of the pure zone; one that only the UI side uses may also import tasks and the UI framework's API
+    that is not stateful logic ([Stateful logic and plain functions](stateful-logic-and-functions.md));
   - store → plain functions that reach no store, directly or through other plain functions, types, constants, and
-    pure functions, types and constants of the pure zone — never another store, a task or stateful logic. The entry
-    of a store entry folder imports its parts; on a server, a store may import the client of its own database;
+    pure functions, types and constants of the pure zone. The entry of a store entry folder imports its parts; on a
+    server, a store may import the client of its own database;
   - generic I/O → generic I/O, pure functions, error classes, types and constants of the pure zone. No kind but a
     task and generic I/O imports it.
 - A type-only import is allowed for every kind from any allowed target, a child's View included: a Presenter may
@@ -118,8 +113,6 @@ src/
         StatusBadge
       OrderTable/
         OrderTable      imports _logic/presenter, OrdersPage/_components/StatusBadge
-        _logic/
-          presenter     imports tasks/cancelOrder — the app's tasks folder, not the parent's logic folder
       OrderFilters/
         _logic/
           presenter     imports OrdersPage/_stores/filtersStore, OrdersPage/types, tasks/notifyUser

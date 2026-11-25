@@ -26,8 +26,8 @@ anyone else.
 - The folder holds its entry, its parts as files — one thing each — the entry folders of parts with parts of their
   own, and its tests (a tests folder or files beside the code, by the project's convention). Any other folder in it
   is a violation.
-- The entry imports its parts, a nested entry folder through its entry; the parts import each other. The users of
-  the folder are the users of its entry: it counts as one file of the folder that holds it.
+- The users of the folder are the users of its entry: it counts as one file of the folder that holds it. Imports
+  into and inside it: [Imports](imports.md).
 - The entry of a store entry folder is the store its users reach: it gives the API and, when the store has several
   implementations, picks one by the environment (in memory locally, a database where the app is deployed). An
   implementation is a part, not a store, so the entry importing it is not one store importing another.
