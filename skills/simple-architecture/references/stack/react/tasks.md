@@ -18,11 +18,13 @@ place; an effect that fetches when its dependencies change hides that link and n
   that imports from `react-dom` (`flushSync`), directly or through other plain functions, is a violation.
 - `navigate`, `router.push` or a redirect in a task is a violation.
 - A `useEffect` with dependencies that calls a task — `useEffect(() => { loadShows(genre) }, [genre])` — is a
-  violation, whatever the dependencies are (state, props, a store value, params built with `useMemo`); so is a
-  generic hook that fetches whenever its params change. Advice, not checked: a unit that loads by a prop that changes
-  while it stays mounted can get `key` from its parent, so a new value is a new mount.
-- A debounce before a task's call is made once — `const search = useMemo(() => debounce(searchShows, 300), [])` —
-  and called from the handler; `useDebouncedValue(text)` followed by an effect that calls the task is a violation.
+  violation, in a Presenter or any hook, whatever the dependencies are (state, props, a store value, params built
+  with `useMemo`); so is a generic hook that fetches whenever its params change — `useRequest(fn, params)`,
+  `useShows(genre)`. Advice, not checked: a unit that loads by a prop that changes while it stays mounted can get
+  `key` from its parent, so a new value is a new mount.
+- A debounce before a task's call is made once — `const search = useMemo(() => debounce(searchShows, 300), [])`, or
+  a ref — and called from the handler; `useDebouncedValue(text)` followed by an effect that calls the task is a
+  violation.
 - A condition on the app's data before a task's call — `if (page < pageCount) goToPage(page + 1)` in a Presenter —
   is a violation; `onFavoriteClick(show.id)` for the clicked item of a list read with a store hook is not.
 
