@@ -26,9 +26,8 @@ The values are resolved in section 2, once `SKILL.md` is read.
 ## 2. Find the rules
 
 The rules live in this plugin's `simple-architecture` skill: `skills/simple-architecture/` with `SKILL.md`,
-`references/core/` and `references/stack/<name>/`. Use the rules of the session's plugin version — the version
-the session loaded, which the skill uses too — so the skill and the review check against the same rules. Find
-that folder in this order and use the first that exists:
+`references/core/` and `references/stack/<name>/`. Use the version the session loaded, so the skill and the review
+check against the same rules. Find that folder in this order and use the first that exists:
 
 1. A path the caller gave you. If the caller gave only a version, the folder of that version in the plugin
    cache: `<home>/.claude/plugins/cache/*/simple-architecture/<version>/skills/simple-architecture/`, where
@@ -47,31 +46,22 @@ plugin's root, which holds `skills/`). If the file or the field is missing, the 
 
 **A newer version installed.** When the rules folder is in the plugin cache, Glob for
 `**/skills/simple-architecture/SKILL.md` under `<home>/.claude/plugins/cache/` and compare the version folder
-names — the folder that holds `skills/` — with the version used, as semver: compare major, then minor, then
-patch as numbers; a version with a pre-release part (`1.2.0-beta`) is lower than the same version without one.
-Any higher version → add a warning: a newer version of the plugin is installed (`<newest>`), this session uses
-`<version>`, restart the session to load the new rules. Do not switch to the newer version: the skill in this
-session still uses the session's version. Skip this check when the rules folder is outside the cache.
+names — the folder that holds `skills/` — with the version used, as semver: major, then minor, then patch as
+numbers; a version with a pre-release part (`1.2.0-beta`) is lower than the same version without one. Any higher
+version → add a warning: a newer version of the plugin is installed (`<newest>`), this session uses `<version>`,
+restart the session to load the new rules. Do not switch to it: the skill in this session still uses the session's
+version.
 
 Then read, in this order:
 
-1. `SKILL.md`. Then resolve the config values — the stack, the root level, the pure zone (`lib`, or
-   `folders.lib` under the root) and the ui-kit, the app's tasks folder and stores folder (`tasks` and `stores`, by
-   default next to the pure zone), the folder names, the file size limit, and with `apps` each app's
-   root, stack, pure zone, tasks folder and stores folder, and the shared types package — by its section
-   `## The config`, and a value that cannot be used by `references/config.md`. Say each such value in the
-   report.
+1. `SKILL.md`. Then resolve every config value — with `apps`, each app's — by its section `## The config`, and a
+   value that cannot be used by `references/config.md`. Say each such value in the report.
 2. The core: `references/core/README.md` and every other `.md` file in `references/core/`.
 3. For each declared stack, in the order the config lists them: its `README.md` and every rule file in its
    folder. Do not read stacks the project does not declare. With `apps`, read the stacks of every app that holds
    a changed file.
 
-A rule is a `## <Rule name>` section with a **Rule.** paragraph, written by the plugin's rule template. Text
-such as "No rules yet." or "No core rules yet." is not a rule.
-
-**No rules.** If the core and the declared stacks hold no rule, report that there are no rules to check
-against yet and stop. Do not invent rules, do not borrow rules from elsewhere, and do not say the change breaks
-or follows Simple Architecture.
+A rule is a `## <Rule name>` section with a **Rule.** paragraph. Do not invent rules or borrow them from elsewhere.
 
 ## 3. Get the diff
 
@@ -95,7 +85,6 @@ allowed, advice, "not checked" or "a judgement, not a check" is not a finding.
   only a few of its lines.
 - Before judging where a file lies, find who uses it: placement depends on its users
   (`references/core/placement.md`, `references/core/entry-folders.md`).
-- Core rules always apply. A stack rule carries out a core rule with one technology and never overrides it.
 - Line numbers are in the new version of the file (the `+` side of the diff). For a deleted file or a moved
   file, name the path and say so.
 - One finding per place and rule. If one place breaks two rules, give two findings.
@@ -103,19 +92,16 @@ allowed, advice, "not checked" or "a judgement, not a check" is not a finding.
   it out or overstating it.
 - A rule may name a check as a **warning** — a signal to look at, not a violation. Report it under Warnings,
   never as a finding.
-- Where a rule names a folder by its default, use the name from the project's config.
-- With `apps` in the config, check each changed file by the rules of its app — the app whose root, pure zone set
-  by `lib`, tasks folder or stores folder holds it: the core and that app's stacks only, with levels starting at
-  that root. A pure zone set apart by `lib` lies outside every level yet belongs to its app. A file in the shared
-  types package gets the core rules only. A file outside every app's root, pure zone, tasks folder and stores folder
-  and the shared package is not checked; name it in the report.
+- With `apps` in the config, check each changed file by the core and the stacks of its own app only, as `SKILL.md`
+  assigns them, with levels starting at that app's root. A file outside every app's root, pure zone, tasks folder
+  and stores folder and the shared types package is not checked; name it in the report.
 
 ## 5. Report
 
 Start with one line on what was reviewed: the rules version and the rules folder used, the diff source, and the
 stack read — for example `Rules 0.1.1 from <rules folder>; diff: git diff HEAD; stack: react.`, or with apps
-`…; apps: client (react, zustand), server (core only).` Name any unknown
-stack names that have no stack folder and any config value that took its default.
+`…; apps: client (react, zustand), server (core only).` Name any stack name that has no stack folder and any
+config value that took its default.
 
 Then one of these:
 
@@ -142,14 +128,7 @@ Warnings:
 - A newer version of the plugin is installed (0.2.0); this session uses 0.1.1. Restart the session to load the new rules.
 ```
 
-The warnings from section 2 — a newer version installed, the session's version not known — go here too, and are
-given even when the report is "No rules yet".
-
-**No rules yet:**
-
-```
-No rules to check against: the core and the declared stacks have no rules yet.
-```
+The warnings from section 2 — a newer version installed, the session's version not known — go here too.
 
 **Cannot review** (no config, config that cannot be read, rules not found, empty diff): one line that says which
 and why.

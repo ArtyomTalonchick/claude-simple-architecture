@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- The reviewer agent is shorter: it resolves the config by `SKILL.md` instead of repeating the list of its values,
+  and no longer has a "No rules yet" report — the core always has rules.
+
 ## [0.3.0] — 2026-11-22
 
 ### Added
