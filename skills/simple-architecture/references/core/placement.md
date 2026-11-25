@@ -35,10 +35,9 @@ than needed looks shared, so every change to it needs a search for users that do
   and in the logic folder outside the tasks folder when a Presenter, stateful logic or the entry of a unit with no UI
   uses it, with or without tasks — as a part of its one user when that user is an entry folder
   ([Entry folders](entry-folders.md)). One used only by tasks outside the tasks folder, or one used by a Presenter,
-  stateful logic or such an entry inside the tasks folder, is a violation. One that works on the app's data —
-  converts it, validates it, builds a request — and is used by tasks of the app's tasks folder or by two or more
-  units lies in the app's tasks folder, and a Presenter may import it. One that knows nothing of the app goes to the
-  pure zone.
+  stateful logic or such an entry inside the tasks folder, is a violation. One that works on the app's data and is
+  used by tasks of the app's tasks folder or by two or more units lies in the app's tasks folder, and a Presenter
+  may import it.
 - The pure zone and the app's tasks folder and stores folder are not placed by this rule: their code stays there
   whatever the number of its users.
 

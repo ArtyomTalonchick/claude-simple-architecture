@@ -57,8 +57,6 @@ function; called only from tasks, it keeps the app's I/O in the tasks.
   Such a component is app code placed by [Placement by users](placement.md): with one user, as its child unit;
   with more, in the components folder of the lowest level that covers them. When the call is a judgement, say so.
 - A pure zone below the root level (a module with its own lib folder) is a violation.
-- A pure-zone file with one user is not a placement violation: pure code stays here whatever the number of its
-  users.
 - The pure zone has no types file: a type a module exports — of its argument or its result, a ui-kit component's
   props type and the types that are part of it — is part of its API, and its users import it from that module.
 - [View and Presenter](view-presenter.md) and
