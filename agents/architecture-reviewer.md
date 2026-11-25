@@ -81,15 +81,17 @@ surrounding file when a rule depends on where the file lives, what it imports or
 rule's **How to check** covers — not taste, not general code quality, not rules of your own. What a rule calls
 allowed, advice, "not checked" or "a judgement, not a check" is not a finding.
 
-- The file limit is checked on the whole file, not on the diff: for every added or changed file, count the lines of
-  its whole new version and compare them with `maxFileLines`, skipping the files
-  `references/core/one-thing-per-file.md` exempts. A file over the limit is a violation even when the diff touches
-  only a few of its lines.
+- The file limit is checked on the whole file, even when the diff touches only a few of its lines: for every added
+  or changed file, count the lines of its whole new version and compare them with `maxFileLines`, skipping the
+  files `references/core/one-thing-per-file.md` exempts.
 - Before judging where a file lies, find who uses it: placement depends on its users
   (`references/core/placement.md`, `references/core/entry-folders.md`).
-- Line numbers are in the new version of the file (the `+` side of the diff). For a deleted file or a moved
-  file, name the path and say so.
-- One finding per place and rule. If one place breaks two rules, give two findings.
+- When the caller names a second user that a later commit of the same task adds — the file and its unit — and it
+  would make a placement right, report the placement under Warnings and name the planned user. A user of another
+  task does not count.
+- Line numbers are in the new version of the file (the `+` side of the diff). For a deleted or moved file,
+  name the path and say so.
+- One finding per place and rule.
 - When you are not sure a line breaks a rule, or the call is a judgement, say so in the finding rather than leaving
   it out or overstating it.
 - A rule may name a check as a **warning** — a signal to look at, not a violation. Report it under Warnings,
@@ -128,10 +130,11 @@ No findings: the change follows every rule checked (<N> rules).
 ```
 Warnings:
 - src/orders/OrderForm/OrderForm.tsx — <Rule name>: <what the signal says>
+- src/tasks/priceOrder.ts — <Rule name>: one user today; src/cart/Cart.tsx (unit cart) comes later in this task.
 - A newer version of the plugin is installed (0.2.0); this session uses 0.1.1. Restart the session to load the new rules.
 ```
 
-The warnings from section 3 — a newer version installed, the session's version not known — go here too.
+The warnings from section 3 go here too.
 
 **Cannot review** (no config, config that cannot be read, rules not found, empty diff, no file to check): one line
 that says which and why.

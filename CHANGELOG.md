@@ -51,6 +51,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - The `architecture-reviewer` agent gets the diff before it reads the rules: when no changed file lies inside an
   app or the shared package it says so at once and reads no rule file, and it reads only the stacks of the apps
   that hold a changed file. The skill says a caller may skip the reviewer only for such a diff.
+- The reviewer reports a placement under Warnings, not as a finding, when the caller names a second user that a
+  later commit of the same task adds — the file and its unit — and that user would make the placement right; the
+  warning names the planned user. A user planned for another task does not count, and the placement rules do not
+  change: code is placed by today's users.
 
 ## [0.3.0] — 2026-11-22
 
