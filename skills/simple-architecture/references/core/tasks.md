@@ -5,11 +5,11 @@ named with a verb, with nothing from the UI framework, that holds the action's s
 app's data. Call it from an event — a handler or another task, an effect only on start or mount — and leave to the
 caller only the state of the call and what follows, navigation included.
 
-**Why.** What a business action means does not depend on the UI: logging out is the same in a web app and in a
-mobile app. Written inside stateful logic, it can run only inside a component; spread over a Presenter as a row of
+**Why.** What a business action means does not depend on the UI: logging out is the same in a web app and a
+mobile one. Written inside stateful logic, it can run only inside a component; spread over a Presenter as a row of
 calls, it cannot be found as one action. A task keeps the action in one place that survives a change of the UI and
 can be called and tested on its own. When an event calls the task, the link between what happened and the request
-is read top to bottom in one place; when a handler only changes data and an effect elsewhere calls the task, a
+is read top to bottom; when a handler only changes data and an effect elsewhere calls the task, a
 change to one side breaks the other unseen. The caller sets the interface: a task takes and returns what its caller
 needs, so how it gets the data — a request, a cache — can change without the caller, and when the call starts
 without the task.
@@ -25,7 +25,9 @@ without the task.
 - From the outside a task is one action and one function. A function it is split into is a file of its own, a part
   of the task ([Entry folders](entry-folders.md)).
 - A violation in a task: an import from the UI framework, a call of stateful logic, a plain function that acts on the
-  screen or imports from the UI framework — directly or through other plain functions — and navigation.
+  screen or imports from the UI framework — directly or through other plain functions — and navigation. In an
+  app with no UI, the framework that takes requests is not the UI framework: a task, a middleware included, may
+  import it, as its database client.
 - An event calls a task: a handler of a user action in a Presenter or stateful logic, directly or through a plain
   function of the UI side, of a request in the entry of a unit with no UI, or another task. An effect — code the UI
   framework runs after a render or a change — and stateful logic outside a handler it returns or runs call a task
@@ -35,7 +37,7 @@ without the task.
 - A Presenter, stateful logic or a plain function of the UI side that reads the app's data to decide whether to
   call a task is a violation: the condition is the task's — "go to the next page" itself returns when there is no
   next page. A value computed to show — a flag that disables a button — is not such a
-  condition, nor is what the event was about — the clicked item's id, the chosen value — passed as an argument,
+  condition, nor is what the event was about — the clicked item's id — passed as an argument,
   wherever the caller got it. Advice, not checked: a value the event does not choose, such as the current page, the
   task reads itself.
 - The state of a call — loading, error — and its result are kept by the caller around the call, or written by the
@@ -52,9 +54,8 @@ without the task.
   actions — in a Presenter, stateful logic or a plain function are a violation: they are a task. The number of
   store actions a handler calls, or of stores, does not decide: changes of UI state stay in the handler or a plain
   function.
-- A large step that several actions need is a task of its own, and the actions call it.
-- Where a task lives: [Levels](levels.md), [The app's tasks and stores folders](app-folders.md),
-  [Entry folders](entry-folders.md).
+- A large step several actions need is a task of its own.
+- Where a task lives: [Levels](levels.md), [The app's tasks and stores folders](app-folders.md).
 - Advice, not checked: a task talks to the server through a small project module of tasks, one per request
   (`api.logout()`), which call the pure zone's generic I/O. The module is one file, placed by all the tasks that use
   it.
@@ -120,7 +121,7 @@ SearchBox/
 SearchPage/
   _logic/
     _tasks/
-      showResults     the screen swap with a screen transition — UI code as a task
+      showResults     a screen swap with its transition — UI code as a task
 CartPage/
   _logic/
     clearCart         cart store: clear — a business action outside a tasks folder

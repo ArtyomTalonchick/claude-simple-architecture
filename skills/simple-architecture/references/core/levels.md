@@ -99,7 +99,8 @@ src/
   orders/
     orders              the entry: builds the routes of /orders
     _logic/
-      requireUser
+      _tasks/
+        requireUser     a middleware only these routes use — a task
     items/              the routes of /orders/:id/items — a child unit
       items
 ```

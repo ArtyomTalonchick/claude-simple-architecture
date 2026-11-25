@@ -35,6 +35,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   to every user, such as "is a user signed in"; a Presenter or stateful logic calls them as it calls the store. The
   core and the Zustand rule now say the same. A computation for one user in a store file stays a violation, and the
   Zustand rule shows both cases; its word budget is raised 700→750 for them.
+- "Tasks": in an app with no UI the framework that takes its requests is not the UI framework — a task may import
+  it, as its database client. A middleware is a task: one that two route units share lies in the app's tasks folder
+  ("Placement by users"), and the one-user middleware in the example of "Levels" lies in its unit's tasks folder.
 
 ## [0.3.0] — 2026-11-22
 
