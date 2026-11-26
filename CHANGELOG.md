@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.3.2] — 2026-11-26
+
 ### Changed
 
 - Wording left unclear after 0.3.1 is tidied, and no rule changes: "Stateful logic and plain functions" says that
