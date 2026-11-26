@@ -613,11 +613,11 @@ check reported it. Nor was it clear whether a Presenter that only reads fields o
 **Answer.** No. A child unit reads the store and calls the task in its own Presenter; a Presenter that hands a
 child unit a value read from a store or computed from one, or a handler that only calls a task, is a violation.
 Props carry the item a list repeats the child for — whole, its id or a ready row — and options of the look. A
-component, of the ui-kit or of a components folder, takes all as props: it has several users. What several units
-read is a store, in the shape they read it; what one unit shows stays in its Presenter (Q39). A plain read of a
-prop's field is not a computation, so a Presenter that only returns its props or their fields is a pass-through
-Presenter. Written into "View and Presenter", "View and Presenter in React", "Imports" and "Stateful logic and
-plain functions".
+component, of the ui-kit or a components folder, may get any value or handler: it has several users. What
+several units read is a store, in the shape they read it; what one unit shows stays in its Presenter (Q39). A
+plain read of a prop's field is not a computation, so a Presenter that only returns its props or their fields is
+a pass-through Presenter. Written into "View and Presenter", "View and Presenter in React", "Imports" and
+"Stateful logic and plain functions".
 
 ## Q42. May a View read its own style table by a key?
 

@@ -22,12 +22,12 @@ without the task.
   [Stateful logic and plain functions](stateful-logic-and-functions.md).
 - A plain function of the UI side — a screen swap inside a screen transition — may call a task, or take its call
   as a callback; one that redoes a task's store changes itself is a violation: those changes are the task.
-- From the outside a task is one action and one function. A function it is split into is a file of its own, a part
-  of the task ([Entry folders](entry-folders.md)).
+- From the outside a task is one action and one function. A function it is split into is a part of it
+  ([One thing per file](one-thing-per-file.md), [Entry folders](entry-folders.md)).
 - A violation in a task: an import from the UI framework, a call of stateful logic, a plain function that acts on the
   screen or imports from the UI framework — directly or through other plain functions — and navigation. In an
   app with no UI, the framework that takes requests is not the UI framework: a task, a middleware included, may
-  import it, as its database client.
+  import it, as it imports its database client.
 - An event calls a task: a handler of a user action in a Presenter or stateful logic, directly or through a plain
   function of the UI side, of a request in the entry of a unit with no UI, or another task. The file the app starts
   from calls one on start ([Levels](levels.md)). An effect — code the UI framework runs after a render or a

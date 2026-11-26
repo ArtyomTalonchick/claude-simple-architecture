@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- Wording left unclear after 0.3.1 is tidied, and no rule changes: "Stateful logic and plain functions" says that
+  a task does not subscribe and may read again, without "the limit"; "Tasks" says that a task may import the
+  framework that takes requests as it imports its database client, and links to "One thing per file" for the file
+  of a function a task is split into.
+
 ## [0.3.1] — 2026-11-25
 
 ### Changed
