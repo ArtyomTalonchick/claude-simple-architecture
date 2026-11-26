@@ -93,6 +93,8 @@ allowed, advice, "not checked" or "a judgement, not a check" is not a finding.
   name the path and say so.
 - A runtime schema is a plain function (`references/core/stateful-logic-and-functions.md`): check its file, place
   and imports as one, never as a constant and never as a judgement.
+- A store of the pure zone (`references/core/pure-zone.md`): a ui-kit component's Presenter that only returns it,
+  for a library component that subscribes to it, is no finding; a View that imports it is one.
 - A written exception the project or the caller gives is not a finding for what it names; one that names a kind of
   code — schemas — covers every file of that kind.
 - One finding per place and rule.

@@ -27,7 +27,13 @@ function; called only from tasks, it keeps the app's I/O in the tasks.
   (`lib/theme/`: tokens and the styles of ui-kit components), icons, styles, stateful logic (`lib/disclosure/`),
   pure functions (`lib/dates/`) — and the ui-kit when it is set inside it. What a function does decides its kind
   ([Stateful logic and plain functions](stateful-logic-and-functions.md)), not its folder. A pure function is a
-  plain function of the pure zone, so it reaches no store.
+  plain function of the pure zone, so it reaches no store of the app.
+- State the pure zone keeps — data that lives longer than one call and knows nothing of the app, such as a queue of
+  messages a library component shows — is a store of the pure zone. It lies in the folder named by its subject,
+  next to the code that fills it (`lib/toasts/`); the pure zone has no stores folder, and `lib/stores/` is a folder
+  named by a kind. A plain function and stateful logic of the pure zone and the Presenter of a ui-kit component
+  reach it ([View and Presenter](view-presenter.md)); other code reaches it only through them. A View that imports
+  it is a violation, as with any store.
 - A folder in the lib folder named by the kind of code — `hooks/`, `helpers/`, `utils/`, `functions/`, `services/`
   and the like — is a violation: each piece in it goes to a folder named by its subject (a debounce to
   `lib/debounce/`). The ui-kit, errors, the theme, icons and styles are not kinds.
@@ -75,6 +81,11 @@ src/
       Skeleton/           a generic placeholder block of a given size
       Modal/              its close button's accessible label defaults to "Close", replaceable by its user
       SearchField/        looks up the style "searchField", registered in lib/theme/
+      Toaster/            its presenter returns toastQueue; its View hands it to the library's toaster component,
+                          which subscribes to it — not a pass-through
+    toasts/
+      toastQueue          a store of the pure zone: the messages, made by the library's factory
+      showToast           a plain function: puts a message in toastQueue; the app's tasks and presenters call it
     disclosure/
       disclosure          stateful logic: open / closed state
     dates/
@@ -104,11 +115,14 @@ src/
 src/
   lib/
     ui-kit/
-      UserAvatar/         its presenter reads the current user from the store
+      UserAvatar/         its presenter reads the current user from the app's store
       OrderCard/          plain props, no app imports — but a card of an order
       OrderCardSkeleton/  the placeholder of OrderCard
       CheckoutButton/     holds the app's label "Go to checkout"
       SearchField/        looks up the style "searchField", registered in theme/ — an app dependency by key
+      Toaster/            its View imports toastQueue — a View reaching a store
+    stores/
+      toastQueue          a folder named by the kind of code — it belongs in lib/toasts/ with showToast
     dates/
       formatDate          imports the Order type from the app
     _tasks/

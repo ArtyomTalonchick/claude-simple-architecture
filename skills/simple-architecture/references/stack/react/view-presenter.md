@@ -34,7 +34,8 @@ View's concern.
   or a template string goes to `usePresenter.ts`. A literal array or object is allowed, a table read by a ready key
   included.
 - A `usePresenter.ts` that calls no hook and only returns its props or their fields (`name: show.name`) is a
-  violation.
+  violation. One that returns a store's object (`() => ({ toaster })`) is not
+  ([View and Presenter](../../core/view-presenter.md)).
 - The props type is declared in `usePresenter.ts` and re-exported from the component file
   (`export type { ButtonProps, ButtonVariant } from './_logic/usePresenter'`, with the types that are part of it;
   one a logic file declares, from that file); a component without a Presenter declares it in its own file. One that

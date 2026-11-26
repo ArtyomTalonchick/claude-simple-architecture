@@ -16,6 +16,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   project's written exception that names schemas as covering every schema file. Word budgets raised to fit: the
   reviewer agent 1400→1500, `core/stateful-logic-and-functions.md` 1650→1800, `core/one-thing-per-file.md`
   350→450, `core/types-and-constants.md` 500→550.
+- "Pure zone" says that state the pure zone keeps — such as a queue of messages a library component shows — is a
+  store of the pure zone: it lies in the folder named by its subject, next to the code that fills it, and a
+  `stores/` folder there is named by a kind. A plain function and stateful logic of the pure zone and the Presenter
+  of a ui-kit component reach it, other code only through them, and a View that imports it is a violation. "A pure
+  function reaches no store" and "a ui-kit component reads no store" now mean the app's stores. "View and
+  Presenter" and "View and Presenter in React" say that a Presenter that hands its View a store's object, for a
+  library component that subscribes to it by itself, is not a pass-through; "Imports" counts the pure zone's state
+  as a store, and the reviewer reports the View, not the Presenter. Word budgets raised to fit:
+  `core/pure-zone.md` 1400→1600, `core/imports.md` 1600→1650, `core/view-presenter.md` 1150→1200,
+  `stack/react/view-presenter.md` 1100→1150.
 
 ## [0.3.2] — 2026-11-26
 

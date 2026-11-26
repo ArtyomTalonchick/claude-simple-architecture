@@ -713,3 +713,23 @@ users of their own in one file are a violation. The inferred type is part of the
 library and needs no stack rule. Written into "Stateful logic and plain functions", "One thing per file", "Types
 and constants" and the architecture-reviewer agent, which also reads a project's written exception that names
 schemas as covering every schema file.
+
+## Q48. Is a library's state in the pure zone a store, and who reaches it?
+
+**Question.** A library object that holds state — a queue of messages made in the pure zone, filled by a function
+next to it and shown by a ui-kit component — fit no rule. As a store a View could not import it, and the Presenter
+that only returns it to its View read as a pass-through; yet the store rules were written for levels, and the pure
+zone has no stores folder.
+
+**Context.** #70, moved out of #67 and #54; from a project that follows the plugin.
+
+**Status.** answered
+
+**Answer.** It is a store of the pure zone, not an object a View mounts as it mounts a theme: it changes while the
+app runs and is written from elsewhere. It lies in the lib folder, in the folder named by its subject, next to the
+code that fills it; a `stores/` folder there is a folder named by a kind. A plain function and stateful logic of the
+pure zone and the Presenter of a ui-kit component reach it, other code only through them, and a View that imports
+it is a violation, as with any store. A Presenter that hands its View the store's object, for a library component
+that subscribes to it by itself, reads the store: it stays, and it is not a pass-through. Written into "Pure zone",
+"Stateful logic and plain functions", "View and Presenter", "View and Presenter in React", "Imports" and the
+architecture-reviewer agent.

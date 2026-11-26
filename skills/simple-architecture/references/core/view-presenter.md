@@ -32,14 +32,15 @@ without it.
   parts) is a computation in the View.
 - How a Presenter calls a task is set by [Tasks](tasks.md).
 - A Presenter file with no logic — empty or pass-through — is a violation; a plain read of a prop's field
-  (`name = props.show.name`) is not logic.
+  (`name = props.show.name`) is not logic. A Presenter that hands its View a store's object, for a library
+  component that subscribes to it by itself, reads the store: it is not a pass-through, and not a finding.
 - A child unit reads the store and calls the task in its own Presenter: handing it a value read from a store or
   computed from one, or a handler that only calls a task, is a violation. Props carry the item a list repeats the
   child for — whole, its id or a ready row — and options of the look (a size, a variant). This limits what a parent
   passes to a child of its own: a component, of the ui-kit or a components folder, may get any value or handler.
   A unit of a components folder may also read a store and call a task in its own Presenter; a ui-kit component
-  may not ([Pure zone](pure-zone.md)). What several units read is a store, in the shape they read it; what one
-  unit shows stays in its Presenter ([Tasks](tasks.md)).
+  calls no task and reads no store of the app, only one of the pure zone ([Pure zone](pure-zone.md)). What several
+  units read is a store, in the shape they read it; what one unit shows stays in its Presenter ([Tasks](tasks.md)).
 - A **warning**, not a violation: a Presenter whose own state and lifecycle fall into two or more groups by the
   two-concerns test of [Stateful logic and plain functions](stateful-logic-and-functions.md). Name the groups and
   which could move out as stateful logic, as `OrderSearch` there. Not counted: the stateful logic it calls, values
