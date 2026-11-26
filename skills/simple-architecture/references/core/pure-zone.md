@@ -3,7 +3,8 @@
 **Rule.** Keep code that knows nothing of the app — by import, by key or by meaning — in the pure zone: the lib
 folder (default `lib/`) at the root level, or where the app's `lib` key puts it, with the ui-kit and the
 design-system theme, in folders named by what their code is about, never by the kind of code. Generic I/O, code
-that does I/O and knows nothing of the app, is a kind of its own: it lives only here, and only tasks call it.
+that does I/O and knows nothing of the app, is a kind of its own: it lives here, or in the shared package when two
+or more apps use it, and only tasks call it.
 
 **Why.** Pure code is the base the rest of the app stands on. As long as it knows nothing of the app, it changes
 only for its own reasons, can be reused anywhere in the app and moved to another project as it is; it is a base,
@@ -34,8 +35,8 @@ function; called only from tasks, it keeps the app's I/O in the tasks.
   no business logic. Its code that knows nothing of the app is generic I/O or a pure function; code that knows the
   app is a task and goes to the app.
 - Generic I/O does a request or a storage access with only what its caller passes in — no endpoint, key or data
-  shape of the app. Only a task and other generic I/O call it; a Presenter, stateful logic, a plain function, a
-  View, a store or the entry of a unit with no UI that calls it is a violation.
+  shape of the app. Only a task and other generic I/O call it, in the shared package too; a call from any other
+  kind is a violation ([Imports](imports.md)).
 - A pure-zone file that imports from the app is a violation: any path under the root level outside the pure zone,
   and the app's code outside the root level, such as the start file and the app's tasks folder and stores folder.
   Packages, other pure-zone files and files that are not app code (design assets such as an icon sprite) are

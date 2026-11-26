@@ -11,6 +11,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   a task does not subscribe and may read again, without "the limit"; "Tasks" says that a task may import the
   framework that takes requests as it imports its database client, and links to "One thing per file" for the file
   of a function a task is split into.
+- "Pure zone" no longer says that generic I/O lives only in the pure zone, which disagreed with "Imports" since
+  0.3.1: generic I/O lives in the pure zone of its app, or in the shared package when two or more apps use it, and
+  only a task and other generic I/O call it in both places. The reviewer no longer has a reason to report a generic
+  request function two apps share for lying in the shared package.
 
 ## [0.3.1] — 2026-11-25
 
