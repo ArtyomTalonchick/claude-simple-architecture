@@ -27,7 +27,9 @@ without the task.
 - A violation in a task: an import from the UI framework, a call of stateful logic, a plain function that acts on the
   screen or imports from the UI framework — directly or through other plain functions — and navigation. In an
   app with no UI, the framework that takes requests is not the UI framework: a task, a middleware included, may
-  import it, as it imports its database client.
+  import it, as it imports its database client. A middleware's caller is the framework's chain of handlers: the
+  refusal it answers with and passing the request on are its result, and what follows — the route's handler —
+  stays with the chain.
 - An event calls a task: a handler of a user action in a Presenter or stateful logic, directly or through a plain
   function of the UI side, of a request in the entry of a unit with no UI, or another task. The file the app starts
   from calls one on start ([Levels](levels.md)). An effect — code the UI framework runs after a render or a

@@ -679,3 +679,17 @@ logic, a component and code only one app uses stay violations there. A file of t
 kind, and for the by-kind import limits it counts as the pure zone of the app that imports it, so only a task calls
 its generic I/O. This replaces "types only" of Q22. Written into "Imports", with a line in "Placement by users" and
 "Pure zone", `SKILL.md`, the session-start hook and the architecture-reviewer agent.
+
+## Q46. Does a middleware that answers the request or passes it on do "what follows" itself?
+
+**Question.** A middleware is a task, and a task leaves to its caller what follows the action; yet a middleware
+answers the request with a refusal and passes it on to the next handler itself, so it read as a violation of
+"Tasks".
+
+**Context.** #83, after #77 placed a middleware as a task.
+
+**Status.** answered
+
+**Answer.** No. The caller of a middleware is the framework's chain of handlers, so the refusal it answers with and
+passing the request on are its result, as a returned value is another task's; what follows — the handler of the
+route — stays with the chain. The middleware is no exception to the Rule. Written into "Tasks".

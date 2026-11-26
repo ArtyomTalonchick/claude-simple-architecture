@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   0.3.1: generic I/O lives in the pure zone of its app, or in the shared package when two or more apps use it, and
   only a task and other generic I/O call it in both places. The reviewer no longer has a reason to report a generic
   request function two apps share for lying in the shared package.
+- "Tasks" says how a middleware fits "leave to the caller what follows": its caller is the framework's chain of
+  handlers, so the refusal it answers with and passing the request on are its result, and what follows — the
+  route's handler — stays with the chain. The reviewer no longer has a reason to report a middleware that refuses
+  a request or passes it on.
 
 ## [0.3.1] — 2026-11-25
 
