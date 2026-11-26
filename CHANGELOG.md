@@ -5,6 +5,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- "Stateful logic and plain functions" says that a runtime schema — a value that describes a data shape and checks
+  data against it — is a plain function written as data, not a constant: it is placed and imported as a plain
+  function, a View imports none and a constants file holds none. "One thing per file" says that a schema with its
+  inferred type is one thing, a part of it with no other user stays in its file, and two schemas with users of their
+  own in one file are a violation. "Types and constants" says that the inferred type is part of the schema's API,
+  declared in the schema's file. The reviewer checks a schema as a plain function on every run, and reads a
+  project's written exception that names schemas as covering every schema file. Word budgets raised to fit: the
+  reviewer agent 1400→1500, `core/stateful-logic-and-functions.md` 1650→1800, `core/one-thing-per-file.md`
+  350→450, `core/types-and-constants.md` 500→550.
+
 ## [0.3.2] — 2026-11-26
 
 ### Changed

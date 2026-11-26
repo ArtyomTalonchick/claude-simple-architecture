@@ -17,6 +17,9 @@ thing; a limit that is only a signal gets waved away, so it is a rule.
 - Not a second thing: a type or a constant used only in this file, the props type of a View or a Presenter and the
   types that are part of it, a View passing them on, and a store's own readings in the store file
   ([Stateful logic and plain functions](stateful-logic-and-functions.md)).
+- A schema, a plain function ([Stateful logic and plain functions](stateful-logic-and-functions.md)), with the type
+  inferred from it is one thing; a schema that is only a part of it and has no other user stays in its file. Two
+  schemas with users of their own in one file are a violation, whatever subject they share: one file per schema.
 - A file over `maxFileLines` lines is a violation: name the file, its size and the limit, and say what could move
   out — stateful logic, a task, a plain function, a store, a child unit. A long View is split into child units.
 - Not checked against the limit: a test file, and a file written by a tool — marked as generated, or in a folder a
@@ -30,6 +33,7 @@ OrderForm/
   _logic/
     presenter         Presenter
     validateOrder     plain function
+    orderFormSchema   a schema, its inferred type and addressSchema, a part nothing else uses
   OrderTotals/        child unit
 ```
 
@@ -38,6 +42,8 @@ OrderForm/
 ```
 OrderForm/
   OrderForm           View + a Totals View + validateOrder plain function, 260 lines
+  _logic/
+    orderSchemas      orderSchema and customerSchema, each imported by its own users — two things
 ```
 
 **Stack notes.** None.

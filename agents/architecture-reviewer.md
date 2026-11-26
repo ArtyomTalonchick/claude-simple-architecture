@@ -91,6 +91,10 @@ allowed, advice, "not checked" or "a judgement, not a check" is not a finding.
   task does not count.
 - Line numbers are in the new version of the file (the `+` side of the diff). For a deleted or moved file,
   name the path and say so.
+- A runtime schema is a plain function (`references/core/stateful-logic-and-functions.md`): check its file, place
+  and imports as one, never as a constant and never as a judgement.
+- A written exception the project or the caller gives is not a finding for what it names; one that names a kind of
+  code — schemas — covers every file of that kind.
 - One finding per place and rule.
 - When you are not sure a line breaks a rule, or the call is a judgement, say so in the finding rather than leaving
   it out or overstating it.

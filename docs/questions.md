@@ -693,3 +693,23 @@ answers the request with a refusal and passes it on to the next handler itself, 
 **Answer.** No. The caller of a middleware is the framework's chain of handlers, so the refusal it answers with and
 passing the request on are its result, as a returned value is another task's; what follows — the handler of the
 route — stays with the chain. The middleware is no exception to the Rule. Written into "Tasks".
+
+## Q47. What kind of code is a runtime schema, and is a file of several schemas one thing?
+
+**Question.** A runtime schema is built once, like a constant, but holds logic and is called, like a plain
+function, and the rules named neither. So a schema had no place of its own, "One thing per file" did not say whether
+several schemas of one subject are one thing, and the reviewer decided the same schema file differently between
+runs.
+
+**Context.** #85, from a project that follows the plugin; after Q45 let the shared package hold schemas.
+
+**Status.** answered
+
+**Answer.** A schema is a plain function written as data, not a constant: it is called and holds logic, and as a
+constant a View could import it and it would move to a constants file. It is placed and imported as a plain
+function, with no rule of its own. One schema per file, not a subject per file — "a subject" is a judgement: a
+schema with its inferred type is one thing, a part of it with no other user stays in its file, and two schemas with
+users of their own in one file are a violation. The inferred type is part of the schema's API. The core names no
+library and needs no stack rule. Written into "Stateful logic and plain functions", "One thing per file", "Types
+and constants" and the architecture-reviewer agent, which also reads a project's written exception that names
+schemas as covering every schema file.

@@ -3,7 +3,7 @@
 **Rule.** Keep a type or a constant in the one file that uses it; put one that two or more files use in the types
 file or the constants file of the lowest level that covers them, of the app's tasks folder, or of the innermost
 entry folder that holds them all — never export it from one of its users. A type that is part of an API — a props
-type, a pure-zone module's type, a store's data — stays with that API.
+type, a pure-zone module's type, a store's data, the type inferred from a schema — stays with that API.
 
 **Why.** A type exported from one of its users makes that user look like its owner, and a type in a shared file
 with one user looks shared while it is not. A type that belongs to an API is found where the API is.
@@ -22,7 +22,8 @@ with one user looks shared while it is not. A type that belongs to an API is fou
   [View and Presenter](view-presenter.md), however many files use them; one that several logic files need lies in
   the types file. None of these is a violation here.
 - A pure-zone module's type stays in the module ([Pure zone](pure-zone.md)); the type of a store's data is declared
-  in the store file and imported from there.
+  in the store file and imported from there; the type inferred from a schema is declared in the schema's file and
+  imported from there, however many files use it.
 
 **Good.**
 
@@ -34,6 +35,7 @@ OrdersPage/
     orderFilters
     sortOrders          declares OrderSort, the type of a prop; the presenter imports it for the props type
     openOrder           declares OpenOrderOptions — its one user, so the type stays here
+    filtersSchema       declares FiltersInput, inferred from the schema; the presenter and orderFilters import it
   _stores/
     filtersStore        declares Filters, the type of its data; its users import it from here
 ```
