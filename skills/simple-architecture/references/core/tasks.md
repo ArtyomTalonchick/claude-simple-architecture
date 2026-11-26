@@ -37,11 +37,11 @@ without the task.
   watches state, props or a store and calls a task when they change is a violation — a "request follows its
   params" piece and a delay that follows a value until it settles included: the handler that changed the data
   calls the task, through a debounce made once when the call is delayed.
-- A route's handler is the entry of a unit with no UI or a part of it ([Levels](levels.md)): it turns the request
-  into the task's arguments, calls the task, and turns its result or its error into the answer. It may check the
-  request by a schema ([Stateful logic and plain functions](stateful-logic-and-functions.md)) and answer a refusal.
-  An order of business steps in it — two or more tasks joined by conditions on the data, a store reached directly,
-  I/O — is a violation: it is a task.
+- A route's handler ([Levels](levels.md)) turns the request into the task's arguments, calls the task, and turns
+  its result or its error into the answer. It may check the request by a schema
+  ([Stateful logic and plain functions](stateful-logic-and-functions.md)) and answer a refusal. An order of business
+  steps in it — two or more tasks joined by conditions on the data, a store reached directly, I/O — is a violation:
+  it is a task.
 - A Presenter, stateful logic or a plain function of the UI side that reads the app's data to decide whether to
   call a task is a violation: the condition is the task's — "go to the next page" itself returns when there is no
   next page. A value computed to show — a flag that disables a button — is not such a
