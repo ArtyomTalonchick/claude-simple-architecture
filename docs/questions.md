@@ -733,3 +733,65 @@ it is a violation, as with any store. A Presenter that hands its View the store'
 that subscribes to it by itself, reads the store: it stays, and it is not a pass-through. Written into "Pure zone",
 "Stateful logic and plain functions", "View and Presenter", "View and Presenter in React", "Imports" and the
 architecture-reviewer agent.
+
+## Q49. Is a function's own result type part of its API?
+
+**Question.** A function that joins two others names their result types to build its own. "Never export a type
+from one of its users" made each import a violation, deriving the type without its name passed, and the reviewer
+decided the same code differently between runs.
+
+**Context.** #54, from a project that follows the plugin, whose style gives every function that returns an object a
+named result type.
+
+**Status.** answered
+
+**Answer.** Yes. The type of a function's parameters or of its result — the type written for its options or its
+return value — is part of the function's API, as a pure-zone module's types are and as a type goes the way the code
+does: it is declared in the function's file, and a file that may import the function imports it from there by
+name, however many files do. A type the function only uses, which other files use without it, still goes to the
+types file. Written into "Types and constants" and the architecture-reviewer agent.
+
+## Q50. Where do the start file and the test infrastructure lie once `lib` is set?
+
+**Question.** With `lib` set, the root level is a folder of its own and the start file and the test runner's setup
+file lie beside it, in no app: the reviewer assigned a file to an app only through its root, its pure zone, its
+tasks folder or its stores folder, so it might not check them.
+
+**Context.** #54, from a project that moved its root level into a folder of its own with `lib`.
+
+**Status.** answered
+
+**Answer.** With `lib` set, the start file lies in the folder that holds `root`, beside the root folder, and is
+checked as a start file; without `lib`, at the root level's root, as before. The test infrastructure — a setup file
+of the test runner, fixtures the tests of two or more places share — lies in one folder beside the start file,
+named by the project's convention; it is not part of a level's shape, only its place is checked, and code other
+than tests that imports from it is a violation. A fixture the tests of one unit use lies with those tests. Both are
+files of their app. No config key: their place follows from `root`. Written into "Levels", "Pure zone", "View and
+Presenter in React", `SKILL.md`, `references/config.md` and the architecture-reviewer agent.
+
+## Q51. May a ui-kit component hold generic text its user cannot replace?
+
+**Question.** "Pure zone" cleared a generic default its user can replace, such as "Close" on a dialog. A pagination
+with fixed "Next page" and a search field with a fixed "Clear" fit neither that nor the app's own text.
+
+**Context.** #54, from a project that follows the plugin.
+
+**Status.** answered
+
+**Answer.** Yes. Generic text that names no domain and no screen of the app is not the app's text, whether its user
+can replace it or not: what the text names decides, not whether it is a prop. A project that translates its
+interface makes such text replaceable for its own reasons; the rules do not ask for it. Written into "Pure zone"
+and the architecture-reviewer agent.
+
+## Q52. Does a types file count as a user of its own types?
+
+**Question.** A type in a types file is named by one file outside it and by another type of the same types file.
+"A type in a types file with one user file is a violation" did not say whether the use inside counts.
+
+**Context.** #54, from a project that follows the plugin.
+
+**Status.** answered
+
+**Answer.** No. The users of a type in a types file are the files outside it; a type another type of the same types
+file is built from stays there with it, whatever the number of its other users. Written into "Types and constants"
+and the architecture-reviewer agent.

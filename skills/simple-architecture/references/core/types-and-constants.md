@@ -3,7 +3,8 @@
 **Rule.** Keep a type or a constant in the one file that uses it; put one that two or more files use in the types
 file or the constants file of the lowest level that covers them, of the app's tasks folder, or of the innermost
 entry folder that holds them all — never export it from one of its users. A type that is part of an API — a props
-type, a pure-zone module's type, a store's data, the type inferred from a schema — stays with that API.
+type, the type of a function's parameters or result, a pure-zone module's type, a store's data, the type inferred
+from a schema — stays with that API.
 
 **Why.** A type exported from one of its users makes that user look like its owner, and a type in a shared file
 with one user looks shared while it is not. A type that belongs to an API is found where the API is.
@@ -13,6 +14,8 @@ with one user looks shared while it is not. A type that belongs to an API is fou
 - A file uses a type when it names it. A file that derives a type from another file's value or type — the type of
   a function, of its parameters or of its result — without naming the type it reaches does not use it and is not
   counted among its users.
+- The users of a type in a types file are the files outside it. A type another type of the same types file is
+  built from stays there with it, whatever the number of its other users.
 - The users are files — of the own unit, of its child units, or both — and a level's types file and constants file
   lie at its root. Which types and constants the app's tasks folder and an entry folder keep in their own:
   [The app's tasks and stores folders](app-folders.md), [Entry folders](entry-folders.md).
@@ -24,17 +27,24 @@ with one user looks shared while it is not. A type that belongs to an API is fou
 - A pure-zone module's type stays in the module ([Pure zone](pure-zone.md)); the type of a store's data is declared
   in the store file and imported from there; the type inferred from a schema is declared in the schema's file and
   imported from there, however many files use it.
+- The type of a function's parameters or of its result — the type written for its options or its return value
+  (`OpenOrderOptions`, `OrderFiltersResult`) — is declared in the function's file; a file that may import the
+  function imports it from there by name, however many files do, and that is no violation. A type the function only
+  uses, which other files use without it — a domain type such as `OrderFilter` — goes to the types file.
 
 **Good.**
 
 ```
 OrdersPage/
   types                 OrderFilter — used by the presenter and by _logic/orderFilters
+                        FilterGroup — built into OrderFilter; one user outside the file, still it stays
   _logic/
     presenter           derives the type of openOrder's parameters without naming it
-    orderFilters
+    orderFilters        declares OrderFiltersResult, the type of its result; the presenter and orderSummary
+                        import it from here
+    orderSummary
     sortOrders          declares OrderSort, the type of a prop; the presenter imports it for the props type
-    openOrder           declares OpenOrderOptions — its one user, so the type stays here
+    openOrder           declares OpenOrderOptions, the type of its parameters
     filtersSchema       declares FiltersInput, inferred from the schema; the presenter and orderFilters import it
   _stores/
     filtersStore        declares Filters, the type of its data; its users import it from here
@@ -47,6 +57,7 @@ OrdersPage/
   types                 OpenOrderOptions — the presenter only derives it from openOrder's parameters, which is no
                         use: it belongs in openOrder
                         SortKey — used only by orderFilters: it belongs in orderFilters
+                        OrderFiltersResult — the type of orderFilters' result: it belongs in orderFilters
   _logic/
     orderFilters        exports OrderFilter, which the presenter imports — it belongs in OrdersPage/types
 ```

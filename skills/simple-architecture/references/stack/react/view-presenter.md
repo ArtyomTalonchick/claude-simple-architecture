@@ -43,8 +43,9 @@ View's concern.
   with no props has no props type and takes no parameter.
 - A short handler that acts on the DOM — `event.preventDefault()`, `inputRef.current?.focus()` — may stay inline in
   `usePresenter.ts`.
-- The start file (`main.tsx`) renders `App` and may wrap it in `StrictMode` and the providers the app mounts around
-  it; a component only `main.tsx` uses for that, such as `AppShell`, is a child unit of the root level next to `App`.
+- The start file (`main.tsx`, beside `App/` in `src/` when the app sets `lib`: [Levels](../../core/levels.md))
+  renders `App` and may wrap it in `StrictMode` and the providers the app mounts around it; a component only
+  `main.tsx` uses for that, such as `AppShell`, is a child unit of the root level next to `App`.
 
 **Good.**
 

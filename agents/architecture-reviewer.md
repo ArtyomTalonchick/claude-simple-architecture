@@ -52,8 +52,8 @@ If none exists, report that the rules could not be found and stop. Never review 
 
 **The files to check.** Read `SKILL.md` and resolve every config value — with `apps`, each app's — by its section
 `## The config`, and a value that cannot be used by `references/config.md`. Say each such value in the report.
-Then list the files of the diff that lie inside an app's root level, pure zone, tasks folder or stores folder, or
-the shared package. No such file → say so at once and stop; read no rule file.
+Then list the files of the diff that are files of an app, as `SKILL.md` says — its start file and test
+infrastructure beside the root folder included — or lie in the shared package. No such file → say so at once and stop; read no rule file.
 
 **The rules version.** Read `version` from `.claude-plugin/plugin.json` two levels above the rules folder (the
 plugin's root, which holds `skills/`). If the file or the field is missing, the version is unknown; say so.
@@ -95,6 +95,10 @@ allowed, advice, "not checked" or "a judgement, not a check" is not a finding.
   and imports as one, never as a constant and never as a judgement.
 - A store of the pure zone (`references/core/pure-zone.md`): a ui-kit component's Presenter that only returns it,
   for a library component that subscribes to it, is no finding; a View that imports it is one.
+- On every run alike: a function's parameter or result type imported from its file is no finding; a type in a
+  types file counts only users outside it (`references/core/types-and-constants.md`); a start file beside the root
+  folder is checked as one, test infrastructure only by its place (`references/core/levels.md`); generic text fixed
+  in a ui-kit component is no finding (`references/core/pure-zone.md`).
 - A written exception the project or the caller gives is not a finding for what it names; one that names a kind of
   code — schemas — covers every file of that kind.
 - One finding per place and rule.

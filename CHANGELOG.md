@@ -26,6 +26,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   as a store, and the reviewer reports the View, not the Presenter. Word budgets raised to fit:
   `core/pure-zone.md` 1400→1600, `core/imports.md` 1600→1650, `core/view-presenter.md` 1150→1200,
   `stack/react/view-presenter.md` 1100→1150.
+- "Types and constants" says that the type of a function's parameters or of its result is part of its API: it is
+  declared in the function's file and imported from there by name, however many files do, while a type the function
+  only uses still goes to the types file; and that the users of a type in a types file are the files outside it, so
+  a type another type there is built from stays. "Levels" says that with `lib` set the start file lies beside the
+  root folder, in the folder that holds `root`, and that the test infrastructure — a test runner's setup file,
+  fixtures shared by the tests of two or more places — lies in one folder beside the start file: only its place is
+  checked, and code other than tests that imports from it is a violation. `SKILL.md` and `references/config.md`
+  count both as files of their app. "Pure zone" says that generic text fixed in a ui-kit component is not the app's
+  text, whether its user can replace it or not. The reviewer decides each of these cases the same way on every run.
+  Word budgets raised to fit: the reviewer agent 1500→1600, `SKILL.md` 900→950, `references/config.md` 550→600,
+  `core/levels.md` 1200→1400, `core/pure-zone.md` 1600→1650, `core/types-and-constants.md` 550→700.
 
 ## [0.3.2] — 2026-11-26
 

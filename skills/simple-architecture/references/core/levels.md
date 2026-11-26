@@ -35,8 +35,8 @@ unit's code says what that unit does, and whether a file may import from it is a
   - child units: unit folders used only by this level, with the same shape.
 - Any other file or folder at a level root is a violation: a folder of stateful logic, functions or tasks (such as
   `hooks/`) or a file of non-UI code goes to the logic folder, a store to the stores folder, a unit next to the entry
-  or to the components folder. Tests, the pure zone ([Pure zone](pure-zone.md)) and the app's tasks folder and
-  stores folder are not part of the shape.
+  or to the components folder. Tests, the test infrastructure, the pure zone ([Pure zone](pure-zone.md)) and the
+  app's tasks folder and stores folder are not part of the shape.
 - Who may import a file of the logic folder: [Imports](imports.md).
 - A types file or a constants file in the logic folder, outside an entry folder, is a violation: it lies at the
   level root. A store in the logic folder or its tasks folder is a violation, even with one user: it goes to the
@@ -51,9 +51,15 @@ unit's code says what that unit does, and whether a file may import from it is a
   `function`), each running the same entry; a second start file for one runtime is a violation. A unit that only the
   start files use to wrap the entry is a child unit of the root level, next to the entry.
   The root level has no other exception: the rest of its unit's code follows the shape.
+- When the app sets `lib`, the start files lie in the folder that holds `root`, beside the root folder (`src/main`
+  next to `src/App/` and `src/lib/`), not at the root level's root, and are checked as start files all the same.
 - A test lives next to the code it tests — a test file beside it, or a tests folder in the folder that holds it, by
   the project's convention — and is not a unit, a level or a folder of the shape. Only where it lives is checked:
   its imports are not ([Imports](imports.md)), and it is not a user ([Placement by users](placement.md)).
+- The test infrastructure — a setup file of the test runner, fixtures the tests of two or more places share — lies
+  in one folder beside the start file, named by the project's convention. As with a test, only its place is
+  checked, not its imports. A fixture the tests of one unit use lies with those tests. A file that is neither a test
+  nor test infrastructure and imports from it is a violation.
 
 **Good.**
 
@@ -109,6 +115,17 @@ src/
       items
 ```
 
+With `lib` set to `src/lib` and `root` to `src/App`:
+
+```
+src/
+  main                  the start file, beside the root folder
+  test/                 the test runner's setup file and fixtures the tests of two units share
+  App/
+    App
+  lib/
+```
+
 **Bad.**
 
 ```
@@ -128,6 +145,16 @@ src/
   main                  starts the app in the browser
   start                 starts it in the browser too — a second start file for one runtime
   App
+```
+
+With `lib` set to `src/lib` and `root` to `src/App`:
+
+```
+src/
+  App/
+    main                at the root level's root — it lies in src/, beside App/
+    _logic/
+      presenter         imports a fixture from src/test/ — app code importing the test infrastructure
 ```
 
 **Stack notes.** [react/view-presenter.md](../stack/react/view-presenter.md) — the View and Presenter files of a

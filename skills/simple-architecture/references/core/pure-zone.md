@@ -20,7 +20,8 @@ function; called only from tasks, it keeps the app's I/O in the tasks.
 - Where it is: the lib folder and the ui-kit folder (`folders.uiKit`, default `lib/ui-kit/`) under the root level,
   or, when the app sets `lib`, the folder it names, outside every level, with the ui-kit inside it; the root level
   then holds no pure zone, and a lib folder there is an ordinary folder at a level root ([Levels](levels.md)). The
-  app's tasks folder and stores folder next to it are the app's code, not the pure zone.
+  app's tasks folder and stores folder next to it, the start file and the test infrastructure beside the root
+  folder ([Levels](levels.md)) are the app's code, not the pure zone.
 - The ui-kit is the pure zone's components folder, not a level's: its name does not follow `folders.components`,
   and when it is set outside the lib folder, the lib folder has no components folder of its own.
 - The lib folder holds folders named by what their code is about — generic I/O (`lib/http/`), errors, the theme
@@ -56,8 +57,10 @@ function; called only from tasks, it keeps the app's I/O in the tasks.
   - it is named after or shaped by a domain entity — an order card, a user row — not a generic element; shaped
     means its props or layout follow one entity's fields, even under a generic name;
   - it holds the app's own text: a label, title or message that names the app's domain or screens ("My orders",
-    "No orders yet"). Text its user passes in, and a generic default its user can replace ("Close" on a dialog's
-    close button, an accessible label "Loading" on a spinner), are not the app's text;
+    "No orders yet"). Text its user passes in, and generic text that names no domain and no screen ("Close" on a
+    dialog, "Next page" on a pagination, "Clear" on a search field, an accessible label "Loading" on a spinner), are
+    not the app's text, whether its user can replace it or not: what the text names decides, not whether it is a
+    prop;
   - it is a placeholder or a part of such a component — an order card's skeleton, an order row's actions; a generic
     placeholder, such as a skeleton block of a given size, is fine.
 
@@ -80,6 +83,7 @@ src/
       Card/               a generic card: title, image, children and onClick come from its user
       Skeleton/           a generic placeholder block of a given size
       Modal/              its close button's accessible label defaults to "Close", replaceable by its user
+      Pagination/         fixed labels "Previous page" and "Next page", not props — generic text
       SearchField/        looks up the style "searchField", registered in lib/theme/
       Toaster/            its presenter returns toastQueue; its View hands it to the library's toaster component,
                           which subscribes to it — not a pass-through

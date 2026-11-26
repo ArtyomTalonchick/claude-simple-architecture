@@ -43,6 +43,9 @@ user the name has no stack folder, and name the stacks that exist.
 - inside the root level anywhere but `<root>/<folders.lib>`. That one place is the default, so it is used with no
   problem to report.
 
+With `lib` set, the start file and the test infrastructure beside the root folder are files of the app
+([SKILL.md](../SKILL.md)); with `lib` ignored, they lie at the root level's root, as without `lib`.
+
 `tasks` or `stores` is ignored, and its default is used, when it is:
 
 - absolute, or has a `..` part;
