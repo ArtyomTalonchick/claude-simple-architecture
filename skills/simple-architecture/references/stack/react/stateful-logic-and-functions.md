@@ -28,6 +28,11 @@ code that does not need them, and a plain function that calls a hook breaks at r
 - `debounce` and `throttle` that keep their timer in the closure of the function they return call no hook: plain
   functions. `useDebouncedValue(text)` is a hook.
 - When a hook may call a task, and through a debounce: [Tasks in React](tasks.md).
+- A state update during render that resets state when an input changes — `if (query !== shownQuery)` then
+  `setShownQuery(query)` and `setPage(1)` — is allowed stateful logic, not a violation. Advice, not checked: a value
+  kept together with the input it was chosen for — `{ query, page }`, page 1 when its query is not the current
+  one — needs no reset. An update during render that follows a value to call a task is a violation of
+  [Tasks](../../core/tasks.md).
 - A `usePresenter` that calls no hook but computes something from its props is not a violation of this rule; one
   with no computation at all is judged by [View and Presenter in React](view-presenter.md).
 
@@ -63,6 +68,17 @@ export const waitForResize = (timeout: number) =>
     const timer = setTimeout(done, timeout);
     window.addEventListener('resize', done);
   });
+
+// _logic/useListPage.ts — resets the page during render when the query changes: allowed
+export const useListPage = (query: string) => {
+  const [page, setPage] = useState(1);
+  const [shownQuery, setShownQuery] = useState(query);
+  if (query !== shownQuery) {
+    setShownQuery(query);
+    setPage(1);
+  }
+  return { page, setPage };
+};
 ```
 
 **Bad.**
@@ -84,6 +100,15 @@ export const useShowDetails = () => useScreenStore.getState().setScreen('details
 
 // _logic/watchResize.ts — the listener stays after the call: a hook, useWindowSize
 export const watchResize = (onResize: () => void) => window.addEventListener('resize', onResize);
+
+// _logic/useOrders.ts — follows the status during render to call a task: the handler that changed it calls it
+export const useOrders = (status: Status) => {
+  const [loadedStatus, setLoadedStatus] = useState<Status | null>(null);
+  if (status !== loadedStatus) {
+    setLoadedStatus(status);
+    loadOrders(status);
+  }
+};
 ```
 
 **Stack notes.** Carries out the core rule

@@ -795,3 +795,34 @@ and the architecture-reviewer agent.
 **Answer.** No. The users of a type in a types file are the files outside it; a type another type of the same types
 file is built from stays there with it, whatever the number of its other users. Written into "Types and constants"
 and the architecture-reviewer agent.
+
+## Q53. What is a route handler, and what may it do?
+
+**Question.** A server's route handler parses the request, calls a task and answers with its result or an error.
+The reviewer read it "by analogy" as a Presenter, as no rule named it, and nothing said when the steps in a handler
+are a business action.
+
+**Context.** #35, from a project that follows the plugin; after Q47 named a schema a plain function.
+
+**Status.** answered
+
+**Answer.** A route handler is no kind of its own: it is the entry of a unit with no UI, or a part of it — a
+function the entry calls, in its file or in the logic folder — with the imports "Imports" already gives that entry.
+It turns the request into the task's arguments, calls the task, and turns its result or its error into the answer;
+it may check the request by a schema and answer a refusal. An order of business steps in it — two or more tasks
+joined by conditions on the data, a store reached directly, I/O — is a violation: it is a task. Written into
+"Levels", "Tasks", "Imports" and the architecture-reviewer agent.
+
+## Q54. Is a state update during render allowed stateful logic?
+
+**Question.** A hook drops the chosen page when the query changes by setting state during render, and no rule's
+"How to check" covered it, so the reviewer left it as a note.
+
+**Context.** #35, from a project that follows the plugin.
+
+**Status.** answered
+
+**Answer.** Yes, when it resets state because an input changed: it is allowed stateful logic and not reported.
+Advice, not checked: a value kept together with the input it was chosen for needs no reset. An update during render
+that follows a value to call a task stays a violation of "Tasks". It is a React matter, so it is written into
+"Stateful logic in React is a hook" only, and into the architecture-reviewer agent.

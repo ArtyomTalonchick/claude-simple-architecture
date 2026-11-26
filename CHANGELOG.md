@@ -37,6 +37,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   text, whether its user can replace it or not. The reviewer decides each of these cases the same way on every run.
   Word budgets raised to fit: the reviewer agent 1500→1600, `SKILL.md` 900→950, `references/config.md` 550→600,
   `core/levels.md` 1200→1400, `core/pure-zone.md` 1600→1650, `core/types-and-constants.md` 550→700.
+- "Levels" says that a route's handler is no kind of its own: it is the entry of a unit with no UI, or a part of
+  it in the entry's file or the logic folder, and "Imports" gives it that entry's import list. "Tasks" says what it
+  does: it turns the request into the task's arguments, calls the task, and turns its result or its error into the
+  answer, and it may check the request by a schema; an order of business steps in it — two or more tasks joined by
+  conditions on the data, a store reached directly, I/O — is a violation, with a server example of each. "Stateful
+  logic in React is a hook" says that a state update during render that resets state when an input changes is
+  allowed, with the advice to keep the value together with the input it was chosen for, while one that follows a
+  value to call a task breaks "Tasks". The reviewer checks a route's handler as that entry and reports no
+  render-phase reset. Word budgets raised to fit: the reviewer agent 1600→1650, `core/levels.md` 1400→1450,
+  `core/tasks.md` 1450→1650, `stack/react/stateful-logic-and-functions.md` 700→850.
 
 ## [0.3.2] — 2026-11-26
 

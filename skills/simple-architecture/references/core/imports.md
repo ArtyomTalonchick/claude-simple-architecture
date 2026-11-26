@@ -21,7 +21,7 @@ sibling and branch are as in [Levels](levels.md).
   - an own child unit, through its entry — in an app with a UI, its View, which also passes on its props type and
     the types that are part of it ([View and Presenter](view-presenter.md));
   - the own unit's logic folder, from the unit's entry, a start file and the files of that folder only; the
-    Presenter only from its own entry;
+    Presenter and a route's handler only from their own entry;
   - the types file, the constants file, the stores and the components-folder units (through their entry) of the
     own level and of any level above it;
   - the app's tasks folder, from any level and from inside it; the app's stores folder, from any level and from the
@@ -60,8 +60,8 @@ sibling and branch are as in [Levels](levels.md).
   - the file the app starts from → the root entry, the child units of the root level it wraps the entry in, the
     tasks of the root unit's tasks folder it calls on start ([Levels](levels.md)), the pure zone, types, constants;
   - View → its own Presenter, child units, components from components folders and the ui-kit, types, constants;
-  - the entry of a unit with no UI → child units, tasks, plain functions, error classes of the pure zone, types,
-    constants;
+  - the entry of a unit with no UI, its route handlers included → child units, tasks, plain functions, error
+    classes of the pure zone, types, constants;
   - Presenter → stateful logic, tasks, stores, plain functions, error classes of the pure zone, types, constants;
   - stateful logic → as a Presenter;
   - task → tasks, stores, plain functions, generic I/O, error classes of the pure zone, types, constants — never

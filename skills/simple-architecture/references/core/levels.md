@@ -16,6 +16,9 @@ unit's code says what that unit does, and whether a file may import from it is a
   shared package is not a level) and every unit folder: a folder next to the unit's entry or in a components folder
   that holds a file named as the folder, the unit's entry. In an app with a UI the entry is the unit's View; in an
   app with no UI it is the file that gives the unit to its users, such as the one that builds a server's routes.
+  A route's handler is no kind of its own: it is that entry, or a part of it — a function the entry calls, in the
+  entry's file or in the logic folder — and imports what the entry may ([Imports](imports.md)). What it does and
+  what it leaves to a task: [Tasks](tasks.md).
 - The logic folder, the stores folder, the components folder, the types file and the constants file, and the files
   in them, belong to the level that holds them. A unit folder in the components folder is a level of its own.
   Entry folders ([Entry folders](entry-folders.md)) and the app's tasks folder and stores folder
@@ -24,9 +27,10 @@ unit's code says what that unit does, and whether a file may import from it is a
   is a branch.
 - The parts, each optional:
   - the entry, named as the folder, at the level root;
-  - the logic folder: the Presenter, stateful logic and plain functions of the own unit, as files or entry folders,
-    and a tasks folder (default `_tasks/`) with the tasks only this unit calls and the plain functions only those
-    tasks use, as files or entry folders. Tests aside, it holds nothing else;
+  - the logic folder: the Presenter — with no UI, the entry's route handlers — stateful logic and plain functions
+    of the own unit, as files or entry folders, and a tasks folder (default `_tasks/`) with the tasks only this
+    unit calls and the plain functions only those tasks use, as files or entry folders. Tests aside, it holds
+    nothing else;
   - the types file and the constants file (`types`, `constants`) at the level root
     ([Types and constants](types-and-constants.md));
   - the stores folder: the stores of the level, as files or store entry folders

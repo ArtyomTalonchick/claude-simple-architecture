@@ -99,6 +99,9 @@ allowed, advice, "not checked" or "a judgement, not a check" is not a finding.
   types file counts only users outside it (`references/core/types-and-constants.md`); a start file beside the root
   folder is checked as one, test infrastructure only by its place (`references/core/levels.md`); generic text fixed
   in a ui-kit component is no finding (`references/core/pure-zone.md`).
+- A route's handler is the entry of a unit with no UI or a part of it (`references/core/levels.md`), never a
+  Presenter or a kind of its own: check its imports as that entry's, and what it does by `references/core/tasks.md`.
+  In React, a state update during render that resets state when an input changes is no finding.
 - A written exception the project or the caller gives is not a finding for what it names; one that names a kind of
   code — schemas — covers every file of that kind.
 - One finding per place and rule.
