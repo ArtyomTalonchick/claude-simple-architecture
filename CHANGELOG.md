@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- "A Zustand store" no longer contradicts "Pure zone": only a store file of the app lies in a stores folder, a
+  level's or the app's, and a store of the pure zone lies in the folder of its subject. Such a store is made by
+  `create` and named `use…` as any store; its hook is called by stateful logic of the pure zone and the Presenter
+  of a ui-kit component, and a plain function of the pure zone reaches it through `getState()` and `setState()`.
+  Word budget raised to fit: `stack/zustand/stateful-logic-and-functions.md` 750→850 — the file was at its budget,
+  and the pure-zone store check with its example does not fit after shortening.
+
 ## [0.3.3] — 2026-11-26
 
 ### Changed

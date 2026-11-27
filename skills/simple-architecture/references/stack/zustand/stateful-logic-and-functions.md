@@ -11,9 +11,12 @@ subscribe: `getState()` / `setState()` give the current value and a way to chang
 
 **How to check.**
 
-- A store file lies in a stores folder, a level's or the app's ([Levels](../../core/levels.md),
-  [The app's tasks and stores folders](../../core/app-folders.md)); its `use…` name is right even though its own
-  code calls no hook.
+- A store file of the app lies in a stores folder, a level's or the app's ([Levels](../../core/levels.md),
+  [The app's tasks and stores folders](../../core/app-folders.md)); its `use…` name is right though its code
+  calls no hook.
+- A store of the pure zone lies in the folder of its subject ([Pure zone](../../core/pure-zone.md)). It is made by
+  `create` and named `use…` as any store; its hook is called by stateful logic of the pure zone and the Presenter
+  of a ui-kit component, and a plain function of the pure zone reaches it through `getState()` and `setState()`.
 - A read hook or a selector in the store file is the store's own when it means the same to every user
   (`useHasOrders`), called as the store hook is. One that computes for one user is a violation: that unit's
   stateful logic.
@@ -68,6 +71,13 @@ export const showResults = (query: string) => {
   useSearchStore.getState().setQuery(query);
   useScreenStore.getState().setScreen('results');
 };
+
+// lib/toasts/useToastsStore.ts — a pure-zone store, in its subject's folder
+export const useToastsStore = create<ToastsState>()(() => ({ toasts: [] }));
+
+// lib/toasts/showToast.ts — a plain function fills it
+export const showToast = (text: string) =>
+  useToastsStore.setState((s) => ({ toasts: [...s.toasts, text] }));
 ```
 
 **Bad.**
