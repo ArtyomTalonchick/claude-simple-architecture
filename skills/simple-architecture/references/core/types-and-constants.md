@@ -3,12 +3,12 @@
 **Rule.** Keep a type or a constant in the one file that uses it; put one that two or more files use in the types
 file or the constants file of the lowest level that covers them or of the innermost entry folder that holds them
 all, in the app's types folder, or in the constants file of the app's tasks folder — never export it from one of
-its users. A type that is part of an API — a props
-type, the type of a function's parameters or result, a pure-zone module's type, a store's data, the type inferred
-from a schema — stays with that API.
+its users. A type or a constant that is part of an API — a props type, the type of a function's parameters or
+result, a pure-zone module's type, a store's data, the type inferred from a schema, a constant a schema or a
+function is built on and its callers need — stays with that API.
 
 **Why.** A type exported from one of its users makes that user look like its owner, and a type in a shared file
-with one user looks shared while it is not. A type that belongs to an API is found where the API is.
+with one user looks shared while it is not. What belongs to an API is found where the API is.
 
 **How to check.**
 
@@ -45,6 +45,10 @@ with one user looks shared while it is not. A type that belongs to an API is fou
   (`OpenOrderOptions`, `OrderFiltersResult`) — is declared in the function's file; a file that may import the
   function imports it from there by name, however many files do, and that is no violation. A type the function only
   uses, which other files use without it — a domain type such as `OrderFilter` — goes to the types file.
+- A constant a schema or a function is built on — one it uses in its own code — and that its callers need (a
+  length limit a form names in its hint) is part of its API: declared in its file, and a file that may
+  import the schema or function imports it from there by name, however many files do — no violation. A constant
+  the schema or function does not use itself is not part of its API: it goes to the constants file by its users.
 
 **Good.**
 
@@ -54,6 +58,7 @@ OrdersPage/
                         FilterGroup — built into OrderFilter; one user outside the file, still it stays
   filtersSchema         a schema; declares FiltersInput, inferred from it — the presenter and orderFilters import
                         both from here: two users
+                        declares MAX_FILTERS, the limit it checks by — the presenter imports it for a hint
   _logic/
     presenter           derives the type of openOrder's parameters without naming it
     orderFilters        declares OrderFiltersResult, the type of its result; the presenter and orderSummary
@@ -76,6 +81,7 @@ OrdersPage/
                         OrderFiltersResult — the type of orderFilters' result: it belongs in orderFilters
   _logic/
     orderFilters        exports OrderFilter, which the presenter imports — it belongs in OrdersPage/types
+                        exports PAGE_SIZE, which it does not use itself — it belongs in OrdersPage/constants
     pageSchema          a schema the presenter and orderFilters use — it belongs at OrdersPage's root
 ```
 

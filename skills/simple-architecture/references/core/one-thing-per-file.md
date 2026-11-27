@@ -1,7 +1,7 @@
 ## One thing per file
 
 **Rule.** A file holds one thing — one View, Presenter, piece of stateful logic, task, plain function, piece of
-generic I/O, store or schema — with the types and constants only it uses. A file is no longer than the configured limit
+generic I/O, store or schema — with its own types and constants. A file is no longer than the configured limit
 (`maxFileLines`, default 120).
 
 **Why.** A file that holds one thing is found by its name, read in one go and changed without touching anything
@@ -14,11 +14,12 @@ thing; a limit that is only a signal gets waved away, so it is a rule.
 - A file that defines two or more things — two Views, a View and stateful logic, two plain functions, a task and
   a function it is split into — is a violation, whether the second is exported or not: it gets its own file, placed
   by [Placement by users](placement.md).
-- Not a second thing: a type or a constant used only in this file, the props type of a View or a Presenter and the
+- Not a second thing: a type or a constant used only in this file or part of its thing's API
+  ([Types and constants](types-and-constants.md)), the props type of a View or a Presenter and the
   types that are part of it, a View passing them on, a store's own readings in the store file
   ([Stateful logic and plain functions](stateful-logic-and-functions.md)), and the reads and writes of a closed
   store ([Closed store access](closed-store-access.md)).
-- A schema ([Types and constants](types-and-constants.md)) with the type inferred from it is one thing, in a file
+- A schema with the type inferred from it is one thing, in a file
   named as the schema; a schema that is only a part of it and has no other user stays in its file. Two schemas with
   users of their own in one file are a violation, whatever subject they share: one file per schema.
 - A file over `maxFileLines` lines is a violation: name the file, its size and the limit, and say what could move

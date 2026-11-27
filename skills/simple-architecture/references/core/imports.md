@@ -146,7 +146,8 @@ server/src/             app "server"
                         "not found" when the task throws it
 shared/src/             the shared package
   order                 type Order
-  isValidPassword       a plain function with its constant — both apps check by it
+  isValidPassword       a plain function with PASSWORD_MIN_LENGTH, which it checks by and a form names in its
+                        hint — both apps check by it
   http/
     fetchJson           generic I/O
 ```

@@ -878,3 +878,22 @@ budget, with "Closed store access in Zustand" — `createStore`, `useStore(store
 from "Stateful logic and plain functions", "One thing per file", "Entry folders", "Imports", "Types and
 constants", "A Zustand store" and "Stateful logic in React is a hook"; into `SKILL.md`, `references/config.md`,
 the session-start hook and the architecture-reviewer agent, which reports nothing of it under `"direct"`.
+
+## Q57. Is a constant a schema or a function is built on part of its API?
+
+**Question.** A schema checks a length by a constant declared next to it, and a form imports that constant for its
+hint. "Types and constants" said a constant two or more files use is never exported from one of its users, while
+the Good example of "Imports" showed a plain function with its constant, so the reviewer reported it on every run
+as a finding that can be argued.
+
+**Context.** #90, after the schema placement (#95).
+
+**Status.** answered
+
+**Answer.** Yes: a constant a schema or a function is built on, and that its callers need, is part of its API, as
+the type inferred from the schema and the type of a function's parameters are. It is declared in the file of the
+schema or function and imported from there by name, however many files do, in an app as in the shared package.
+"Built on" means the schema or function uses the constant in its own code — that is what the reviewer checks. A
+constant it does not use itself is not part of its API and goes to the constants file by its users. Written into
+"Types and constants", with "One thing per file" and the example of "Imports" following it, and into the
+architecture-reviewer agent as a case that is no finding on every run.

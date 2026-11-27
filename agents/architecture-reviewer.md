@@ -96,7 +96,8 @@ allowed, advice, "not checked" or "a judgement, not a check" is not a finding.
   (`references/core/types-and-constants.md`): never as a plain function, a constant or a judgement.
 - A store of the pure zone (`references/core/pure-zone.md`): a ui-kit component's Presenter that only returns it,
   for a library component that subscribes to it, is no finding; a View that imports it is one.
-- On every run alike: a function's parameter or result type imported from its file is no finding; a type in a
+- On every run alike: a function's parameter or result type imported from its file is no finding, nor is a
+  constant a schema or a function uses in its own code, imported from its file; a type in a
   types file counts only users outside it (`references/core/types-and-constants.md`); a start file beside the root
   folder is checked as one, test infrastructure only by its place (`references/core/levels.md`); generic text fixed
   in a ui-kit component is no finding (`references/core/pure-zone.md`).

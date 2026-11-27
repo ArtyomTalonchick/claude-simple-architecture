@@ -50,6 +50,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   "Tasks" follow it, and the reviewer checks a schema as a type. Word budgets: `core/types-and-constants.md`
   700→900 — the schema rule moved there; `core/imports.md` 1650→1700 — the file was at its budget;
   `core/stateful-logic-and-functions.md` lowered 1800→1700.
+- A constant a schema or a function is built on — one it uses in its own code — and that its callers need (a
+  length limit a form names in its hint) is now part of its API, as the type inferred from a schema and the type
+  of a function's parameters are: it is declared in the file of the schema or function and imported from there by
+  name, however many files do, in an app as in the shared package. A constant the schema or function does not use
+  itself is not part of its API and goes to the constants file by its users. "Types and constants" no longer
+  contradicts the example of "Imports"; "One thing per file" follows it, and the reviewer reports no finding on
+  such a constant, on every run. Word budgets raised to fit: `core/types-and-constants.md` 900→1000 — the new
+  check and its examples do not fit after shortening; the reviewer agent 1700→1750 — the file was at its budget.
 
 ### Fixed
 
