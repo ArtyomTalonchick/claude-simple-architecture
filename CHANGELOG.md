@@ -94,6 +94,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   of a ui-kit component, and a plain function of the pure zone reaches it through `getState()` and `setState()`.
   Word budget raised to fit: `stack/zustand/stateful-logic-and-functions.md` 750→850 — the file was at its budget,
   and the pure-zone store check with its example does not fit after shortening.
+- The reviewer stated project facts it had not read: a config value named as its default though the config set
+  it, and a project exception cited from a file that was no longer there — the text came from the agent's
+  context, not from the repository. It now states a fact about the project only when it read it in the repository
+  in that run, and names what it did not read as "not read", never as missing. A config value is named as its
+  default only when its key is absent from the config — with `apps`, absent from that app. A project exception
+  known only from the context is read in the file the context names; when the file or the text is not there, it
+  is not applied and is named under Warnings. An exception the caller gives is applied as given. Word budget
+  raised: the reviewer agent 1850→1950 — three lines that repeated the agent's own text were cut first, and the
+  rest is new text.
 
 ## [0.3.3] — 2026-11-26
 

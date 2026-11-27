@@ -21,8 +21,6 @@ git commands that change the index, the working tree, refs or the remote.
 3. No such file → the project does not follow Simple Architecture. Report that and stop; do not review.
    Not valid JSON, or a top level that is not an object → report that the config cannot be read and stop.
 
-The values are resolved in section 3, once `SKILL.md` is read.
-
 ## 2. Get the diff
 
 - By default: `git diff HEAD` — staged and unstaged changes against the last commit. Also check
@@ -52,10 +50,11 @@ If none exists, report that the rules could not be found and stop. Never review 
 
 **The files to check.** Read `SKILL.md` and resolve every config value — with `apps`, each app's — by its section
 `## The config`, and a value that cannot be used by `references/config.md`. Say each such value in the report.
-Then list the files of the diff that are files of an app, as `SKILL.md` says — a file of its tasks folder, stores
-folder or types folder is one — or lie in the shared package. A file `references/config.md` leaves with no app —
-beside the root folders of two apps that set `lib` in one parent folder — is not listed: name it under Warnings
-with that reason. No such file → say so at once and stop; read no rule file.
+A value takes its default only when its key is absent from the config you read — with `apps`, absent from that
+app. Then list the files of the diff that are files of an app, as `SKILL.md` says — a file of its tasks folder,
+stores folder or types folder is one — or lie in the shared package. A file `references/config.md` leaves with no
+app — beside the root folders of two apps that set `lib` in one parent folder — is not listed: name it under
+Warnings with that reason. No such file → say so at once and stop; read no rule file.
 
 **The rules version.** Read `version` from `.claude-plugin/plugin.json` two levels above the rules folder (the
 plugin's root, which holds `skills/`). If the file or the field is missing, the version is unknown; say so.
@@ -65,8 +64,7 @@ plugin's root, which holds `skills/`). If the file or the field is missing, the 
 names — the folder that holds `skills/` — with the version used, as semver: major, then minor, then patch as
 numbers; a version with a pre-release part (`1.2.0-beta`) is lower than the same version without one. Any higher
 version → add a warning: a newer version of the plugin is installed (`<newest>`), this session uses `<version>`,
-restart the session to load the new rules. Do not switch to it: the skill in this session still uses the session's
-version.
+restart the session to load the new rules. Do not switch to it.
 
 Then read, in this order:
 
@@ -112,7 +110,9 @@ allowed, advice, "not checked" or "a judgement, not a check" is not a finding.
   the checks it names. Under `"direct"`, or a value that fell back to it, check nothing by those two rules and
   report nothing of them: a store in one file, reached through its own API, is no finding.
 - A written exception the project or the caller gives is not a finding for what it names; one that names a kind of
-  code — schemas — covers every file of that kind.
+  code — schemas — covers every file of that kind. One the caller gives is applied as given. A project's
+  exceptions lie in its own rule files, at no fixed path: one you know only from your context, read in the file
+  the context names. The file or the text is not there → do not apply it, and name it under Warnings.
 - One finding per place and rule.
 - When you are not sure a line breaks a rule, or the call is a judgement, say so in the finding rather than leaving
   it out or overstating it.
@@ -129,7 +129,7 @@ allowed, advice, "not checked" or "a judgement, not a check" is not a finding.
 Start with one line on what was reviewed: the rules version and the rules folder used, the diff source, and the
 stack read — for example `Rules 0.1.1 from <rules folder>; diff: git diff HEAD; stack: react.`, or with apps
 `…; apps: client (react, zustand), server (core only).` Name `storeAccess` when it is `"closed"`, any stack name
-that has no stack folder and any config value that took its default.
+that has no stack folder and any config value whose key is absent, with its default.
 
 Then one of these:
 
@@ -155,13 +155,16 @@ Warnings:
 - src/orders/OrderForm/OrderForm.tsx — <Rule name>: <what the signal says>
 - src/tasks/priceOrder.ts — <Rule name>: one user today; src/cart/Cart.tsx (unit cart) comes later in this task.
 - src/main.ts — not checked, a file of no app: the apps shop and admin both set `lib` with roots in src/.
+- Exception for schemas not applied: docs/architecture-exceptions.md, named in the context, is not on disk.
 - A newer version of the plugin is installed (0.2.0); this session uses 0.1.1. Restart the session to load the new rules.
 ```
 
-The warnings from section 3 go here too.
-
 **Cannot review** (no config, config that cannot be read, rules not found, empty diff, no file to check): one line
 that says which and why.
+
+**Only what you read.** State a fact about the project — a config value, a file, what a file says, who names or
+uses it — only when you read it in the repository in this run; your context is not the repository. What you did
+not read, name as "not read", never as missing.
 
 Write in plain, short English. Do not suggest fixes unless the caller asks; the finding and its reason are the
 report.

@@ -981,3 +981,24 @@ file lies at the root level's root — are untouched. Written into the session-s
 the folder, `references/config.md`, the skill's `apps` key and the architecture-reviewer agent. Word budgets
 raised: `references/config.md` 650→750 and `agents/architecture-reviewer.md` 1800→1850 — both additions are new
 cases, and neither file had text that repeats.
+
+## Q62. May the reviewer state a project fact it did not read in the repository?
+
+**Question.** The reviewer's report named facts about the project that were not true: a config value "not in the
+config, so it takes its default" that both apps set, files said to point to a file that no file names, and a
+project exception cited from a file that was deleted and committed. The text came from the agent's context — the
+project rules loaded when the session started — not from the repository. None changed a finding, but a reader
+takes the preamble and the warnings as checked.
+
+**Context.** #92, found in a project that follows the plugin.
+
+**Status.** answered
+
+**Answer.** No: the reviewer states a fact about the project only when it read it in the repository in that run,
+and names what it did not read as "not read", never as missing. A config value is named as its default only when
+its key is absent from the config read — with `apps`, absent from that app. A project exception known only from
+the context is read in the file the context names; when the file or the text is not there, the exception is not
+applied and is named under Warnings. The plugin sets no fixed path for a project's exceptions: they lie in the
+project's own rule files. An exception the caller gives is applied as given — the caller answers for it. Written
+into the architecture-reviewer agent. Three lines that repeated the agent's own text were cut first; word budget
+raised: `agents/architecture-reviewer.md` 1850→1950 — the rest is new text with nothing left that repeats.
