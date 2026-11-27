@@ -1,7 +1,7 @@
 {
   "language": "en",
   "milestones": true,
-  "version": { "scheme": "minor" },
+  "version": { "scheme": "patch" },
   "checks": ["node --test", "claude plugin validate ."],
   "commit": {
     "format": "type(scope): subject",
