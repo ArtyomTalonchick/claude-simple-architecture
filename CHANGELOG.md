@@ -79,6 +79,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   needs while the part is hidden. "View and Presenter in React" says it is the same case as
   `{pagination && <Pagination {...pagination} />}`. Word budgets raised to fit: `core/view-presenter.md`
   1200→1300 and `stack/react/view-presenter.md` 1150→1200 — both files were at their budgets.
+- Two apps of one config that both set `lib` and whose `root` folders lie in the same parent folder are now a
+  config error: the session-start hook names the apps and the folder and says each app needs a parent folder of
+  its own. The apps are still used and their other files are checked as before; until the config is fixed, a
+  start file and test infrastructure in the shared folder — and a tasks, stores or types folder two of those apps
+  have in common — are files of no app, which the reviewer does not check and names under Warnings. Word budgets
+  raised to fit: `references/config.md` 650→750 and the reviewer agent 1800→1850 — neither had text to cut.
 
 ### Fixed
 

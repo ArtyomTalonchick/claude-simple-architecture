@@ -69,3 +69,11 @@ The same holds for an app's `lib`, `tasks`, `stores` and `types`, against that a
   `storeAccess` as without `apps`.
 - With at least one usable app, the top-level `root`, `stack`, `lib`, `tasks`, `stores`, `types` and
   `storeAccess` are ignored, and the user is told each one that is set.
+
+## Apps with `lib` in one parent folder
+
+Two or more apps that each set `lib` — one that is used, not ignored — and whose `root` folders lie in the same
+parent folder are a config error: each such app needs a parent folder of its own. The apps are still used, and
+their other files are checked as before. Until it is fixed, a start file and test infrastructure in that shared
+folder are files of no app and are not checked; nor is a tasks folder, stores folder or types folder two of those
+apps have in common, as their defaults next to `lib` are when `lib` lies there too.

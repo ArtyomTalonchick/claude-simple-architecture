@@ -958,3 +958,26 @@ as empty (a count of zero), a choice by a ready key, a value the View needs whil
 "View and Presenter" and its React side, which says it is the same case as a component's ready props or `null`.
 Word budgets raised: `core/view-presenter.md` 1200→1300 and `stack/react/view-presenter.md` 1150→1200 — both
 files were at their budgets.
+
+## Q61. Whose are the files beside the root folders of two apps that set `lib`?
+
+**Question.** With `lib` set, an app's start file and test infrastructure lie in the folder that holds `root`,
+beside the root folder (Q50). Two apps of one config that both set `lib` and whose `root` folders share a parent
+folder leave a start file or a test setup file there with two owners, so the reviewer cannot tell which app, and
+so which stacks, check it.
+
+**Context.** #87, found while the start file beside the root folder was written (#54).
+
+**Status.** answered
+
+**Answer.** Neither's: the layout is a config error, not a supported one — each app that sets `lib` needs a parent
+folder of its own. No rule finds the owner by the entry a start file runs, and no config key names it: both cost
+more than moving one app's folders. The apps are still used and their other files are checked as before; until
+the config is fixed, a start file and test infrastructure in the shared folder are files of no app and are not
+checked, and the reviewer names them under Warnings with the reason. The same holds for a tasks folder, stores
+folder or types folder two of those apps have in common, which is what their defaults next to `lib` give when
+`lib` lies in that folder too. Apps with `lib` in separate parent folders, and apps without `lib` — whose start
+file lies at the root level's root — are untouched. Written into the session-start hook, which names the apps and
+the folder, `references/config.md`, the skill's `apps` key and the architecture-reviewer agent. Word budgets
+raised: `references/config.md` 650→750 and `agents/architecture-reviewer.md` 1800→1850 — both additions are new
+cases, and neither file had text that repeats.

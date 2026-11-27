@@ -53,8 +53,9 @@ If none exists, report that the rules could not be found and stop. Never review 
 **The files to check.** Read `SKILL.md` and resolve every config value — with `apps`, each app's — by its section
 `## The config`, and a value that cannot be used by `references/config.md`. Say each such value in the report.
 Then list the files of the diff that are files of an app, as `SKILL.md` says — a file of its tasks folder, stores
-folder or types folder is one — or lie in the shared package. No
-such file → say so at once and stop; read no rule file.
+folder or types folder is one — or lie in the shared package. A file `references/config.md` leaves with no app —
+beside the root folders of two apps that set `lib` in one parent folder — is not listed: name it under Warnings
+with that reason. No such file → say so at once and stop; read no rule file.
 
 **The rules version.** Read `version` from `.claude-plugin/plugin.json` two levels above the rules folder (the
 plugin's root, which holds `skills/`). If the file or the field is missing, the version is unknown; say so.
@@ -153,6 +154,7 @@ No findings: the change follows every rule checked (<N> rules).
 Warnings:
 - src/orders/OrderForm/OrderForm.tsx — <Rule name>: <what the signal says>
 - src/tasks/priceOrder.ts — <Rule name>: one user today; src/cart/Cart.tsx (unit cart) comes later in this task.
+- src/main.ts — not checked, a file of no app: the apps shop and admin both set `lib` with roots in src/.
 - A newer version of the plugin is installed (0.2.0); this session uses 0.1.1. Restart the session to load the new rules.
 ```
 

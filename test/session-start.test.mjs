@@ -424,3 +424,57 @@ test('storeAccess: with no usable app, the top-level value is used', () => {
   assert.match(out, /^Store access: closed - /m);
   assert.ok(!out.includes('"storeAccess" is ignored because "apps" is set'));
 });
+
+test('apps with lib whose roots share a parent folder: a config error, and the apps are still used', () => {
+  const out = runHook(
+    JSON.stringify({
+      apps: {
+        shop: { root: 'src/Shop', lib: 'src/shop-lib', stack: ['react'] },
+        admin: { root: './src/Admin/', lib: 'admin/lib', tasks: 'admin/jobs' },
+        docs: { root: 'src/Docs' },
+      },
+    })
+  );
+  assert.match(
+    out,
+    /^Config error: the apps shop, admin each set "lib" and their root folders lie in one parent folder \(src\/\)\. Each app that sets "lib" needs a parent folder of its own\. Until that is fixed, a start file and test infrastructure in src\/ are files of no app and are not checked\. The apps are still used and their other files are checked as before\. Tell the user\.$/m
+  );
+  assert.match(out, /- shop: root level src\/Shop\/; stack react; pure zone src\/shop-lib\/ .*Tasks folder src\/tasks\//);
+  assert.match(out, /- admin: .*Tasks folder admin\/jobs\/, stores folder admin\/stores\/, types folder admin\/types\//);
+  assert.match(out, /- docs: root level src\/Docs\/; .*pure zone src\/Docs\/lib\/;/);
+  assert.doesNotMatch(out, /Config problems|docs each|, docs /);
+});
+
+test('apps with lib whose roots share a parent folder: the folders they have in common are named too', () => {
+  const out = runHook(
+    JSON.stringify({
+      apps: {
+        shop: { root: 'src/Shop', lib: 'src/shop-lib' },
+        admin: { root: 'src/Admin', lib: 'src/admin-lib', types: 'src/admin-types' },
+      },
+    })
+  );
+  assert.match(
+    out,
+    /are files of no app and are not checked, and neither are the folders these apps have in common: src\/tasks\/, src\/stores\/\. The apps are still used/
+  );
+  assert.doesNotMatch(out, /in common: [^.]*types/);
+
+  const top = runHook(JSON.stringify({ apps: { web: { root: 'web', lib: 'web-lib' }, api: { root: 'api', lib: 'api-lib' } } }));
+  assert.match(top, /lie in one parent folder \(the project root\)\..* test infrastructure in the project root are files of no app/);
+  assert.match(top, /in common: tasks\/, stores\/, types\/\./);
+});
+
+test('apps with lib in separate parent folders, apps without lib and a single app: no config error', () => {
+  for (const config of [
+    { apps: { web: { root: 'web/src/App', lib: 'web/src/lib' }, api: { root: 'api/src/App', lib: 'api/src/lib' } } },
+    { apps: { web: { root: 'src/Web' }, api: { root: 'src/Api' } } },
+    { apps: { web: { root: 'src/Web', lib: 'src/web-lib' }, api: { root: 'src/Api' } } },
+    // An ignored `lib`, and one at the default place, set no pure zone apart.
+    { apps: { web: { root: 'src/Web', lib: 'src/web-lib' }, api: { root: 'src/Api', lib: 'src/Api/lib' } } },
+    { apps: { web: { root: 'src/Web', lib: 'src/web-lib' }, api: { root: 'src/Api', lib: '../lib' } } },
+    { root: 'src/App', lib: 'src/lib' },
+  ]) {
+    assert.doesNotMatch(runHook(JSON.stringify(config)), /Config error/, JSON.stringify(config));
+  }
+});

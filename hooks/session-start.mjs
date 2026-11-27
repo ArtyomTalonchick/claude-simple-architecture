@@ -253,6 +253,43 @@ function resolveApps(raw, folders, problems) {
   return apps;
 }
 
+// Apps that set `lib` keep their start file and test infrastructure in the folder that holds `root`, so two of
+// them whose roots lie in one parent folder leave the files there with no owner. Returns a list of
+// { parent, names, folders }: the shared parent folder, the apps in it, and the tasks, stores and types folders
+// two of those apps have in common - as their defaults next to `lib` are when `lib` lies there too.
+function sharedParents(apps) {
+  const groups = new Map();
+  for (const app of apps) {
+    if (!app.lib) continue;
+    const parent = parentOf(normalPath(app.root));
+    groups.set(parent, [...(groups.get(parent) || []), app]);
+  }
+  const shared = [];
+  for (const [parent, group] of groups) {
+    if (group.length < 2) continue;
+    const users = new Map();
+    for (const app of group) {
+      for (const folder of new Set([app.tasks, app.stores, app.types])) {
+        users.set(folder, (users.get(folder) || 0) + 1);
+      }
+    }
+    const folders = [...users].filter(([, count]) => count > 1).map(([folder]) => `${folder}/`);
+    shared.push({ parent, names: group.map((app) => app.name), folders });
+  }
+  return shared;
+}
+
+function sharedParentLine({ parent, names, folders }) {
+  const where = parent ? `${parent}/` : 'the project root';
+  return (
+    `Config error: the apps ${names.join(', ')} each set "lib" and their root folders lie in one parent folder (${where}). ` +
+    'Each app that sets "lib" needs a parent folder of its own. ' +
+    `Until that is fixed, a start file and test infrastructure in ${where} are files of no app and are not checked` +
+    (folders.length ? `, and neither are the folders these apps have in common: ${folders.join(', ')}` : '') +
+    '. The apps are still used and their other files are checked as before. Tell the user.'
+  );
+}
+
 // Applies the defaults; every value of the wrong type is replaced by its default and noted in `problems`.
 function resolveConfig(raw) {
   const problems = [];
@@ -359,6 +396,7 @@ function main() {
     "The types those two folders and the units share live in the app's types folder, outside every level; any code of the app outside the pure zone may import it, and it imports only the pure zone and the shared package.",
     `File size limit: ${config.maxFileLines} lines; a longer file is a violation (test files and generated files are not checked).`
   );
+  if (config.apps) lines.push(...sharedParents(config.apps).map(sharedParentLine));
   if (unknown.length) {
     lines.push(
       `Unknown stack names, skipped (no stack folder): ${unknown.join(', ')}. Available: ${available}. Tell the user.`

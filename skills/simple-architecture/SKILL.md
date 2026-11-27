@@ -98,9 +98,10 @@ A repository with several apps — a client, a server and a package of code they
 ```
 
 - **`apps`** — the apps, by name, each with a `root` (required), a `stack` (default `[]`) and an optional `lib`,
-  `tasks`, `stores`, `types` and `storeAccess`, read as the top-level keys are; each app is checked on its own,
-  from its own root, by its own stacks and its own `storeAccess`. The top-level `root`, `stack`, `lib`, `tasks`,
-  `stores`, `types` and `storeAccess` are then ignored; `folders` and `maxFileLines` apply to every app.
+  `tasks`, `stores`, `types` and `storeAccess`, read as the top-level keys are; each app is checked on its own, by
+  its own root, stacks and `storeAccess`. The same top-level keys are then ignored; `folders` and `maxFileLines`
+  apply to every app. Apps that set `lib` keep `root` in separate parent folders
+  ([references/config.md](references/config.md)).
 - **`shared`** — the shared package, relative to the project root: types and the runtime code two or more apps
   use, imported by every app, importing no app ([Imports](references/core/imports.md)). Optional, no default, with or without `apps`.
 
