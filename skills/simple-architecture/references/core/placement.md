@@ -15,11 +15,12 @@ than needed looks shared, so every change to it needs a search for users that do
   A test is not a user: code used by one unit and its tests has one user.
 - A level's stores folder holds the own unit's stores and the stores its units share — UI state, or data the tasks
   of two of its units reach, such as a server cache — when no task of the app's tasks folder reaches them
-  ([The app's tasks and stores folders](app-folders.md)). Data two units need is a store, not shared stateful logic.
+  ([The app's folders](app-folders.md)). Data two units need is a store, not shared stateful logic.
 - A child unit or a file used by two or more siblings, or from outside its parent level, is a violation. It goes
   where its users are covered: a unit to the components folder of the lowest level that covers them, a store to its
   stores folder, a type or a constant to its types file or constants file; a task, a store a task of the app's tasks
-  folder reaches, and a plain function on the app's data to the app's folders.
+  folder reaches, a plain function on the app's data, and a type that a file of the app's tasks folder or stores
+  folder also uses, to the app's folders.
 - One user below is a violation: a store in a level's stores folder whose only user is one child unit (it goes to
   that child's stores folder), a type or a constant in a level's types file or constants file whose only users sit
   in one child unit (it goes into that child), a unit in the components folder with only one user (it goes to that
@@ -39,8 +40,8 @@ than needed looks shared, so every change to it needs a search for users that do
   stateful logic or such an entry inside the tasks folder, is a violation. One that works on the app's data and is
   used by tasks of the app's tasks folder or by two or more units lies in the app's tasks folder, and a Presenter
   may import it.
-- The pure zone and the app's tasks folder and stores folder are not placed by this rule: their code stays there
-  whatever the number of its users. Nor is what two apps use: [Imports](imports.md) says what the shared package
+- The pure zone and the app's tasks folder, stores folder and types folder are not placed by this rule: their code
+  stays there whatever the number of its users. Nor is what two apps use: [Imports](imports.md) says what the shared package
   holds.
 
 **Good.**

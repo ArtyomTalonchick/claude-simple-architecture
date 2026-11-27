@@ -52,7 +52,8 @@ If none exists, report that the rules could not be found and stop. Never review 
 
 **The files to check.** Read `SKILL.md` and resolve every config value — with `apps`, each app's — by its section
 `## The config`, and a value that cannot be used by `references/config.md`. Say each such value in the report.
-Then list the files of the diff that are files of an app, as `SKILL.md` says, or lie in the shared package. No
+Then list the files of the diff that are files of an app, as `SKILL.md` says — a file of its tasks folder, stores
+folder or types folder is one — or lie in the shared package. No
 such file → say so at once and stop; read no rule file.
 
 **The rules version.** Read `version` from `.claude-plugin/plugin.json` two levels above the rules folder (the

@@ -51,8 +51,9 @@ test('empty config: every default', () => {
     out,
     /On every level: the own unit's non-UI code in _logic\/ next to its entry - only the unit itself imports from it - and the tasks only it calls in _logic\/_tasks\/; its stores in _stores\/, never in _logic\/; its types and constants files at the level root; shared child units in _components\/\./
   );
-  assert.match(out, /The app's tasks folder: src\/tasks\/\. Its stores folder: src\/stores\/\./);
+  assert.match(out, /The app's tasks folder: src\/tasks\/\. Its stores folder: src\/stores\/\. Its types folder: src\/types\/\./);
   assert.match(out, /Tasks that two or more units call, and the stores those tasks reach, live in the app's tasks folder and stores folder, outside every level/);
+  assert.match(out, /The types those two folders and the units share live in the app's types folder, outside every level; any code of the app outside the pure zone may import it, and it imports only the pure zone and the shared package\./);
   assert.match(out, /File size limit: 120 lines; a longer file is a violation \(test files and generated files are not checked\)\./);
   assert.doesNotMatch(out, /problems|Unknown/);
 });
@@ -294,53 +295,68 @@ test('lib: an invalid value is ignored and named, and the pure zone stays under 
   assert.doesNotMatch(out, /set by "lib"|is not a known key/);
 });
 
-test('tasks and stores: by default next to the pure zone, at the root level or next to lib', () => {
+test('tasks, stores and types: by default next to the pure zone, at the root level or next to lib', () => {
   const atRoot = runHook(JSON.stringify({ root: 'app' }));
-  assert.match(atRoot, /The app's tasks folder: app\/tasks\/\. Its stores folder: app\/stores\/\./);
+  assert.match(atRoot, /The app's tasks folder: app\/tasks\/\. Its stores folder: app\/stores\/\. Its types folder: app\/types\/\./);
 
   const nextToLib = runHook(JSON.stringify({ root: 'src/App', lib: 'src/lib' }));
-  assert.match(nextToLib, /The app's tasks folder: src\/tasks\/\. Its stores folder: src\/stores\/\./);
+  assert.match(nextToLib, /The app's tasks folder: src\/tasks\/\. Its stores folder: src\/stores\/\. Its types folder: src\/types\/\./);
 
   const libAtTop = runHook(JSON.stringify({ root: 'src', lib: 'lib' }));
-  assert.match(libAtTop, /The app's tasks folder: tasks\/\. Its stores folder: stores\/\./);
+  assert.match(libAtTop, /The app's tasks folder: tasks\/\. Its stores folder: stores\/\. Its types folder: types\/\./);
 
   const apps = runHook(
     JSON.stringify({ apps: { client: { root: 'client/src/App', lib: 'client/src/lib' }, server: { root: 'server/src' } } })
   );
-  assert.match(apps, /- client: .*UI kit client\/src\/lib\/ui-kit\/\. Tasks folder client\/src\/tasks\/, stores folder client\/src\/stores\/\./);
-  assert.match(apps, /- server: .*Tasks folder server\/src\/tasks\/, stores folder server\/src\/stores\/\./);
+  assert.match(
+    apps,
+    /- client: .*UI kit client\/src\/lib\/ui-kit\/\. Tasks folder client\/src\/tasks\/, stores folder client\/src\/stores\/, types folder client\/src\/types\/\./
+  );
+  assert.match(apps, /- server: .*Tasks folder server\/src\/tasks\/, stores folder server\/src\/stores\/, types folder server\/src\/types\/\./);
   for (const out of [atRoot, nextToLib, libAtTop, apps]) assert.doesNotMatch(out, /problems/);
 });
 
-test('tasks and stores: set by keys, at the top level and per app', () => {
-  const one = runHook(JSON.stringify({ root: 'src/App', tasks: './src\\actions/', stores: 'src/data' }));
-  assert.match(one, /The app's tasks folder: src\/actions\/\. Its stores folder: src\/data\/\./);
+test('tasks, stores and types: set by keys, at the top level and per app', () => {
+  const one = runHook(JSON.stringify({ root: 'src/App', tasks: './src\\actions/', stores: 'src/data', types: 'src\\model/' }));
+  assert.match(one, /The app's tasks folder: src\/actions\/\. Its stores folder: src\/data\/\. Its types folder: src\/model\/\./);
   assert.doesNotMatch(one, /problems/);
 
-  const apps = runHook(JSON.stringify({ apps: { web: { root: 'web/src', tasks: 'web/src/actions', stores: 'web/state' } } }));
-  assert.match(apps, /- web: .*Tasks folder web\/src\/actions\/, stores folder web\/state\/\./);
+  const apps = runHook(
+    JSON.stringify({ apps: { web: { root: 'web/src', tasks: 'web/src/actions', stores: 'web/state', types: 'web/src/model' } } })
+  );
+  assert.match(apps, /- web: .*Tasks folder web\/src\/actions\/, stores folder web\/state\/, types folder web\/src\/model\/\./);
   assert.doesNotMatch(apps, /problems/);
 });
 
-test('tasks and stores: an invalid value is ignored and named, and the default is used', () => {
+test('tasks, stores and types: an invalid value is ignored and named, and the default is used', () => {
   const out = runHook(
     JSON.stringify({
       apps: {
-        a: { root: 'a/src', tasks: 5, stores: '/a/stores' },
-        b: { root: 'b/src', tasks: '../tasks', stores: 'b' },
-        c: { root: 'c/src', tasks: 'c/src/lib/tasks', stores: 'c/src/orders/stores' },
-        d: { root: 'd/src', tasks: 'd/src/_stores', stores: 'd/x' },
-        e: { root: 'e/src', tasks: 'e/x', stores: 'e/x' },
+        a: { root: 'a/src', tasks: 5, stores: '/a/stores', types: [] },
+        b: { root: 'b/src', tasks: '../tasks', stores: 'b', types: 'b/src/../types' },
+        c: { root: 'c/src', tasks: 'c/src/lib/tasks', stores: 'c/src/orders/stores', types: 'c/src/lib/types' },
+        d: { root: 'd/src', tasks: 'd/src/_stores', stores: 'd/x', types: 'd/x' },
+        e: { root: 'e/src', tasks: 'e/x', stores: 'e/x', types: 'e/x' },
       },
       tasks: 'tasks',
+      types: 'types',
     })
   );
   for (const name of ['a', 'b', 'c']) {
-    assert.ok(out.includes(`Tasks folder ${name}/src/tasks/, stores folder ${name}/src/stores/.`), `defaults for ${name}`);
+    assert.ok(
+      out.includes(`Tasks folder ${name}/src/tasks/, stores folder ${name}/src/stores/, types folder ${name}/src/types/.`),
+      `defaults for ${name}`
+    );
   }
-  assert.ok(out.includes('Tasks folder d/src/tasks/, stores folder d/x/.'));
-  assert.ok(out.includes('Tasks folder e/x/, stores folder e/src/stores/.'));
+  assert.ok(out.includes('Tasks folder d/src/tasks/, stores folder d/x/, types folder d/src/types/.'));
+  assert.ok(out.includes('Tasks folder e/x/, stores folder e/src/stores/, types folder e/src/types/.'));
   for (const problem of [
+    '"apps.a.types" is not a folder name',
+    '"apps.b.types" is not a folder path relative to the project root',
+    '"apps.c.types" lies inside the pure zone, so it is ignored',
+    '"apps.d.types" is the same folder as the stores folder, so it is ignored',
+    '"apps.e.types" is the same folder as the tasks folder, so it is ignored',
+    '"types" is ignored because "apps" is set',
     '"apps.a.tasks" is not a folder name',
     '"apps.a.stores" is not a folder path relative to the project root',
     '"apps.b.tasks" is not a folder path relative to the project root',

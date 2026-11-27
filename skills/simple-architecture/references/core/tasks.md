@@ -63,7 +63,7 @@ without the task.
   store actions a handler calls, or of stores, does not decide: changes of UI state stay in the handler or a plain
   function.
 - A large step several actions need is a task of its own.
-- Where a task lives: [Levels](levels.md), [The app's tasks and stores folders](app-folders.md).
+- Where a task lives: [Levels](levels.md), [The app's folders](app-folders.md).
 - Advice, not checked: a task talks to the server through a small project module of tasks, one per request
   (`api.logout()`), which call the pure zone's generic I/O. The module is one file, placed by all the tasks that use
   it.

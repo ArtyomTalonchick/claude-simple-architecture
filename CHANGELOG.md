@@ -5,6 +5,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- The app's types folder (default `types/`, config key `types`, at the top level and in each app of `apps`), next
+  to its tasks folder and stores folder, outside every level. It holds the types that two or more files use, at
+  least one of them in the app's tasks folder or stores folder; a type with one user stays with that user. Any code
+  of the app outside the pure zone may import it, and its files import only that folder, the pure zone and the
+  shared package, so a store of the app's stores folder can now name a shared type. The types file of the app's
+  tasks folder is gone: its types go to the types folder; the constants file there stays. The rule "The app's
+  tasks and stores folders" is renamed "The app's folders". The session-start hook reads and checks `types` as it
+  does `tasks` and `stores`, and passes its value. Word budget raised to fit: `core/app-folders.md` 650→800 — the
+  file was at its budget, and the third folder with its checks and examples does not fit after shortening.
+
 ### Fixed
 
 - "A Zustand store" no longer contradicts "Pure zone": only a store file of the app lies in a stores folder, a

@@ -1,10 +1,11 @@
 ## Imports
 
 **Rule.** Import only along the structure — your own children through their entry, your own unit's logic folder,
-the shared folders and files of your level and of the levels above, the app's tasks folder and stores folder, the
-pure zone, the shared package — and from an entry folder only its entry. Imports go one way: levels → the
-app's tasks folder → the app's stores folder → the pure zone, and View → Presenter → stateful logic and the UI side's
-plain functions → tasks → plain functions, with stores and generic I/O open only to the kinds listed below.
+the shared folders and files of your level and of the levels above, the app's tasks folder, stores folder and types
+folder, the pure zone, the shared package — and from an entry folder only its entry. Imports go one way: levels →
+the app's tasks folder → the app's stores folder → the app's types folder → the pure zone, and View → Presenter →
+stateful logic and the UI side's plain functions → tasks → plain functions, with stores and generic I/O open only to
+the kinds listed below.
 
 **Why.** When imports follow the folders, the folders tell the truth: a unit can be changed inside without
 breaking anyone, moved or deleted with its folder, and every dependency is visible from where a file lies. A
@@ -25,7 +26,7 @@ sibling and branch are as in [Levels](levels.md).
   - the types file, the constants file, the stores and the components-folder units (through their entry) of the
     own level and of any level above it;
   - the app's tasks folder, from any level and from inside it; the app's stores folder, from any level and from the
-    app's tasks folder;
+    app's tasks folder; the app's types folder, from any code of the app outside the pure zone;
   - the pure zone of the own app, from anywhere in the app; a type of it from the module that exports it;
   - the shared package (`shared` in the config), from any app: types, and the runtime code two or more apps use —
     plain functions on its types, constants, schemas, and what would lie in a pure zone, generic I/O included;
@@ -42,9 +43,9 @@ sibling and branch are as in [Levels](levels.md).
   - an import of a parent's or an ancestor's entry; what comes through props is set by
     [View and Presenter](view-presenter.md);
   - in a logic folder, an import of the own unit's entry, of a type too: the file that needs a type declares it;
-  - in the app's tasks folder, an import from anywhere but that folder, the app's stores folder, the pure zone and
-    the shared package; in the app's stores folder, from anywhere but the pure zone and the shared package — no
-    level, and no task from a store;
+  - in the app's folders, an import from anywhere but the pure zone and the shared package, and besides them: in
+    the tasks folder, any of the three folders; in the stores folder, the types folder; in the types folder, that
+    folder — no level, and no task from a store;
   - with `apps` in the config, an import from another app — its code, its pure zone, anything under its root; what
     two apps share goes to the shared package;
   - in the shared package, an import from any app; a store, a task, stateful logic or a component; code only one
@@ -89,10 +90,12 @@ src/
   lib/
     http/
       fetchJson
+  types/
+    order               imports nothing of the app
   stores/
-    ordersStore         imports nothing of the app
+    ordersStore         imports types/order
   tasks/
-    cancelOrder         imports stores/ordersStore, tasks/notifyUser, lib/http/fetchJson
+    cancelOrder         imports stores/ordersStore, types/order, tasks/notifyUser, lib/http/fetchJson
     notifyUser
     formatPrice         a plain function on the app's data
   App/
@@ -149,6 +152,8 @@ shared/src/             the shared package
 
 ```
 src/
+  types/
+    order               imports stores/ordersStore — the types folder importing a store
   stores/
     ordersStore         imports tasks/notifyUser — a store importing a task
   tasks/

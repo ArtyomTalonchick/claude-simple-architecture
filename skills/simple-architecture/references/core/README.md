@@ -10,8 +10,8 @@ what it is about.
 - [Levels](levels.md) — the one shape of the app root and of every unit folder.
 - [Placement by users](placement.md) — a child unit, store, type or constant at the lowest level that covers its
   users.
-- [The app's tasks and stores folders](app-folders.md) — the tasks two or more units call, and the stores they
-  reach, outside every level.
+- [The app's folders](app-folders.md) — the tasks two or more units call, the stores they reach and the types
+  these share with the units, outside every level.
 - [Entry folders](entry-folders.md) — an entry with parts only it uses, in a folder named as it.
 - [Types and constants](types-and-constants.md) — where a type or a constant lies by the files that use it.
 - [Stateful logic and plain functions](stateful-logic-and-functions.md) — the kinds of non-UI code, stores, and who

@@ -23,6 +23,7 @@ const DEFAULTS = {
   lib: null,
   tasks: null,
   stores: null,
+  types: null,
   folders: DEFAULT_FOLDERS,
   maxFileLines: 120,
   apps: null,
@@ -158,16 +159,16 @@ function pureZone(root, lib, folders) {
 // The parent folder of a path, '' for a path with one part.
 const parentOf = (path) => (path.includes('/') ? path.slice(0, path.lastIndexOf('/')) : '');
 
-// The app's tasks folder and stores folder (keys `tasks` and `stores`), relative to the project root. By default
-// they lie next to the pure zone: next to the folder `lib` names, or at the root level without it. A bad value is
-// named in `problems` and the default is used.
+// The app's tasks folder, stores folder and types folder (keys `tasks`, `stores` and `types`), relative to the
+// project root. By default they lie next to the pure zone: next to the folder `lib` names, or at the root level
+// without it. A bad value is named in `problems` and the default is used.
 function appFolders(raw, prefix, root, lib, folders, problems) {
   const rootPath = normalPath(root);
   const zone = normalPath(pureZone(rootPath, lib, folders).lib);
   const base = lib ? parentOf(lib) : rootPath;
   const levelStores = `${rootPath}/${normalPath(folders.stores)}`;
   const result = {};
-  for (const key of ['tasks', 'stores']) {
+  for (const key of ['tasks', 'stores', 'types']) {
     const fallback = base ? `${base}/${key}` : key;
     const label = `${prefix}${key}`;
     result[key] = fallback;
@@ -189,15 +190,17 @@ function appFolders(raw, prefix, root, lib, folders, problems) {
     else if (isInside(path, rootPath) && parentOf(path) !== rootPath) {
       why = 'lies inside the root level other than directly under it';
     } else if (path === levelStores) why = "is the root level's stores folder";
-    else if (key === 'stores' && path === result.tasks) why = 'is the same folder as the tasks folder';
+    else if (key !== 'tasks' && path === result.tasks) why = 'is the same folder as the tasks folder';
+    else if (key === 'types' && path === result.stores) why = 'is the same folder as the stores folder';
     if (why) problems.push(`"${label}" ${why}, so it is ignored`);
     else result[key] = path;
   }
   return result;
 }
 
-// Several apps of one repository: { name: { root, stack, lib, tasks, stores } }. Returns a list of { name, root, stack, lib }, or
-// null when there is no usable app, so the config falls back to one app.
+// Several apps of one repository: { name: { root, stack, lib, tasks, stores, types } }. Returns a list of
+// { name, root, stack, lib, tasks, stores, types }, or null when there is no usable app, so the config falls back
+// to one app.
 function resolveApps(raw, folders, problems) {
   if (!raw.apps || typeof raw.apps !== 'object' || Array.isArray(raw.apps)) {
     problems.push('"apps" is not an object');
@@ -216,19 +219,19 @@ function resolveApps(raw, folders, problems) {
     }
     const root = app.root.trim();
     const lib = 'lib' in app ? resolveLib(app.lib, `apps.${name}.lib`, root, folders, problems) : null;
-    const { tasks, stores } = appFolders(app, `apps.${name}.`, root, lib, folders, problems);
+    const { tasks, stores, types } = appFolders(app, `apps.${name}.`, root, lib, folders, problems);
     for (const key of Object.keys(app)) {
-      if (!['root', 'stack', 'lib', 'tasks', 'stores'].includes(key)) {
+      if (!['root', 'stack', 'lib', 'tasks', 'stores', 'types'].includes(key)) {
         problems.push(`"apps.${name}.${key}" is not a known key`);
       }
     }
-    apps.push({ name, root, stack, lib, tasks, stores });
+    apps.push({ name, root, stack, lib, tasks, stores, types });
   }
   if (!apps.length) {
     problems.push('"apps" has no usable app, so it is ignored and the project is one app');
     return null;
   }
-  for (const key of ['root', 'stack', 'lib', 'tasks', 'stores']) {
+  for (const key of ['root', 'stack', 'lib', 'tasks', 'stores', 'types']) {
     if (key in raw) problems.push(`"${key}" is ignored because "apps" is set`);
   }
   return apps;
@@ -318,7 +321,7 @@ function main() {
     for (const app of config.apps) {
       const zone = pureZone(app.root, app.lib, f);
       lines.push(
-        `- ${app.name}: root level ${app.root}/; stack ${stackText(app.stack)}; pure zone ${zone.lib}/${zone.apart ? APART : ''}; UI kit ${zone.uiKit}/. Tasks folder ${app.tasks}/, stores folder ${app.stores}/.`
+        `- ${app.name}: root level ${app.root}/; stack ${stackText(app.stack)}; pure zone ${zone.lib}/${zone.apart ? APART : ''}; UI kit ${zone.uiKit}/. Tasks folder ${app.tasks}/, stores folder ${app.stores}/, types folder ${app.types}/.`
       );
     }
   } else {
@@ -326,7 +329,7 @@ function main() {
     lines.push(
       `Stack: ${stackText(config.stack)}.`,
       `Root level: ${config.root}/. Pure zone: ${zone.lib}/${zone.apart ? APART : ''}. UI kit: ${zone.uiKit}/.`,
-      `The app's tasks folder: ${config.tasks}/. Its stores folder: ${config.stores}/.`
+      `The app's tasks folder: ${config.tasks}/. Its stores folder: ${config.stores}/. Its types folder: ${config.types}/.`
     );
   }
   if (config.shared) {
@@ -335,6 +338,7 @@ function main() {
   lines.push(
     `On every level: the own unit's non-UI code in ${f.logic}/ next to its entry - only the unit itself imports from it - and the tasks only it calls in ${f.logic}/${f.tasks}/; its stores in ${f.stores}/, never in ${f.logic}/; its types and constants files at the level root; shared child units in ${f.components}/.`,
     "Tasks that two or more units call, and the stores those tasks reach, live in the app's tasks folder and stores folder, outside every level; they import no level.",
+    "The types those two folders and the units share live in the app's types folder, outside every level; any code of the app outside the pure zone may import it, and it imports only the pure zone and the shared package.",
     `File size limit: ${config.maxFileLines} lines; a longer file is a violation (test files and generated files are not checked).`
   );
   if (unknown.length) {

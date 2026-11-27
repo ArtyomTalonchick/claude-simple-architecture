@@ -43,7 +43,7 @@ without touching the logic around it, and the few kinds that reach it show who d
   - a store may have several implementations behind one API, picked by the environment, in a store entry folder
     ([Entry folders](entry-folders.md));
   - where a store lives: [Levels](levels.md), [Placement by users](placement.md),
-    [The app's tasks and stores folders](app-folders.md), [Pure zone](pure-zone.md).
+    [The app's folders](app-folders.md), [Pure zone](pure-zone.md).
 - Plain functions:
   - the kind is decided by meaning, not by reaching a store: a business action, or a step of one, is a task; a
     computation, a change of UI state in a store or an act on the screen is a plain function;

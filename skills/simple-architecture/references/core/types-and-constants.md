@@ -1,8 +1,9 @@
 ## Types and constants
 
 **Rule.** Keep a type or a constant in the one file that uses it; put one that two or more files use in the types
-file or the constants file of the lowest level that covers them, of the app's tasks folder, or of the innermost
-entry folder that holds them all — never export it from one of its users. A type that is part of an API — a props
+file or the constants file of the lowest level that covers them or of the innermost entry folder that holds them
+all, in the app's types folder, or in the constants file of the app's tasks folder — never export it from one of
+its users. A type that is part of an API — a props
 type, the type of a function's parameters or result, a pure-zone module's type, a store's data, the type inferred
 from a schema — stays with that API.
 
@@ -15,10 +16,11 @@ with one user looks shared while it is not. A type that belongs to an API is fou
   a function, of its parameters or of its result — without naming the type it reaches does not use it and is not
   counted among its users.
 - The users of a type in a types file are the files outside it. A type another type of the same types file is
-  built from stays there with it, whatever the number of its other users.
+  built from stays there with it, whatever the number of its other users. The app's types folder counts here as
+  one types file.
 - The users are files — of the own unit, of its child units, or both — and a level's types file and constants file
-  lie at its root. Which types and constants the app's tasks folder and an entry folder keep in their own:
-  [The app's tasks and stores folders](app-folders.md), [Entry folders](entry-folders.md).
+  lie at its root. Which types and constants the app's folders and an entry folder keep:
+  [The app's folders](app-folders.md), [Entry folders](entry-folders.md).
 - A violation: a type or a constant in a types file or a constants file with only one user file (it belongs in that
   file); one exported from one of its users to the others (it belongs in the shared file).
 - A props type, the types that are part of it and the type of a key the Presenter returns are placed by

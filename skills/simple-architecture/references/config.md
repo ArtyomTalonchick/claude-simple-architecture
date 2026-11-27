@@ -21,8 +21,8 @@ A key the config does not know — at the top level, in `folders` or in an app o
 A value of the wrong type is ignored and its default is used:
 
 - `stack` (and an app's `stack`) that is not a list of non-empty names → `[]`.
-- `root`, `shared`, a key of `folders`, `lib`, `tasks` or `stores` that is not a non-empty folder name → its
-  default (`shared`, `lib`: none).
+- `root`, `shared`, a key of `folders`, `lib`, `tasks`, `stores` or `types` that is not a non-empty folder name →
+  its default (`shared`, `lib`: none).
 - `folders` that is not an object → every folder name keeps its default.
 - `maxFileLines` that is not a positive whole number → `120`.
 
@@ -46,16 +46,16 @@ user the name has no stack folder, and name the stacks that exist.
 With `lib` set, the start file and the test infrastructure beside the root folder are files of the app
 ([SKILL.md](../SKILL.md)); with `lib` ignored, they lie at the root level's root, as without `lib`.
 
-`tasks` or `stores` is ignored, and its default is used, when it is:
+`tasks`, `stores` or `types` is ignored, and its default is used, when it is:
 
 - absolute, or has a `..` part;
 - the root level or a folder that holds it;
 - inside the pure zone;
 - inside the root level, other than a folder directly under it;
 - the root level's stores folder (`<root>/<folders.stores>`);
-- for `stores`: the same folder as the app's tasks folder.
+- for `stores`: the same folder as the app's tasks folder; for `types`: as its tasks folder or its stores folder.
 
-The same holds for an app's `lib`, `tasks` and `stores`, against that app's root.
+The same holds for an app's `lib`, `tasks`, `stores` and `types`, against that app's root.
 
 ## `apps` with no usable app
 
@@ -63,6 +63,7 @@ The same holds for an app's `lib`, `tasks` and `stores`, against that app's root
 - An app that is not an object, or has no `root` folder name, is skipped. A wrong value in an app that has a
   `root` falls back as above; the app is still used.
 - With no usable app left — `apps` is empty, is not an object, or every app is skipped — `apps` is ignored and the
-  project is one app, read from the top-level `root`, `stack`, `lib`, `tasks` and `stores` as without `apps`.
-- With at least one usable app, the top-level `root`, `stack`, `lib`, `tasks` and `stores` are ignored, and the
-  user is told each one that is set.
+  project is one app, read from the top-level `root`, `stack`, `lib`, `tasks`, `stores` and `types` as without
+  `apps`.
+- With at least one usable app, the top-level `root`, `stack`, `lib`, `tasks`, `stores` and `types` are ignored,
+  and the user is told each one that is set.

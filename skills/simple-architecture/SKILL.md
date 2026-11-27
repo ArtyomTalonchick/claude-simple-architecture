@@ -31,8 +31,8 @@ package; one such file is reviewed.
    every rule file in that folder. A stack rule file is named as the core rule it carries out and never overrides
    it.
 
-A file of an app lies in its root, its pure zone set by `lib`, its tasks folder or its stores folder, or, when it
-sets `lib`, is its start file or test infrastructure beside the root folder
+A file of an app lies in its root, its pure zone set by `lib`, its tasks folder, its stores folder or its types folder,
+or, when it sets `lib`, is its start file or test infrastructure beside the root folder
 ([Levels](references/core/levels.md)). With `apps` in the config, read the core and then only the stacks of the
 app that holds the code; code in the shared package gets the core only.
 
@@ -62,10 +62,10 @@ Every key is optional; a missing key takes its default. The full file with the d
 - **`lib`** — the folder of the pure zone set apart from the root level, relative to the project root, for example
   `"root": "src/App", "lib": "src/lib"`; the pure zone then lies outside every level. No default: without it, the
   pure zone is `folders.lib` under `root`.
-- **`tasks`**, **`stores`** — the app's tasks folder and stores folder, relative to the project root
-  ([The app's tasks and stores folders](references/core/app-folders.md)); not `folders.tasks` and `folders.stores`.
-  Default: next to the pure zone — next to the folder `lib` names, or, without `lib`, `<root>/tasks` and
-  `<root>/stores`.
+- **`tasks`**, **`stores`**, **`types`** — the app's tasks folder, stores folder and types folder, relative to the
+  project root ([The app's folders](references/core/app-folders.md)); not `folders.tasks` and `folders.stores`.
+  Default: next to the pure zone — next to the folder `lib` names, or, without `lib`, `<root>/tasks`,
+  `<root>/stores` and `<root>/types`.
 - **`folders.lib`** — the pure zone, relative to `root`; when `lib` is set, `lib` takes its place. Default `lib`.
 - **`folders.uiKit`** — the ui-kit, relative to `root`: part of the pure zone, so its name does not follow
   `folders.components`. Default `lib/ui-kit`; with `lib` set, it lies inside `lib` as inside `folders.lib`
@@ -80,7 +80,7 @@ Every key is optional; a missing key takes its default. The full file with the d
   ([One thing per file](references/core/one-thing-per-file.md)). Default `120`.
 
 A repository with several apps — a client, a server and a package of code they share — declares them instead of
-`root`, `stack`, `lib`, `tasks` and `stores`:
+`root`, `stack`, `lib`, `tasks`, `stores` and `types`:
 
 ```json
 {
@@ -93,8 +93,8 @@ A repository with several apps — a client, a server and a package of code they
 ```
 
 - **`apps`** — the apps, by name, each with a `root` (required), a `stack` (default `[]`) and an optional `lib`,
-  `tasks` and `stores`, read as the top-level keys are; each app is checked on its own, from its own root, by its own
-  stacks. The top-level `root`, `stack`, `lib`, `tasks` and `stores` are then ignored; `folders` and `maxFileLines`
+  `tasks`, `stores` and `types`, read as the top-level keys are; each app is checked on its own, from its own root,
+  by its own stacks. The top-level `root`, `stack`, `lib`, `tasks`, `stores` and `types` are then ignored; `folders` and `maxFileLines`
   apply to every app.
 - **`shared`** — the shared package, relative to the project root: types and the runtime code two or more apps
   use, imported by every app, importing no app ([Imports](references/core/imports.md)). Optional, no default, with or without `apps`.

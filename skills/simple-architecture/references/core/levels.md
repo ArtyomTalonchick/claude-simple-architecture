@@ -21,8 +21,8 @@ unit's code says what that unit does, and whether a file may import from it is a
   what it leaves to a task: [Tasks](tasks.md).
 - The logic folder, the stores folder, the components folder, the types file and the constants file, and the files
   in them, belong to the level that holds them. A unit folder in the components folder is a level of its own.
-  Entry folders ([Entry folders](entry-folders.md)) and the app's tasks folder and stores folder
-  ([The app's tasks and stores folders](app-folders.md)) are not levels.
+  Entry folders ([Entry folders](entry-folders.md)) and the app's three folders
+  ([The app's folders](app-folders.md)) are not levels.
 - The parent of a level is the nearest level above it; levels with the same parent are siblings; a level's subtree
   is a branch.
 - The parts, each optional:
@@ -40,12 +40,12 @@ unit's code says what that unit does, and whether a file may import from it is a
 - Any other file or folder at a level root is a violation: a folder of stateful logic, functions or tasks (such as
   `hooks/`) or a file of non-UI code goes to the logic folder, a store to the stores folder, a unit next to the entry
   or to the components folder. Tests, the test infrastructure, the pure zone ([Pure zone](pure-zone.md)) and the
-  app's tasks folder and stores folder are not part of the shape.
+  app's tasks folder, stores folder and types folder are not part of the shape.
 - Who may import a file of the logic folder: [Imports](imports.md).
 - A types file or a constants file in the logic folder, outside an entry folder, is a violation: it lies at the
   level root. A store in the logic folder or its tasks folder is a violation, even with one user: it goes to the
   stores folder of the same level.
-- An empty logic, tasks, stores or components folder, app's tasks folder or app's stores folder is a violation.
+- An empty logic, tasks, stores or components folder or app's tasks, stores or types folder is a violation.
 - A child unit needs no prefix of its parent's name.
 - The root level is not named after its entry. Its root holds the entry, the file that builds the app (`App`,
   `createApp`), and the file the app starts from (`main`, `index`), which runs the entry and may wrap it in what the
