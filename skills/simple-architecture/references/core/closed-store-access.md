@@ -23,8 +23,8 @@ lives, what it may import.
     file; a read function (`getOrderById(id)`) that applies it to the current state; and, in an app with a UI, a
     read subscription that subscribes with it, for a Presenter or stateful logic. Both are always written and both
     use the same getter: one that repeats the reading is a violation;
-  - `writes` — everything that changes the store: plain functions whose name ends with `InStore`
-    (`addOrderInStore(order)`, `resetOrdersInStore()`);
+  - `writes` — everything that changes the store: plain functions (`addOrderInStore(order)`,
+    `resetOrdersInStore()`);
   - `index` — re-exports everything from `reads` and from `writes`, and nothing else.
 - Inside the folder:
   - imports go one way, for code and for types alike: `index` → `reads`, `writes` → the store file. `reads` and

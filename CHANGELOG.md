@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.3.4] — 2026-11-27
+
 ### Added
 
 - The app's types folder (default `types/`, config key `types`, at the top level and in each app of `apps`), next
@@ -103,6 +105,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   is not applied and is named under Warnings. An exception the caller gives is applied as given. Word budget
   raised: the reviewer agent 1850→1950 — three lines that repeated the agent's own text were cut first, and the
   rest is new text.
+- "Levels" said that a logic folder holds nothing but the Presenter, stateful logic, plain functions, the tasks
+  folder and tests, while a schema with one user lies beside that user: it now names such a schema too.
 
 ## [0.3.3] — 2026-11-26
 

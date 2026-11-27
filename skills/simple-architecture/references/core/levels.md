@@ -1,9 +1,9 @@
 ## Levels
 
 **Rule.** Give the app root and every unit folder the same shape: the unit's entry, a logic folder (default
-`_logic/`) with the own unit's non-UI code but its stores, a stores folder (default `_stores/`), a types file, schema files, a
-constants file, a components folder (default `_components/`) and the child units. Put nothing else at a level root,
-and nothing but the own unit's code in its logic folder.
+`_logic/`) with the own unit's non-UI code but its stores, a stores folder (default `_stores/`), a types file,
+schema files, a constants file, a components folder (default `_components/`) and the child units. Put nothing else
+at a level root, and nothing but the own unit's code in its logic folder.
 
 **Why.** One shape on every level means one set of rules to know: a module reads the same way as the app, at any
 depth. With the own unit's code in one folder and its stores in another, the entry — the file people look for — is
@@ -29,8 +29,8 @@ unit's code says what that unit does, and whether a file may import from it is a
   - the entry, named as the folder, at the level root;
   - the logic folder: the Presenter — with no UI, the entry's route handlers — stateful logic and plain functions
     of the own unit, as files or entry folders, and a tasks folder (default `_tasks/`) with the tasks only this
-    unit calls and the plain functions only those tasks use, as files or entry folders. Tests aside, it holds
-    nothing else;
+    unit calls and the plain functions only those tasks use, as files or entry folders. Tests and a schema beside
+    its one user aside, it holds nothing else;
   - the types file, the constants file (`types`, `constants`) and the schema files at the level root
     ([Types and constants](types-and-constants.md));
   - the stores folder: the stores of the level, as files or store entry folders
@@ -40,7 +40,7 @@ unit's code says what that unit does, and whether a file may import from it is a
 - Any other file or folder at a level root is a violation: a folder of stateful logic, functions or tasks (such as
   `hooks/`) or a file of non-UI code goes to the logic folder, a store to the stores folder, a unit next to the entry
   or to the components folder. Tests, the test infrastructure, the pure zone ([Pure zone](pure-zone.md)) and the
-  app's tasks folder, stores folder and types folder are not part of the shape.
+  app's three folders are not part of the shape.
 - Who may import a file of the logic folder: [Imports](imports.md).
 - A types file or a constants file in the logic folder, outside an entry folder, is a violation: it lies at the
   level root. A store in the logic folder or its tasks folder is a violation, even with one user: it goes to the

@@ -4,8 +4,8 @@
 the shared folders and files of your level and of the levels above, the app's tasks folder, stores folder and types
 folder, the pure zone, the shared package — and from an entry folder only its entry. Imports go one way: levels →
 the app's tasks folder → the app's stores folder → the app's types folder → the pure zone, and View → Presenter →
-stateful logic and the UI side's plain functions → tasks → plain functions, with stores and generic I/O open only to
-the kinds listed below.
+stateful logic and the UI side's plain functions → tasks → plain functions, with stores and generic I/O open only
+to the kinds listed below.
 
 **Why.** When imports follow the folders, the folders tell the truth: a unit can be changed inside without
 breaking anyone, moved or deleted with its folder, and every dependency is visible from where a file lies. A

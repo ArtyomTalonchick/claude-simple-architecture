@@ -31,8 +31,8 @@ package; one such file is reviewed.
    every rule file in that folder. A stack rule file is named as the core rule it carries out and never overrides
    it.
 
-A file of an app lies in its root, its pure zone set by `lib`, its tasks folder, its stores folder or its types folder,
-or, when it sets `lib`, is its start file or test infrastructure beside the root folder
+A file of an app lies in its root, its pure zone set by `lib`, its tasks folder, its stores folder or its types
+folder, or, when it sets `lib`, is its start file or test infrastructure beside the root folder
 ([Levels](references/core/levels.md)). With `apps` in the config, read the core and then only the stacks of the
 app that holds the code; code in the shared package gets the core only.
 

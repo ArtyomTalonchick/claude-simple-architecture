@@ -13,8 +13,7 @@ subscribe: `getState()` / `setState()` give the current value and a way to chang
 [Closed store access in Zustand](closed-store-access.md) instead of this rule.
 
 - A store file of the app lies in a stores folder, a level's or the app's ([Levels](../../core/levels.md),
-  [The app's folders](../../core/app-folders.md)); its `use…` name is right though its code
-  calls no hook.
+  [The app's folders](../../core/app-folders.md)); its `use…` name is right though its code calls no hook.
 - A store of the pure zone lies in the folder of its subject ([Pure zone](../../core/pure-zone.md)). It is made by
   `create` and named `use…` as any store; its hook is called by stateful logic of the pure zone and the Presenter
   of a ui-kit component, and a plain function of the pure zone reaches it through `getState()` and `setState()`.

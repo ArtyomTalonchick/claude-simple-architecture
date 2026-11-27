@@ -96,12 +96,12 @@ allowed, advice, "not checked" or "a judgement, not a check" is not a finding.
 - A store of the pure zone (`references/core/pure-zone.md`): a ui-kit component's Presenter that only returns it,
   for a library component that subscribes to it, is no finding; a View that imports it is one.
 - On every run alike: a function's parameter or result type imported from its file is no finding, nor is a
-  constant a schema or a function uses in its own code, imported from its file; a type in a
-  types file counts only users outside it (`references/core/types-and-constants.md`); a start file beside the root
-  folder is checked as one, test infrastructure only by its place (`references/core/levels.md`); generic text fixed
-  in a ui-kit component is no finding (`references/core/pure-zone.md`); a function declared inside a body that
-  closes over a parameter or local of the call and is used only in that call is no finding, one that closes over
-  none is a second thing (`references/core/one-thing-per-file.md`).
+  constant a schema or a function uses in its own code, imported from its file; a type in a types file counts only
+  users outside it (`references/core/types-and-constants.md`); a start file beside the root folder is checked as
+  one, test infrastructure only by its place (`references/core/levels.md`); generic text fixed in a ui-kit
+  component is no finding (`references/core/pure-zone.md`); a function declared inside a body that closes over a
+  parameter or local of the call and is used only in that call is no finding, one that closes over none is a
+  second thing (`references/core/one-thing-per-file.md`).
 - A route's handler is the entry of a unit with no UI or a part of it (`references/core/levels.md`), never a
   Presenter or a kind of its own: check its imports as that entry's, and what it does by `references/core/tasks.md`.
   In React, a state update during render that resets state when an input changes is no finding.

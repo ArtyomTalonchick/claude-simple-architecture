@@ -15,17 +15,17 @@ thing; a limit that is only a signal gets waved away, so it is a rule.
   a function at file level it is split into — is a violation, whether the second is exported or not: it gets its
   own file, placed by [Placement by users](placement.md).
 - Not a second thing: a type or a constant used only in this file or part of its thing's API
-  ([Types and constants](types-and-constants.md)), the props type of a View or a Presenter and the
-  types that are part of it, a View passing them on, a store's own readings in the store file
+  ([Types and constants](types-and-constants.md)), the props type of a View or a Presenter and the types that are
+  part of it, a View passing them on, a store's own readings in the store file
   ([Stateful logic and plain functions](stateful-logic-and-functions.md)), and the reads and writes of a closed
   store ([Closed store access](closed-store-access.md)).
 - A function declared inside the body of a thing — a task, a Presenter, stateful logic, a plain function — that
   closes over the values of one call, its parameters or locals, and has no user outside that call is part of the
   body, not a second thing. One that closes over nothing of the call is a file-level function written inside the
   body, and is a second thing as one at file level is. Its length is not checked.
-- A schema with the type inferred from it is one thing, in a file
-  named as the schema; a schema that is only a part of it and has no other user stays in its file. Two schemas with
-  users of their own in one file are a violation, whatever subject they share: one file per schema.
+- A schema with the type inferred from it is one thing, in a file named as the schema; a schema that is only a part
+  of it and has no other user stays in its file. Two schemas with users of their own in one file are a violation,
+  whatever subject they share: one file per schema.
 - A file over `maxFileLines` lines is a violation: name the file, its size and the limit, and say what could move
   out — stateful logic, a task, a plain function, a store, a child unit. A long View is split into child units.
 - Not checked against the limit: a test file, and a file written by a tool — marked as generated, or in a folder a

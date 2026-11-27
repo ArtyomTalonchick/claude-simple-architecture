@@ -13,7 +13,8 @@ what it is about.
 - [The app's folders](app-folders.md) — the tasks two or more units call, the stores they reach and the types
   these share with the units, outside every level.
 - [Entry folders](entry-folders.md) — an entry with parts only it uses, in a folder named as it.
-- [Types and constants](types-and-constants.md) — where a type, a schema or a constant lies by the files that use it.
+- [Types and constants](types-and-constants.md) — where a type, a schema or a constant lies by the files that use
+  it.
 - [Stateful logic and plain functions](stateful-logic-and-functions.md) — the kinds of non-UI code, stores, and who
   calls whom.
 - [Closed store access](closed-store-access.md) — with `storeAccess` set to `"closed"`, a store as a folder of

@@ -46,9 +46,9 @@ with one user looks shared while it is not. What belongs to an API is found wher
   function imports it from there by name, however many files do, and that is no violation. A type the function only
   uses, which other files use without it — a domain type such as `OrderFilter` — goes to the types file.
 - A constant a schema or a function is built on — one it uses in its own code — and that its callers need (a
-  length limit a form names in its hint) is part of its API: declared in its file, and a file that may
-  import the schema or function imports it from there by name, however many files do — no violation. A constant
-  the schema or function does not use itself is not part of its API: it goes to the constants file by its users.
+  length limit a form names in its hint) is part of its API: declared in its file, and a file that may import the
+  schema or function imports it from there by name, however many files do — no violation. A constant the schema or
+  function does not use itself is not part of its API: it goes to the constants file by its users.
 
 **Good.**
 

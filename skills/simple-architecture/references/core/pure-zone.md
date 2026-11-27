@@ -20,8 +20,8 @@ function; called only from tasks, it keeps the app's I/O in the tasks.
 - Where it is: the lib folder and the ui-kit folder (`folders.uiKit`, default `lib/ui-kit/`) under the root level,
   or, when the app sets `lib`, the folder it names, outside every level, with the ui-kit inside it; the root level
   then holds no pure zone, and a lib folder there is an ordinary folder at a level root ([Levels](levels.md)). The
-  app's tasks folder, stores folder and types folder next to it, the start file and the test infrastructure beside the root
-  folder ([Levels](levels.md)) are the app's code, not the pure zone.
+  app's tasks folder, stores folder and types folder next to it, the start file and the test infrastructure beside
+  the root folder ([Levels](levels.md)) are the app's code, not the pure zone.
 - The ui-kit is the pure zone's components folder, not a level's: its name does not follow `folders.components`,
   and when it is set outside the lib folder, the lib folder has no components folder of its own.
 - The lib folder holds folders named by what their code is about — generic I/O (`lib/http/`), errors, the theme
