@@ -71,6 +71,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   is split into stays a violation. The check is by where the function is declared and what it closes over, not by
   its length. The reviewer decides the case the same way on every run. Word budgets raised to fit:
   `core/one-thing-per-file.md` 450→550 and the reviewer agent 1750→1800 — both files were at their budgets.
+- "View and Presenter": a View shows or hides a part, or chooses one of two, by a ready value that is there or
+  not, as it does by a ready flag, and the Presenter decides whether the value is there — it returns none when the
+  part is hidden for any reason. A flag a Presenter computes only as the presence of a value it also returns
+  (`hasImage` next to `imageSrc`) is now a violation. A separate flag stays right when showing and presence
+  differ: a value that is there but counts as empty (a count of zero), a choice by a ready key, a value the View
+  needs while the part is hidden. "View and Presenter in React" says it is the same case as
+  `{pagination && <Pagination {...pagination} />}`. Word budgets raised to fit: `core/view-presenter.md`
+  1200→1300 and `stack/react/view-presenter.md` 1150→1200 — both files were at their budgets.
 
 ### Fixed
 

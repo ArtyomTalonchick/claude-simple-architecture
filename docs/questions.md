@@ -937,3 +937,24 @@ where the function is declared and what it closes over, not by its length or by 
 own, which cannot be checked. Written into "One thing per file" and into the architecture-reviewer agent as a case
 decided the same way on every run. Word budgets raised: `core/one-thing-per-file.md` 450→550 and
 `agents/architecture-reviewer.md` 1750→1800 — both files were at their budgets.
+
+## Q60. Does a Presenter return a flag that only repeats that a value is there?
+
+**Question.** A Presenter returned `hasImage`, computed as "the image is not null", next to `imageSrc`, and the
+View chose by the flag. "View and Presenter" allowed both a ready flag and a ready value that is there or not, and
+did not say which one a Presenter gives when the flag only repeats the value's presence. The core also worded the
+choice of one of two parts for a flag only, so choosing by a value was covered by the React rule alone.
+
+**Context.** #93, found twice in a project that follows the plugin.
+
+**Status.** answered
+
+**Answer.** No, and it is a violation, not advice: the check is that the flag is computed from nothing but the
+presence of a value the Presenter also returns. A View shows or hides a part, or chooses one of two, by the value
+itself, and the Presenter decides whether it is there. The argument for the flag — the condition may change later,
+and then only the Presenter should change — holds without it: the Presenter returns no value when the part is
+hidden for any reason. A separate flag is right when showing and presence differ: a value that is there but counts
+as empty (a count of zero), a choice by a ready key, a value the View needs while the part is hidden. Written into
+"View and Presenter" and its React side, which says it is the same case as a component's ready props or `null`.
+Word budgets raised: `core/view-presenter.md` 1200→1300 and `stack/react/view-presenter.md` 1150→1200 — both
+files were at their budgets.

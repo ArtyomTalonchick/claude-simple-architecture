@@ -15,14 +15,18 @@ without it.
 - A View may: call its own Presenter once and read values from the result; hold markup and styles of the design
   system (a style by name, a theme value, a value per screen size); read a row of its own literal table by a ready
   key: a style (`STYLES[p.size]`) or one child of several (`CONTENTS[p.content]`); read a resource text by a
-  literal key, with ready values as parameters; show or hide a part by a ready flag (an "if" or a two-way choice on
-  it) or by a ready value that is there or not; repeat a part for each item of a ready list; pass a ready handler;
-  wrap a Presenter handler only to pass it an argument (`select(item.id)`); keep a constant written out as a plain
-  value (a list of labels, a size).
+  literal key, with ready values as parameters; show or hide a part, or choose one of two, by a ready flag or by a
+  ready value that is there or not; repeat a part for each item of a ready list; pass a ready handler; wrap a
+  Presenter handler only to pass it an argument (`select(item.id)`); keep a constant written out as a plain value
+  (a list of labels, a size).
+- The Presenter decides whether a value is there: it returns none when the part is hidden, for any reason. A flag
+  it computes only as the presence of a value it also returns (`hasImage` next to `imageSrc`) is a violation. A
+  separate flag is right when showing and presence differ: a value that is there but counts as empty (a count of
+  zero), a choice by a ready key, a value the View needs while the part is hidden.
 - A violation in a View: state, effects or lifecycle code; reading data or a store directly; a computation or
   formatting of raw data (filtering, sorting, comparing, rounding, joining text); a handler that does more than call
-  one Presenter handler; a ready key compared to a literal — a two-way choice goes by a ready flag, one of three
-  or more by the table.
+  one Presenter handler; a ready key compared to a literal — a two-way choice goes by a ready flag or such a
+  value, one of three or more by the table.
 - A text's plural forms and formats are the resource's: a View may pass them a ready raw value. A violation: a key
   built from data (`"status." + p.status`), a computation in the parameters, a text chosen by a condition, reading
   or changing the language.
@@ -103,8 +107,10 @@ OrderList/
                              OrderRow(order, total = round(order.sum * 1.2, 2), title = order.name or "Untitled")
 OrderPage/
   OrderPage   (View)       OrderResults(count = p.count, onRetry = p.onRetry)
+                           if p.hasPagination: Pagination(p.pagination as its props)
   _logic/
     presenter (Presenter)  count from the orders store, onRetry calls loadOrders — handed down
+                           hasPagination = pagination is there — a flag that only repeats a returned value
 ```
 
 **Stack notes.** [react/view-presenter.md](../stack/react/view-presenter.md) — View and Presenter in React.

@@ -25,6 +25,10 @@ View's concern.
   `{items.map((item) => <Row key={item.id} … />)}` on a ready array; `<Content />` for
   `Content = CONTENTS[content]`; `onClick={onSave}`; `onClick={() => onSelect(item.id)}`; style props,
   `className`, `style`.
+- A flag `usePresenter.ts` computes only as the presence of a value it also returns (`hasImage: image !== null`
+  next to `imageSrc`) is a violation: `{imageSrc ? <img src={imageSrc} /> : <Placeholder />}` is the same case as
+  `{pagination && <Pagination {...pagination} />}`. A flag stays where showing and presence differ, as for a
+  `count` of `0`, which `&&` would render ([View and Presenter](../../core/view-presenter.md)).
 - A violation in JSX: `.filter`, `.sort`, `.reduce`, `.find` on data; `.toFixed`, `toLocaleString` or a template
   string built from data; a comparison on raw data or a ready key (`a > b`, `status === 'paid'`,
   `content === 'empty'`); an arrow with more than one call or with a condition; `??`, `||` or `?:` that picks a
