@@ -92,8 +92,8 @@ allowed, advice, "not checked" or "a judgement, not a check" is not a finding.
   task does not count.
 - Line numbers are in the new version of the file (the `+` side of the diff). For a deleted or moved file,
   name the path and say so.
-- A runtime schema is a plain function (`references/core/stateful-logic-and-functions.md`): check its file, place
-  and imports as one, never as a constant and never as a judgement.
+- A runtime schema is placed and imported as a type with the same users, in a file of its own
+  (`references/core/types-and-constants.md`): never as a plain function, a constant or a judgement.
 - A store of the pure zone (`references/core/pure-zone.md`): a ui-kit component's Presenter that only returns it,
   for a library component that subscribes to it, is no finding; a View that imports it is one.
 - On every run alike: a function's parameter or result type imported from its file is no finding; a type in a

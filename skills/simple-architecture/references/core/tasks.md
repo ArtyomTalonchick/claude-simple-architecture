@@ -39,7 +39,7 @@ without the task.
   calls the task, through a debounce made once when the call is delayed.
 - A route's handler ([Levels](levels.md)) turns the request into the task's arguments, calls the task, and turns
   its result or its error into the answer. It may check the request by a schema
-  ([Stateful logic and plain functions](stateful-logic-and-functions.md)) and answer a refusal. An order of business
+  ([Types and constants](types-and-constants.md)) and answer a refusal. An order of business
   steps in it — two or more tasks joined by conditions on the data, a store reached directly, I/O — is a violation:
   it is a task.
 - A Presenter, stateful logic or a plain function of the UI side that reads the app's data to decide whether to
@@ -118,8 +118,8 @@ On a server:
 orders/
   orders              the entry: POST /orders — the body fails orderSchema: 400; order = await placeOrder(body):
                       201 with order; OutOfStockError from the task: 409
+  orderSchema         the schema the entry, its one user, checks the request by — beside it
   _logic/
-    orderSchema       the schema the entry checks the request by
     _tasks/
       placeOrder      reserveItems, chargeCard when the total is above zero, orders store: add — the steps
 ```

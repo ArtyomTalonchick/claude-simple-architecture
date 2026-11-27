@@ -31,6 +31,8 @@ sibling and branch are as in [Levels](levels.md).
   - the shared package (`shared` in the config), from any app: types, and the runtime code two or more apps use —
     plain functions on its types, constants, schemas, and what would lie in a pure zone, generic I/O included;
   - packages from outside the project, from any kind of code.
+- A schema is imported as a type, by place and by kind, its file at a level's root as the types file
+  ([Types and constants](types-and-constants.md)).
 - An entry folder, a store entry folder included, at any depth and in any folder, is imported only through its
   entry ([Entry folders](entry-folders.md)); inside it, the entry imports its parts and the parts import each other.
 - A violation:

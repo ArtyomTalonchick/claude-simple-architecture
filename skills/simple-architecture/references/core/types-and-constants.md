@@ -29,6 +29,17 @@ with one user looks shared while it is not. A type that belongs to an API is fou
 - A pure-zone module's type stays in the module ([Pure zone](pure-zone.md)); the type of a store's data is declared
   in the store file and imported from there; the type inferred from a schema is declared in the schema's file and
   imported from there, however many files use it.
+- A runtime schema — a value that describes a data shape and checks data against it — is a data shape written as a
+  value, not a constant: it lies where a type with the same users goes, and whatever may import that type may
+  import it. Its one difference: a schema takes a file of its own ([One thing per file](one-thing-per-file.md)),
+  which lies:
+  - with one user, beside that user;
+  - with two or more users within a level, at the level's root, beside its types file;
+  - with two or more users, one of them in the app's tasks folder or stores folder, in the app's types folder
+    ([The app's folders](app-folders.md));
+  - with users in two apps, in the shared package, by its subject; in the pure zone, in its module.
+
+  A schema in a constants file is a violation.
 - The type of a function's parameters or of its result — the type written for its options or its return value
   (`OpenOrderOptions`, `OrderFiltersResult`) — is declared in the function's file; a file that may import the
   function imports it from there by name, however many files do, and that is no violation. A type the function only
@@ -40,6 +51,8 @@ with one user looks shared while it is not. A type that belongs to an API is fou
 OrdersPage/
   types                 OrderFilter — used by the presenter and by _logic/orderFilters
                         FilterGroup — built into OrderFilter; one user outside the file, still it stays
+  filtersSchema         a schema; declares FiltersInput, inferred from it — the presenter and orderFilters import
+                        both from here: two users
   _logic/
     presenter           derives the type of openOrder's parameters without naming it
     orderFilters        declares OrderFiltersResult, the type of its result; the presenter and orderSummary
@@ -47,7 +60,6 @@ OrdersPage/
     orderSummary
     sortOrders          declares OrderSort, the type of a prop; the presenter imports it for the props type
     openOrder           declares OpenOrderOptions, the type of its parameters
-    filtersSchema       declares FiltersInput, inferred from the schema; the presenter and orderFilters import it
   _stores/
     filtersStore        declares Filters, the type of its data; its users import it from here
 ```
@@ -56,12 +68,14 @@ OrdersPage/
 
 ```
 OrdersPage/
+  constants             orderSchema — a schema is not a constant: it takes a file of its own
   types                 OpenOrderOptions — the presenter only derives it from openOrder's parameters, which is no
                         use: it belongs in openOrder
                         SortKey — used only by orderFilters: it belongs in orderFilters
                         OrderFiltersResult — the type of orderFilters' result: it belongs in orderFilters
   _logic/
     orderFilters        exports OrderFilter, which the presenter imports — it belongs in OrdersPage/types
+    pageSchema          a schema the presenter and orderFilters use — it belongs at OrdersPage's root
 ```
 
 **Stack notes.** [react/types-and-constants.md](../stack/react/types-and-constants.md) — a derived type is not used

@@ -712,7 +712,8 @@ schema with its inferred type is one thing, a part of it with no other user stay
 users of their own in one file are a violation. The inferred type is part of the schema's API. The core names no
 library and needs no stack rule. Written into "Stateful logic and plain functions", "One thing per file", "Types
 and constants" and the architecture-reviewer agent, which also reads a project's written exception that names
-schemas as covering every schema file.
+schemas as covering every schema file. Changed by Q55: a schema is placed and imported as a type, not as a plain
+function.
 
 ## Q48. Is a library's state in the pure zone a store, and who reaches it?
 
@@ -826,3 +827,26 @@ joined by conditions on the data, a store reached directly, I/O — is a violati
 Advice, not checked: a value kept together with the input it was chosen for needs no reset. An update during render
 that follows a value to call a task stays a violation of "Tasks". It is a React matter, so it is written into
 "Stateful logic in React is a hook" only, and into the architecture-reviewer agent.
+
+## Q55. Why does a schema follow other rules than the type of the same data shape?
+
+**Question.** Q47 placed a schema as a plain function, so a schema used by tasks lay in the app's tasks folder. A
+store may import a type but nothing from the tasks folder, so it could not name the type inferred from that schema
+without an exception.
+
+**Context.** #95, after the app's types folder (#94); it cancels a part of Q47 on purpose.
+
+**Status.** answered
+
+**Answer.** A schema and a type do one job — they describe a data shape — so they follow one rule: a schema is a
+data shape written as a value, placed where a type with the same users goes and imported by whatever may import that
+type. Its one difference is a file of its own, named as the schema, with the inferred type declared in it: beside
+its one user; at the level's root, beside the types file, for two or more users within a level — a schema two files
+of one unit use leaves the logic folder; in the app's types folder when a file of the app's tasks folder or stores
+folder is among its users; in the shared package or the pure zone as before. A schema is still not a constant. "A
+View imports none" is gone: a schema called in a View is a computation, which "View and Presenter" already forbids.
+Rejected: a `schemas/` folder — a folder named by a kind of code; a hand-written type in the types folder checked
+against the schema — two records of one shape; a type-only import from the tasks folder for a store — an exception.
+Written into "Types and constants", with links from "Stateful logic and plain functions", "One thing per file",
+"Levels", "Placement by users", "The app's folders", "Imports" and "Tasks", and into the architecture-reviewer
+agent.

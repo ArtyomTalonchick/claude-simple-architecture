@@ -17,6 +17,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   does `tasks` and `stores`, and passes its value. Word budget raised to fit: `core/app-folders.md` 650→800 — the
   file was at its budget, and the third folder with its checks and examples does not fit after shortening.
 
+### Changed
+
+- A runtime schema is no longer a plain function (the 0.3.3 rule): it is a data shape written as a value, placed
+  where a type with the same users goes and imported by whatever may import that type, so a store can import a
+  schema and its type with no exception. Its one difference from a type is a file of its own — one schema per
+  file, named as the schema, with the inferred type declared in it: beside its one user; at the level's root,
+  beside the types file, for two or more users within a level; in the app's types folder when a file of the
+  app's tasks folder or stores folder is among its users; in the shared package for two apps; in its module in
+  the pure zone. A schema two files of one unit use moves from the logic folder to the level's root. "A View
+  imports none" is removed — a schema called in a View is a computation, which "View and Presenter" forbids; a
+  schema in a constants file stays a violation. The rule now lies in "Types and constants"; "Stateful logic and
+  plain functions", "One thing per file", "Levels", "Placement by users", "The app's folders", "Imports" and
+  "Tasks" follow it, and the reviewer checks a schema as a type. Word budgets: `core/types-and-constants.md`
+  700→900 — the schema rule moved there; `core/imports.md` 1650→1700 — the file was at its budget;
+  `core/stateful-logic-and-functions.md` lowered 1800→1700.
+
 ### Fixed
 
 - "A Zustand store" no longer contradicts "Pure zone": only a store file of the app lies in a stores folder, a

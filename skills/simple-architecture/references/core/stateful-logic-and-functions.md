@@ -62,11 +62,8 @@ without touching the logic around it, and the few kinds that reach it show who d
     whose listener outlives the call is stateful logic;
   - a wrapper that delays or thins out calls — a debounce, a throttle — and keeps its timer in the closure of the
     function it returns is a plain function. The caller makes it once and keeps it; the handler calls it;
-  - a runtime schema — a value that describes a data shape and checks data against it — is a plain function written
-    as data, not a constant: it holds logic and is called. It is placed and imported as a plain function, with no
-    rule of its own: in its unit's logic folder or tasks folder, the app's tasks folder, the pure zone or the shared
-    package. A View imports none; one in a constants file is a violation. Its file:
-    [One thing per file](one-thing-per-file.md);
+  - a runtime schema is not a plain function: it is a data shape written as a value, placed and imported as a type
+    ([Types and constants](types-and-constants.md));
   - where a plain function lives: [Placement by users](placement.md).
 - Stateful logic:
   - a function marked as stateful logic by the stack's convention that uses no state, lifecycle or subscription and
@@ -95,7 +92,6 @@ OrdersPage/
     statusFilter        stateful logic: options computed from the orders, the selected status, the filtered
                         orders — one concern
     formatPrice         a plain function: number -> text
-    filtersSchema       a schema: the presenter checks the filters read from the URL by it — a plain function
     _tasks/
       cancelOrder       server call, then _stores/ordersStore: remove the order — no subscription
   _stores/
@@ -123,10 +119,6 @@ BookmarkButton/
 On a server:
 
 ```
-tasks/
-  payments/
-    paymentAnswerSchema the payment service's answer, checked only by the payment tasks: in their topic folder
-    chargeCard
 orders/
   _logic/
     _tasks/
@@ -140,7 +132,6 @@ orders/
 
 ```
 OrdersPage/
-  constants             orderSchema — a schema is a plain function, not a constant
   _logic/
     formatPrice         called by a task, but follows the currency in the store — stateful logic
     cancelOrder         server call, then a store change — a task outside _tasks/

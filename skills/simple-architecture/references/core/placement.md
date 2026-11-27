@@ -1,8 +1,8 @@
 ## Placement by users
 
 **Rule.** Put each child unit, store, type and constant at the lowest level that covers all its users, and move it
-when its users change. A level shares only the units of its components folder, its stores, its types file and its
-constants file — there is no shared logic at a level.
+when its users change. A level shares only the units of its components folder, its stores, its types file, schema
+files and constants file — there is no shared logic at a level.
 
 **Why.** Code that sits next to its only user can be changed without checking anyone else; code that sits higher
 than needed looks shared, so every change to it needs a search for users that do not exist.
@@ -40,9 +40,9 @@ than needed looks shared, so every change to it needs a search for users that do
   stateful logic or such an entry inside the tasks folder, is a violation. One that works on the app's data and is
   used by tasks of the app's tasks folder or by two or more units lies in the app's tasks folder, and a Presenter
   may import it.
-- The pure zone and the app's tasks folder, stores folder and types folder are not placed by this rule: their code
-  stays there whatever the number of its users. Nor is what two apps use: [Imports](imports.md) says what the shared package
-  holds.
+- A schema is placed as a type ([Types and constants](types-and-constants.md)). The pure zone and the app's three
+  folders are not placed by this rule: their code stays there, however many users it has. Nor is what two apps
+  use: [Imports](imports.md) says what the shared package holds.
 
 **Good.**
 

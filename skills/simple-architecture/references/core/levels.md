@@ -1,7 +1,7 @@
 ## Levels
 
 **Rule.** Give the app root and every unit folder the same shape: the unit's entry, a logic folder (default
-`_logic/`) with the own unit's non-UI code but its stores, a stores folder (default `_stores/`), a types file, a
+`_logic/`) with the own unit's non-UI code but its stores, a stores folder (default `_stores/`), a types file, schema files, a
 constants file, a components folder (default `_components/`) and the child units. Put nothing else at a level root,
 and nothing but the own unit's code in its logic folder.
 
@@ -31,7 +31,7 @@ unit's code says what that unit does, and whether a file may import from it is a
     of the own unit, as files or entry folders, and a tasks folder (default `_tasks/`) with the tasks only this
     unit calls and the plain functions only those tasks use, as files or entry folders. Tests aside, it holds
     nothing else;
-  - the types file and the constants file (`types`, `constants`) at the level root
+  - the types file, the constants file (`types`, `constants`) and the schema files at the level root
     ([Types and constants](types-and-constants.md));
   - the stores folder: the stores of the level, as files or store entry folders
     ([Placement by users](placement.md));

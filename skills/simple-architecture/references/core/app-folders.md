@@ -27,9 +27,9 @@ stays with them. A type both folders name lies below them, or a store could not 
   the stores folder of the lowest level that covers its users); a store in a level's stores folder that such a task
   reaches (it belongs in the app's stores folder).
 - The types folder holds the types that two or more files use, at least one of them in the app's tasks folder or
-  stores folder, and nothing but types. A violation: a type there with one user (it belongs in that file) or with
-  users in units only (it belongs in a level's types file); a types file in the app's tasks folder. Types that stay
-  with an API: [Types and constants](types-and-constants.md).
+  stores folder, and the schemas with such users — nothing else. A violation: a type there with one user (it
+  belongs in that file) or with users in units only (it belongs in a level's types file); a types file in the
+  app's tasks folder. Types that stay with an API: [Types and constants](types-and-constants.md).
 - Folders inside any of the three are optional, grouped by topic (`tasks/orders/`); a folder named by the kind of
   code (`helpers/`, `utils/`, `hooks/`, a nested `tasks/`) is a violation. Entry folders there follow
   [Entry folders](entry-folders.md).
