@@ -915,3 +915,25 @@ only one app uses, with no type another app needs — a path schema only the ser
 Written into "Imports", in the shared package's allowed targets, its violation and both examples, and into the
 architecture-reviewer agent as a case that is no finding on every run. Word budget of `core/imports.md` raised
 1700→1750: the file was at its budget.
+
+## Q59. Is a function declared inside a body a second thing in the file?
+
+**Question.** A task declares a one-line function in its body that closes over a value of the call — the request
+it started — and reads it twice after an `await`. "One thing per file" calls a task and a function it is split
+into a violation, exported or not, and did not say whether such a local function counts, so the reviewer decided
+the same code differently on two full runs: three findings on one, none on the other.
+
+**Context.** #89.
+
+**Status.** answered
+
+**Answer.** No: a function declared inside the body of a thing that closes over the values of one call — its
+parameters or locals — and has no user outside that call is part of the body. Moving it out costs a file, an entry
+folder and changed import paths for one line, and adds a parameter for what the closure already held. It holds for
+every kind of code: a task, a Presenter, stateful logic, a plain function. The opposite case: a local function
+that closes over nothing of the call is a file-level function written inside the body, and is a second thing as
+one at file level is; a function at file level that the thing is split into stays a violation. The check is by
+where the function is declared and what it closes over, not by its length or by whether it has a meaning of its
+own, which cannot be checked. Written into "One thing per file" and into the architecture-reviewer agent as a case
+decided the same way on every run. Word budgets raised: `core/one-thing-per-file.md` 450→550 and
+`agents/architecture-reviewer.md` 1750→1800 — both files were at their budgets.

@@ -64,6 +64,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   app needs — a path schema only the server checks — still goes to that app. Written into "Imports", in the shared
   package's allowed targets, its violation and both examples; the reviewer reports no finding on such a schema on
   every run. Word budget raised to fit: `core/imports.md` 1700→1750 — the file was at its budget.
+- "One thing per file" now decides a function declared inside a body. One that closes over the values of one
+  call — its parameters or locals — and has no user outside that call is part of the body, in a task, a Presenter,
+  stateful logic and a plain function alike. One that closes over nothing of the call is a file-level function
+  written inside the body, and is a second thing as one at file level is; a function at file level that the thing
+  is split into stays a violation. The check is by where the function is declared and what it closes over, not by
+  its length. The reviewer decides the case the same way on every run. Word budgets raised to fit:
+  `core/one-thing-per-file.md` 450→550 and the reviewer agent 1750→1800 — both files were at their budgets.
 
 ### Fixed
 

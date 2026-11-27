@@ -1,6 +1,6 @@
 {
   "README.md": 600,
-  "agents/architecture-reviewer.md": 1750,
+  "agents/architecture-reviewer.md": 1800,
   "skills/simple-architecture/SKILL.md": 1000,
   "skills/simple-architecture/references/config.md": 650,
   "skills/simple-architecture/references/core/README.md": 300,
@@ -9,7 +9,7 @@
   "skills/simple-architecture/references/core/entry-folders.md": 950,
   "skills/simple-architecture/references/core/imports.md": 1750,
   "skills/simple-architecture/references/core/levels.md": 1450,
-  "skills/simple-architecture/references/core/one-thing-per-file.md": 450,
+  "skills/simple-architecture/references/core/one-thing-per-file.md": 550,
   "skills/simple-architecture/references/core/placement.md": 900,
   "skills/simple-architecture/references/core/pure-zone.md": 1650,
   "skills/simple-architecture/references/core/stateful-logic-and-functions.md": 1700,
