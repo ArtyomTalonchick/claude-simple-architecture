@@ -33,6 +33,9 @@ code that does not need them, and a plain function that calls a hook breaks at r
   kept together with the input it was chosen for — `{ query, page }`, page 1 when its query is not the current
   one — needs no reset. An update during render that follows a value to call a task is a violation of
   [Tasks](../../core/tasks.md).
+- With `storeAccess` set to `"closed"` ([Closed store access](../../core/closed-store-access.md)), a read
+  subscription is a hook, named `use…` (`useOrderById`) and called as any hook; the store object, a read function
+  and a write call no hook and are not named `use…`.
 - A `usePresenter` that calls no hook but computes something from its props is not a violation of this rule; one
   with no computation at all is judged by [View and Presenter in React](view-presenter.md).
 

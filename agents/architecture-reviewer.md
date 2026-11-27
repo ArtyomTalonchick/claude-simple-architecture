@@ -103,6 +103,10 @@ allowed, advice, "not checked" or "a judgement, not a check" is not a finding.
 - A route's handler is the entry of a unit with no UI or a part of it (`references/core/levels.md`), never a
   Presenter or a kind of its own: check its imports as that entry's, and what it does by `references/core/tasks.md`.
   In React, a state update during render that resets state when an input changes is no finding.
+- Store access: resolve `storeAccess`, with `apps` that of the file's app. Under `"closed"`, check the stores
+  `references/core/closed-store-access.md` covers by it and by the stack rule that carries it out, in place of
+  the checks it names. Under `"direct"`, or a value that fell back to it, check nothing by those two rules and
+  report nothing of them: a store in one file, reached through its own API, is no finding.
 - A written exception the project or the caller gives is not a finding for what it names; one that names a kind of
   code — schemas — covers every file of that kind.
 - One finding per place and rule.
@@ -119,8 +123,8 @@ allowed, advice, "not checked" or "a judgement, not a check" is not a finding.
 
 Start with one line on what was reviewed: the rules version and the rules folder used, the diff source, and the
 stack read — for example `Rules 0.1.1 from <rules folder>; diff: git diff HEAD; stack: react.`, or with apps
-`…; apps: client (react, zustand), server (core only).` Name any stack name that has no stack folder and any
-config value that took its default.
+`…; apps: client (react, zustand), server (core only).` Name `storeAccess` when it is `"closed"`, any stack name
+that has no stack folder and any config value that took its default.
 
 Then one of these:
 

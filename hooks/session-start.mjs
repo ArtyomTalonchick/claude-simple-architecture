@@ -26,6 +26,7 @@ const DEFAULTS = {
   types: null,
   folders: DEFAULT_FOLDERS,
   maxFileLines: 120,
+  storeAccess: 'direct',
   apps: null,
   shared: null,
 };
@@ -198,9 +199,23 @@ function appFolders(raw, prefix, root, lib, folders, problems) {
   return result;
 }
 
-// Several apps of one repository: { name: { root, stack, lib, tasks, stores, types } }. Returns a list of
-// { name, root, stack, lib, tasks, stores, types }, or null when there is no usable app, so the config falls back
-// to one app.
+// The `storeAccess` key: how the stores of the stores folders are reached. Any value but the two modes is named
+// in `problems` and "direct" is used.
+const STORE_ACCESS = {
+  direct: "direct - a store is reached through the store's own API",
+  closed:
+    'closed - a store of a stores folder is a folder of plain data behind named reads and writes, reached only through them (core rule "Closed store access")',
+};
+function storeAccess(raw, label, problems) {
+  if (!('storeAccess' in raw)) return 'direct';
+  if (typeof raw.storeAccess === 'string' && Object.hasOwn(STORE_ACCESS, raw.storeAccess)) return raw.storeAccess;
+  problems.push(`"${label}" is not "direct" or "closed", so "direct" is used`);
+  return 'direct';
+}
+
+// Several apps of one repository: { name: { root, stack, lib, tasks, stores, types, storeAccess } }. Returns a
+// list of { name, root, stack, lib, tasks, stores, types, storeAccess }, or null when there is no usable app, so
+// the config falls back to one app.
 function resolveApps(raw, folders, problems) {
   if (!raw.apps || typeof raw.apps !== 'object' || Array.isArray(raw.apps)) {
     problems.push('"apps" is not an object');
@@ -220,18 +235,19 @@ function resolveApps(raw, folders, problems) {
     const root = app.root.trim();
     const lib = 'lib' in app ? resolveLib(app.lib, `apps.${name}.lib`, root, folders, problems) : null;
     const { tasks, stores, types } = appFolders(app, `apps.${name}.`, root, lib, folders, problems);
+    const access = storeAccess(app, `apps.${name}.storeAccess`, problems);
     for (const key of Object.keys(app)) {
-      if (!['root', 'stack', 'lib', 'tasks', 'stores', 'types'].includes(key)) {
+      if (!['root', 'stack', 'lib', 'tasks', 'stores', 'types', 'storeAccess'].includes(key)) {
         problems.push(`"apps.${name}.${key}" is not a known key`);
       }
     }
-    apps.push({ name, root, stack, lib, tasks, stores, types });
+    apps.push({ name, root, stack, lib, tasks, stores, types, storeAccess: access });
   }
   if (!apps.length) {
     problems.push('"apps" has no usable app, so it is ignored and the project is one app');
     return null;
   }
-  for (const key of ['root', 'stack', 'lib', 'tasks', 'stores', 'types']) {
+  for (const key of ['root', 'stack', 'lib', 'tasks', 'stores', 'types', 'storeAccess']) {
     if (key in raw) problems.push(`"${key}" is ignored because "apps" is set`);
   }
   return apps;
@@ -271,6 +287,7 @@ function resolveConfig(raw) {
   if ('apps' in raw) config.apps = resolveApps(raw, config.folders, problems);
   if ('lib' in raw && !config.apps) config.lib = resolveLib(raw.lib, 'lib', config.root, config.folders, problems);
   if (!config.apps) Object.assign(config, appFolders(raw, '', config.root, config.lib, config.folders, problems));
+  if (!config.apps) config.storeAccess = storeAccess(raw, 'storeAccess', problems);
   if ('shared' in raw) {
     if (isText(raw.shared)) config.shared = raw.shared.trim();
     else problems.push('"shared" is not a folder name');
@@ -321,7 +338,7 @@ function main() {
     for (const app of config.apps) {
       const zone = pureZone(app.root, app.lib, f);
       lines.push(
-        `- ${app.name}: root level ${app.root}/; stack ${stackText(app.stack)}; pure zone ${zone.lib}/${zone.apart ? APART : ''}; UI kit ${zone.uiKit}/. Tasks folder ${app.tasks}/, stores folder ${app.stores}/, types folder ${app.types}/.`
+        `- ${app.name}: root level ${app.root}/; stack ${stackText(app.stack)}; pure zone ${zone.lib}/${zone.apart ? APART : ''}; UI kit ${zone.uiKit}/. Tasks folder ${app.tasks}/, stores folder ${app.stores}/, types folder ${app.types}/. Store access: ${STORE_ACCESS[app.storeAccess]}.`
       );
     }
   } else {
@@ -329,7 +346,8 @@ function main() {
     lines.push(
       `Stack: ${stackText(config.stack)}.`,
       `Root level: ${config.root}/. Pure zone: ${zone.lib}/${zone.apart ? APART : ''}. UI kit: ${zone.uiKit}/.`,
-      `The app's tasks folder: ${config.tasks}/. Its stores folder: ${config.stores}/. Its types folder: ${config.types}/.`
+      `The app's tasks folder: ${config.tasks}/. Its stores folder: ${config.stores}/. Its types folder: ${config.types}/.`,
+      `Store access: ${STORE_ACCESS[config.storeAccess]}.`
     );
   }
   if (config.shared) {

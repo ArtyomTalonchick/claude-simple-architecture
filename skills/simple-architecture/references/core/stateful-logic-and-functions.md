@@ -23,10 +23,11 @@ without touching the logic around it, and the few kinds that reach it show who d
   - a store: a task and a plain function through the store's own API, at any moment they run, on any app — a task
     after its own `await` too, such as a check that the answer still fits the store. A task does not subscribe; it may
     read again. On a client also a Presenter or stateful logic, which subscribe to it or call its API. A View,
-    another store
-    or the entry of a unit with no UI that reaches a store directly is a violation: a View takes the data from its
-    Presenter, an entry calls a task. A store is not stateful logic, so reaching one calls none. Who reaches a store
-    of the pure zone: [Pure zone](pure-zone.md);
+    another store or the entry of a unit with no UI that reaches a store directly is a violation: a View takes the
+    data from its Presenter, an entry calls a task. A store is not stateful logic, so reaching one calls none. Who
+    reaches a store of the pure zone: [Pure zone](pure-zone.md);
+  - with `storeAccess` set to `"closed"`, a store of a stores folder is a folder reached through its reads and
+    writes, not its own API: [Closed store access](closed-store-access.md);
   - generic I/O: only a task and other generic I/O ([Pure zone](pure-zone.md)).
 - Stores:
   - a store is data that lives longer than one call and is shared by the code that reads it — state several UI

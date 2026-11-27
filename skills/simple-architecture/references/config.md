@@ -25,6 +25,8 @@ A value of the wrong type is ignored and its default is used:
   its default (`shared`, `lib`: none).
 - `folders` that is not an object → every folder name keeps its default.
 - `maxFileLines` that is not a positive whole number → `120`.
+- `storeAccess` (and an app's `storeAccess`) that is not `"direct"` or `"closed"`, written exactly so →
+  `"direct"`.
 
 Names in `stack` are trimmed and compared in lower case; a repeated name counts once. Paths may use either slash;
 empty and `.` parts are dropped.
@@ -63,7 +65,7 @@ The same holds for an app's `lib`, `tasks`, `stores` and `types`, against that a
 - An app that is not an object, or has no `root` folder name, is skipped. A wrong value in an app that has a
   `root` falls back as above; the app is still used.
 - With no usable app left — `apps` is empty, is not an object, or every app is skipped — `apps` is ignored and the
-  project is one app, read from the top-level `root`, `stack`, `lib`, `tasks`, `stores` and `types` as without
-  `apps`.
-- With at least one usable app, the top-level `root`, `stack`, `lib`, `tasks`, `stores` and `types` are ignored,
-  and the user is told each one that is set.
+  project is one app, read from the top-level `root`, `stack`, `lib`, `tasks`, `stores`, `types` and
+  `storeAccess` as without `apps`.
+- With at least one usable app, the top-level `root`, `stack`, `lib`, `tasks`, `stores`, `types` and
+  `storeAccess` are ignored, and the user is told each one that is set.

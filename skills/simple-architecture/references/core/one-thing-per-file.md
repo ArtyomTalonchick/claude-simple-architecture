@@ -15,8 +15,9 @@ thing; a limit that is only a signal gets waved away, so it is a rule.
   a function it is split into — is a violation, whether the second is exported or not: it gets its own file, placed
   by [Placement by users](placement.md).
 - Not a second thing: a type or a constant used only in this file, the props type of a View or a Presenter and the
-  types that are part of it, a View passing them on, and a store's own readings in the store file
-  ([Stateful logic and plain functions](stateful-logic-and-functions.md)).
+  types that are part of it, a View passing them on, a store's own readings in the store file
+  ([Stateful logic and plain functions](stateful-logic-and-functions.md)), and the reads and writes of a closed
+  store ([Closed store access](closed-store-access.md)).
 - A schema ([Types and constants](types-and-constants.md)) with the type inferred from it is one thing, in a file
   named as the schema; a schema that is only a part of it and has no other user stays in its file. Two schemas with
   users of their own in one file are a violation, whatever subject they share: one file per schema.

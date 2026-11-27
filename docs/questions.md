@@ -850,3 +850,31 @@ against the schema — two records of one shape; a type-only import from the tas
 Written into "Types and constants", with links from "Stateful logic and plain functions", "One thing per file",
 "Levels", "Placement by users", "The app's folders", "Imports" and "Tasks", and into the architecture-reviewer
 agent.
+
+## Q56. May a project close its stores behind named reads and writes?
+
+**Question.** Every reader and writer reaches a store through the store's own API, so the rest of the app depends
+on the store's shape. Is a second style — plain data behind named functions — a rule for everyone, an option, or
+nothing?
+
+**Context.** #88, after the app's types folder (#94) and the schema placement (#95), which let a store import the
+types of its data.
+
+**Status.** answered
+
+**Answer.** An option: the config key `storeAccess`, at the top level and in each app of `apps`, `"direct"` by
+default — the rules as they were — or `"closed"`; any other value falls back to `"direct"` and the user is told.
+Both styles are valid, and the closed one costs a folder of four files per store, so a project chooses. Under
+`"closed"` a store of a stores folder is a folder named as the store: the store file with data only, `reads` — a
+private getter with a read function and a read subscription over it — `writes`, plain functions named `…InStore`
+that change only their own store, and `index`, which re-exports the two and is all the outside imports; the store
+object's own API is a violation outside the folder. No type leaves the folder: the types of the data lie in the
+level's types file or the app's types folder, a schema's type the same way, never through an import from the app's
+tasks folder. The file names are a default, judged only for being the same in every store. A store of the pure
+zone, a server store over its own database and a store with several implementations stay as they are in both
+modes. Written as a rule of its own, "Closed store access", since "Stateful logic and plain functions" is at its
+budget, with "Closed store access in Zustand" — `createStore`, `useStore(store, getter)`, `getState()` and
+`setState()`, the `AbortController` of a call through a read function and a write, by tasks only — and with links
+from "Stateful logic and plain functions", "One thing per file", "Entry folders", "Imports", "Types and
+constants", "A Zustand store" and "Stateful logic in React is a hook"; into `SKILL.md`, `references/config.md`,
+the session-start hook and the architecture-reviewer agent, which reports nothing of it under `"direct"`.

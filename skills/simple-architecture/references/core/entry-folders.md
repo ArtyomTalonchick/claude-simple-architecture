@@ -31,6 +31,7 @@ anyone else.
 - The entry of a store entry folder is the store its users reach: it gives the API and, when the store has several
   implementations, picks one by the environment (in memory locally, a database where the app is deployed). An
   implementation is a part, not a store, so the entry importing it is not one store importing another.
+- A closed store's folder is not an entry folder: [Closed store access](closed-store-access.md).
 - In a unit's logic folder outside its tasks folder, and in a stores folder, an entry whose parts lie next to it —
   in the same folder, or in the folder of the entry it is a part of — is a violation: the parts move into its entry
   folder. In a tasks folder, a unit's or the app's, parts lying flat are fine, inside a task's entry folder too.

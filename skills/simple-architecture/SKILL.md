@@ -52,7 +52,8 @@ Every key is optional; a missing key takes its default. The full file with the d
     "logic": "_logic",
     "stores": "_stores"
   },
-  "maxFileLines": 120
+  "maxFileLines": 120,
+  "storeAccess": "direct"
 }
 ```
 
@@ -78,9 +79,13 @@ Every key is optional; a missing key takes its default. The full file with the d
 - The same folder names are used on every level.
 - **`maxFileLines`** — the size in lines above which a file is a violation
   ([One thing per file](references/core/one-thing-per-file.md)). Default `120`.
+- **`storeAccess`** — how the stores of the stores folders are reached. `"direct"`, the default: through the
+  store's own API, the rules as they are without the key. `"closed"`: a store is a folder of plain data behind
+  named reads and writes ([Closed store access](references/core/closed-store-access.md)); that rule and the stack
+  rules that carry it out apply only then.
 
 A repository with several apps — a client, a server and a package of code they share — declares them instead of
-`root`, `stack`, `lib`, `tasks`, `stores` and `types`:
+`root`, `stack`, `lib`, `tasks`, `stores`, `types` and `storeAccess`:
 
 ```json
 {
@@ -93,9 +98,9 @@ A repository with several apps — a client, a server and a package of code they
 ```
 
 - **`apps`** — the apps, by name, each with a `root` (required), a `stack` (default `[]`) and an optional `lib`,
-  `tasks`, `stores` and `types`, read as the top-level keys are; each app is checked on its own, from its own root,
-  by its own stacks. The top-level `root`, `stack`, `lib`, `tasks`, `stores` and `types` are then ignored; `folders` and `maxFileLines`
-  apply to every app.
+  `tasks`, `stores`, `types` and `storeAccess`, read as the top-level keys are; each app is checked on its own,
+  from its own root, by its own stacks and its own `storeAccess`. The top-level `root`, `stack`, `lib`, `tasks`,
+  `stores`, `types` and `storeAccess` are then ignored; `folders` and `maxFileLines` apply to every app.
 - **`shared`** — the shared package, relative to the project root: types and the runtime code two or more apps
   use, imported by every app, importing no app ([Imports](references/core/imports.md)). Optional, no default, with or without `apps`.
 

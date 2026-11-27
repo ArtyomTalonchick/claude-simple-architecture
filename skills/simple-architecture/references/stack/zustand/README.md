@@ -6,3 +6,5 @@ contradict the core. Each rule has its own file, named as the core rule it carri
 - [A Zustand store](stateful-logic-and-functions.md) — a store holds its state and actions only; its hook is
   called only from a Presenter or stateful logic, and a task or a plain function reaches it through `getState()` /
   `setState()`.
+- [Closed store access in Zustand](closed-store-access.md) — with `storeAccess` set to `"closed"`, the store
+  object, its read hooks, read functions and writes.

@@ -27,8 +27,9 @@ with one user looks shared while it is not. A type that belongs to an API is fou
   [View and Presenter](view-presenter.md), however many files use them; one that several logic files need lies in
   the types file. None of these is a violation here.
 - A pure-zone module's type stays in the module ([Pure zone](pure-zone.md)); the type of a store's data is declared
-  in the store file and imported from there; the type inferred from a schema is declared in the schema's file and
-  imported from there, however many files use it.
+  in the store file and imported from there — for a closed store, where
+  [Closed store access](closed-store-access.md) says; the type inferred from a schema is declared in the schema's
+  file and imported from there, however many files use it.
 - A runtime schema — a value that describes a data shape and checks data against it — is a data shape written as a
   value, not a constant: it lies where a type with the same users goes, and whatever may import that type may
   import it. Its one difference: a schema takes a file of its own ([One thing per file](one-thing-per-file.md)),

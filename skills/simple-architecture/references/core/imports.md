@@ -35,6 +35,7 @@ sibling and branch are as in [Levels](levels.md).
   ([Types and constants](types-and-constants.md)).
 - An entry folder, a store entry folder included, at any depth and in any folder, is imported only through its
   entry ([Entry folders](entry-folders.md)); inside it, the entry imports its parts and the parts import each other.
+  A closed store's folder is imported only through its `index` ([Closed store access](closed-store-access.md)).
 - A violation:
   - an import from another unit's logic folder — a parent's, an ancestor's, a sibling's, a child's — of any file in
     it, found by the path alone, whoever else uses the file; where the code goes is set by

@@ -55,6 +55,7 @@ test('empty config: every default', () => {
   assert.match(out, /Tasks that two or more units call, and the stores those tasks reach, live in the app's tasks folder and stores folder, outside every level/);
   assert.match(out, /The types those two folders and the units share live in the app's types folder, outside every level; any code of the app outside the pure zone may import it, and it imports only the pure zone and the shared package\./);
   assert.match(out, /File size limit: 120 lines; a longer file is a violation \(test files and generated files are not checked\)\./);
+  assert.match(out, /^Store access: direct - a store is reached through the store's own API\.$/m);
   assert.doesNotMatch(out, /problems|Unknown/);
 });
 
@@ -370,4 +371,56 @@ test('tasks, stores and types: an invalid value is ignored and named, and the de
     assert.ok(out.includes(problem), `names the problem: ${problem}`);
   }
   assert.doesNotMatch(out, /is not a known key/);
+});
+
+test('storeAccess: "direct" by default and when set, "closed" when set, at the top level and per app', () => {
+  const direct = "Store access: direct - a store is reached through the store's own API.";
+  const closed =
+    'Store access: closed - a store of a stores folder is a folder of plain data behind named reads and writes, reached only through them (core rule "Closed store access").';
+
+  for (const config of [{}, { storeAccess: 'direct' }]) {
+    const out = runHook(JSON.stringify(config));
+    assert.ok(out.includes(`\n${direct}\n`), 'names the direct mode');
+    assert.doesNotMatch(out, /closed|problems/);
+  }
+
+  const one = runHook(JSON.stringify({ storeAccess: 'closed' }));
+  assert.ok(one.includes(`\n${closed}\n`), 'names the closed mode');
+  assert.doesNotMatch(one, /Store access: direct|problems/);
+
+  const apps = runHook(
+    JSON.stringify({ apps: { client: { root: 'client/src', storeAccess: 'closed' }, server: { root: 'server/src' } } })
+  );
+  assert.match(apps, /- client: .*types folder client\/src\/types\/\. Store access: closed - /);
+  assert.ok(apps.includes(`- client: `) && apps.includes(`types folder client/src/types/. ${closed}`));
+  assert.ok(apps.includes(`types folder server/src/types/. ${direct}`), 'an app without the key is direct');
+  assert.doesNotMatch(apps, /problems/);
+});
+
+test('storeAccess: a value other than "direct" or "closed" is named and "direct" is used', () => {
+  for (const value of ['open', 'Closed', ' closed', '', 5, true, null, ['closed'], { mode: 'closed' }, 'toString']) {
+    const out = runHook(JSON.stringify({ storeAccess: value }));
+    assert.match(out, /^Store access: direct - /m);
+    assert.ok(out.includes('"storeAccess" is not "direct" or "closed", so "direct" is used'), `names ${JSON.stringify(value)}`);
+    assert.doesNotMatch(out, /Store access: closed|is not a known key/);
+  }
+
+  const apps = runHook(
+    JSON.stringify({ storeAccess: 'closed', apps: { web: { root: 'web/src', storeAccess: 'shut' }, api: { root: 'api/src' } } })
+  );
+  assert.match(apps, /- web: .*Store access: direct - /);
+  assert.match(apps, /- api: .*Store access: direct - /);
+  assert.doesNotMatch(apps, /Store access: closed|is not a known key/);
+  for (const problem of [
+    '"apps.web.storeAccess" is not "direct" or "closed", so "direct" is used',
+    '"storeAccess" is ignored because "apps" is set',
+  ]) {
+    assert.ok(apps.includes(problem), `names the problem: ${problem}`);
+  }
+});
+
+test('storeAccess: with no usable app, the top-level value is used', () => {
+  const out = runHook(JSON.stringify({ storeAccess: 'closed', apps: { broken: {} } }));
+  assert.match(out, /^Store access: closed - /m);
+  assert.ok(!out.includes('"storeAccess" is ignored because "apps" is set'));
 });

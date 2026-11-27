@@ -16,6 +16,8 @@ what it is about.
 - [Types and constants](types-and-constants.md) — where a type, a schema or a constant lies by the files that use it.
 - [Stateful logic and plain functions](stateful-logic-and-functions.md) — the kinds of non-UI code, stores, and who
   calls whom.
+- [Closed store access](closed-store-access.md) — with `storeAccess` set to `"closed"`, a store as a folder of
+  plain data behind named reads and writes.
 - [Tasks](tasks.md) — a business action as one function with nothing from the UI framework, called from an event.
 - [Pure zone](pure-zone.md) — code that knows nothing of the app, generic I/O included.
 - [One thing per file](one-thing-per-file.md) — one thing in a file, and the file size limit.

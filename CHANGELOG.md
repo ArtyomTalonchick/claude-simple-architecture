@@ -16,6 +16,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   tasks and stores folders" is renamed "The app's folders". The session-start hook reads and checks `types` as it
   does `tasks` and `stores`, and passes its value. Word budget raised to fit: `core/app-folders.md` 650→800 — the
   file was at its budget, and the third folder with its checks and examples does not fit after shortening.
+- Optional closed store access: the config key `storeAccess`, at the top level and in each app of `apps` —
+  `"direct"`, the default, the rules as they were, or `"closed"`; any other value falls back to `"direct"` and the
+  user is told. Under `"closed"`, the new core rule "Closed store access" makes every store of a stores folder a
+  folder named as the store: the store file with data only, `reads` — a private getter with a read function and a
+  read subscription over it — `writes`, plain functions named `…InStore` that change only their own store, and
+  `index`, which re-exports the two and is all that code outside the folder imports; the store object's own API
+  outside the folder is a violation. No type leaves the folder: the types of the data lie in the level's types
+  file or the app's types folder. A store of the pure zone, a server store over its own database and a store with
+  several implementations stay as they are in both modes. "Closed store access in Zustand" adds `createStore` of
+  `zustand/vanilla` with a name without `use`, a read hook over `useStore(store, getter)`, and read functions and
+  writes over `getState()` and `setState()`; "Stateful logic in React is a hook" says a read subscription is a
+  hook. "Stateful logic and plain functions", "One thing per file", "Entry folders", "Imports", "Types and
+  constants" and "A Zustand store" link to the rule. The session-start hook reads and checks `storeAccess` and
+  passes its value, and the reviewer checks the mode the config names and reports nothing of `"closed"` under
+  `"direct"`. Word budgets: new `core/closed-store-access.md` 1250 and `stack/zustand/closed-store-access.md` 750;
+  raised to fit, each file being at its budget: `SKILL.md` 950→1000, `references/config.md` 600→650, the reviewer
+  agent 1650→1700, `stack/react/stateful-logic-and-functions.md` 850→900,
+  `stack/zustand/stateful-logic-and-functions.md` 850→900.
 
 ### Changed
 

@@ -9,7 +9,8 @@ Presenter or other stateful logic. A task or a plain function reaches the store 
 unit depends on, and a View stays free of hidden dependencies on app state. A task or a plain function does not
 subscribe: `getState()` / `setState()` give the current value and a way to change it, without React.
 
-**How to check.**
+**How to check.** With `storeAccess` set to `"closed"`, a store of a stores folder follows
+[Closed store access in Zustand](closed-store-access.md) instead of this rule.
 
 - A store file of the app lies in a stores folder, a level's or the app's ([Levels](../../core/levels.md),
   [The app's folders](../../core/app-folders.md)); its `use…` name is right though its code
