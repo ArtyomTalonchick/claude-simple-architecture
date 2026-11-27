@@ -29,7 +29,8 @@ sibling and branch are as in [Levels](levels.md).
     app's tasks folder; the app's types folder, from any code of the app outside the pure zone;
   - the pure zone of the own app, from anywhere in the app; a type of it from the module that exports it;
   - the shared package (`shared` in the config), from any app: types, and the runtime code two or more apps use —
-    plain functions on its types, constants, schemas, and what would lie in a pure zone, generic I/O included;
+    plain functions on its types, constants, schemas, and what would lie in a pure zone, generic I/O included. An
+    app that uses only the type inferred from a schema counts as its user;
   - packages from outside the project, from any kind of code.
 - A schema is imported as a type, by place and by kind, its file at a level's root as the types file
   ([Types and constants](types-and-constants.md)).
@@ -52,7 +53,7 @@ sibling and branch are as in [Levels](levels.md).
   - with `apps` in the config, an import from another app — its code, its pure zone, anything under its root; what
     two apps share goes to the shared package;
   - in the shared package, an import from any app; a store, a task, stateful logic or a component; code only one
-    app uses — it goes to that app;
+    app uses, with no type another app needs — a path schema only the server checks: it goes to that app;
   - in the pure zone, an import from the app ([Pure zone](pure-zone.md)).
 - By kind, among the allowed targets, an import outside this list is a violation. Code of the pure zone counts as
   its kind: a pure function as a plain function, pure stateful logic as stateful logic, a ui-kit component as a
@@ -148,6 +149,7 @@ shared/src/             the shared package
   order                 type Order
   isValidPassword       a plain function with PASSWORD_MIN_LENGTH, which it checks by and a form names in its
                         hint — both apps check by it
+  signInSchema          server checks a request by it; client names only SignInBody, inferred from it
   http/
     fetchJson           generic I/O
 ```
@@ -187,6 +189,7 @@ client/src/
 shared/src/
   order                 imports client/src/OrderList — the shared package importing an app
   formatOrderRow        used only by client — it goes to client
+  orderPathSchema       only server checks by it, with no type client needs — it goes to server
   sessionStore          a store
 ```
 

@@ -58,6 +58,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   contradicts the example of "Imports"; "One thing per file" follows it, and the reviewer reports no finding on
   such a constant, on every run. Word budgets raised to fit: `core/types-and-constants.md` 900→1000 — the new
   check and its examples do not fit after shortening; the reviewer agent 1700→1750 — the file was at its budget.
+- An app that uses only the type inferred from a schema of the shared package now counts as a user of that schema:
+  a schema one app checks data by, while another app only types its request by the inferred type, stays in the
+  shared package, and a hand-written copy of the type is not the fix. Code only one app uses, with no type another
+  app needs — a path schema only the server checks — still goes to that app. Written into "Imports", in the shared
+  package's allowed targets, its violation and both examples; the reviewer reports no finding on such a schema on
+  every run. Word budget raised to fit: `core/imports.md` 1700→1750 — the file was at its budget.
 
 ### Fixed
 

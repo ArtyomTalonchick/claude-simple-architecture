@@ -897,3 +897,21 @@ schema or function and imported from there by name, however many files do, in an
 constant it does not use itself is not part of its API and goes to the constants file by its users. Written into
 "Types and constants", with "One thing per file" and the example of "Imports" following it, and into the
 architecture-reviewer agent as a case that is no finding on every run.
+
+## Q58. Is an app that uses only a shared schema's type a user of the schema?
+
+**Question.** A schema lies in the shared package; one app checks data by it, the other only types its request by
+the type inferred from it. "Imports" sends code only one app uses to that app, so the reviewer decided it
+differently across runs: no finding on most, and on one a finding with a hand-written copy of the type as the fix.
+
+**Context.** #91, after the schema placement (#95) and the constant of a schema's API (#90).
+
+**Status.** answered
+
+**Answer.** Yes: a schema is placed by its users as a type is, and the inferred type is declared in the schema's
+file, so an app that uses only that type counts as a user of the schema, and the schema stays in the shared
+package. A hand-written copy of the type in the second app is two records of one shape, which drift apart. Code
+only one app uses, with no type another app needs — a path schema only the server checks — still goes to that app.
+Written into "Imports", in the shared package's allowed targets, its violation and both examples, and into the
+architecture-reviewer agent as a case that is no finding on every run. Word budget of `core/imports.md` raised
+1700→1750: the file was at its budget.

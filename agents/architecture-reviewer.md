@@ -118,7 +118,8 @@ allowed, advice, "not checked" or "a judgement, not a check" is not a finding.
 - A file section 3 did not list is not checked; name it in the report.
 - With `apps` in the config, check each listed file by the core and the stacks of its own app only, as `SKILL.md`
   assigns them, with levels starting at that app's root. A file of the shared package gets the core only and is
-  checked as its kind; first find which apps use it (`references/core/imports.md`).
+  checked as its kind; first find which apps use it (`references/core/imports.md`). On every run alike: an app
+  that uses only the type inferred from a shared schema uses that schema, so the schema is no finding.
 
 ## 5. Report
 
